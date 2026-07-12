@@ -10,6 +10,65 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-dusty-taupe-50: #f5f2f0;
+  --color-dusty-taupe-100: #eae5e1;
+  --color-dusty-taupe-200: #d5cbc3;
+  --color-dusty-taupe-300: #c0b1a5;
+  --color-dusty-taupe-400: #ab9787;
+  --color-dusty-taupe-500: #967d69;
+  --color-dusty-taupe-600: #786454;
+  --color-dusty-taupe-700: #5a4b3f;
+  --color-dusty-taupe-800: #3c322a;
+  --color-dusty-taupe-900: #1e1915;
+  --color-dusty-taupe-950: #15120f;
+
+  --color-graphite-50: #f3f1f3;
+  --color-graphite-100: #e7e3e8;
+  --color-graphite-200: #cfc8d0;
+  --color-graphite-300: #b7acb9;
+  --color-graphite-400: #9f91a1;
+  --color-graphite-500: #87758a;
+  --color-graphite-600: #6c5e6e;
+  --color-graphite-700: #514653;
+  --color-graphite-800: #362f37;
+  --color-graphite-900: #1b171c;
+  --color-graphite-950: #131013;
+
+  --color-celadon-50: #ebf9ef;
+  --color-celadon-100: #d8f3e0;
+  --color-celadon-200: #b0e8c1;
+  --color-celadon-300: #89dca2;
+  --color-celadon-400: #62d083;
+  --color-celadon-500: #3bc464;
+  --color-celadon-600: #2f9d50;
+  --color-celadon-700: #23763c;
+  --color-celadon-800: #174f28;
+  --color-celadon-900: #0c2714;
+  --color-celadon-950: #081b0e;
+
+  --color-cool-sky-50: #e7f4fd;
+  --color-cool-sky-100: #d0eafb;
+  --color-cool-sky-200: #a1d5f7;
+  --color-cool-sky-300: #71c0f4;
+  --color-cool-sky-400: #42aaf0;
+  --color-cool-sky-500: #1395ec;
+  --color-cool-sky-600: #0f77bd;
+  --color-cool-sky-700: #0b5a8e;
+  --color-cool-sky-800: #083c5e;
+  --color-cool-sky-900: #041e2f;
+  --color-cool-sky-950: #031521;
+
+  --color-turf-green-50: #e8fdf6;
+  --color-turf-green-100: #d1faed;
+  --color-turf-green-200: #a2f6db;
+  --color-turf-green-300: #74f1ca;
+  --color-turf-green-400: #45edb8;
+  --color-turf-green-500: #17e8a6;
+  --color-turf-green-600: #12ba85;
+  --color-turf-green-700: #0e8b64;
+  --color-turf-green-800: #095d42;
+  --color-turf-green-900: #052e21;
+  --color-turf-green-950: #032017;
 }
 
 @media (prefers-color-scheme: dark) {
