@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 export default function AccountsPage() {
   const router = useRouter();
   const [isAccountCreationEnabled, setIsAccountCreationEnabled] = useState<boolean>(false);
-  const toggleAccountCreation = () => setIsAccountCreationEnabled(!isAccountCreationEnabled);
+  const toggleAccountCreation = () => setIsAccountCreationEnabled(curr => !curr);
 
   function navigateToHome() {
     router.push('/');
