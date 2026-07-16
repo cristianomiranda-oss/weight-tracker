@@ -23,13 +23,14 @@ export default function WeightLogHome() {
     <main className="w-full h-full">
       <Header />
       <div className="w-full h-[calc(100%-10rem)] p-8">
-        <Card>
-          <div className="w-full h-10 flex justify-around items-center border-b-2 text-3xl bg-dusty-taupe-700">
-            <h2 className="w-1/3 text-center">Date</h2>
-            <h2 className="w-1/3 text-center">Weight</h2>
-            <h2 className="w-1/3 text-center">X</h2>
-          </div>
-          <div className="w-full h-[calc(100%-2.5rem)] flex flex-col bg-dusty-taupe-500 overflow-y-auto">
+        <Card padding={false} >
+          <div className="w-full h-full flex flex-col bg-dusty-taupe-500 overflow-y-scroll scrollbar-track-dusty-taupe-700 scrollbar-thumb-turf-green-600">
+            <div className="w-full h-10 sticky top-0 flex justify-around items-center border-b-2 text-3xl bg-dusty-taupe-700">
+              <h2 className="w-1/3 text-center">Date</h2>
+              <h2 className="w-1/3 text-center">Weight</h2>
+              <h2 className="w-1/3 text-center">X</h2>
+            </div>
+
             {tempWeightArr.map(entry => <WeightEntry key={entry.WeightEntryId} weightEntryObj={entry} removeEntry={() => removeWeightEntry(entry.WeightEntryId, entry.userId)} />)}
           </div>
         </Card>
