@@ -1,8 +1,16 @@
+import { twMerge } from "tailwind-merge";
+
 interface CardProps {
-  padding: boolean;
+  className?: string;
   children: React.ReactNode;
 }
 
-export default function Card({ padding, children }: CardProps) {
-  return <div className={`w-full h-full bg-graphite-700 flex flex-col justify-around items-center ${padding ? "p-2" : "p-0"}`}>{children}</div>;
+export default function Card({ className, children }: CardProps) {
+  // Prioritizes the passed in classes
+  const finalClassName = twMerge(
+    "w-full lg:w-1/2 lg:translate-x-1/2 h-full bg-graphite-700 flex flex-col justify-around items-center p-2",
+    className
+  )
+
+  return <div className={finalClassName}>{children}</div>;
 }

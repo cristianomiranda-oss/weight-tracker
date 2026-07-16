@@ -5,6 +5,9 @@ import Header from "./components/header";
 import Footer from "./components/footer";
 import type { WeightEntryType } from "./libs/types";
 import WeightEntry from "./components/weight-entry";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRightFromBracket, faCirclePlus, faWeightScale } from "@fortawesome/free-solid-svg-icons";
+import IconLink from "./components/icon-link";
 
 
 export default function WeightLogHome() {
@@ -21,9 +24,11 @@ export default function WeightLogHome() {
 
   return (
     <main className="w-full h-full">
-      <Header />
+      <Header>
+        <IconLink className="hidden lg:block" icon={faArrowRightFromBracket} href="/"/>
+      </Header>
       <div className="w-full h-[calc(100%-10rem)] p-8">
-        <Card padding={false} >
+        <Card className="p-0">
           <div className="w-full h-full flex flex-col bg-dusty-taupe-500 overflow-y-scroll scrollbar-track-dusty-taupe-700 scrollbar-thumb-turf-green-600">
             <div className="w-full h-10 sticky top-0 flex justify-around items-center border-b-2 text-3xl bg-dusty-taupe-700">
               <h2 className="w-1/3 text-center">Date</h2>
@@ -35,7 +40,11 @@ export default function WeightLogHome() {
           </div>
         </Card>
       </div>
-      <Footer />
+      <Footer className="flex justify-center items-center">
+        <IconLink className="w-1/3 text-center" icon={faWeightScale} href="/entry"/>
+        <IconLink className="w-1/3 text-center" icon={faCirclePlus} href="/entry"/>
+        <IconLink className="w-1/3 text-center block lg:hidden" icon={faArrowRightFromBracket} href="/"/>
+      </Footer>
     </main>
   );
 }
