@@ -4,3 +4,10 @@ export type WeightEntryType = {
     weightDate: Date
     userId: number
 }
+
+export type GoalWeightEntryType = {
+    GoalWeightEntryId: number
+    weightValue: number
+    goalType: "Loss" | "Maintenance" | "Gain"
+    userId: number
+}
