@@ -23,6 +23,6 @@ export default function Button({className, children, type, onClick}: ButtonProps
     )
 
     return (
-        <button className={finalClassName} onClick={onClick}>{children}</button>
+        <button className={finalClassName} onClick={onClick} type="button">{children}</button>
     )
 }
