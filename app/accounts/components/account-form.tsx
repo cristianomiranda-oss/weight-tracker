@@ -3,14 +3,23 @@
 import Button from "@/app/components/button";
 import LabeledInput from "@/app/components/labeled-input";
 import SubmitButton from "@/app/components/submit-button";
+import { GSP_NO_RETURNED_VALUE } from "next/dist/lib/constants";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
 interface AccountFormProps {
-    validateLogin: (userName: string, userPassword: string) => Promise<void>
+  validateLogin: (userName: string, userPassword: string) => Promise<void>;
+  createUserAccount: (
+    userName: string,
+    userPassword: string,
+    confirmPassWord: string,
+  ) => Promise<void>;
 }
 
-export default function AccountForm({validateLogin}: AccountFormProps) {
+export default function AccountForm({
+  validateLogin,
+  createUserAccount,
+}: AccountFormProps) {
   const router = useRouter();
   const [isAccountCreationEnabled, setIsAccountCreationEnabled] =
     useState<boolean>(false);
@@ -30,19 +39,45 @@ export default function AccountForm({validateLogin}: AccountFormProps) {
 
   async function submitForm(e: React.SubmitEvent<HTMLFormElement>) {
     try {
-        // Prevents the form submission event
+      // Prevents the form submission event
       e.preventDefault();
 
       // Sets the loading boolean and clears the current error message
       setIsLoading(true);
       setErrorMessage("");
 
-
+      // Checks that userName and userPassword references to associated text inputs are established
       if (isAccountCreationEnabled) {
+        // Checks that confirmPassword ref to associated text input is established
+        if (
+          userNameRef.current !== null &&
+          userPasswordRef.current !== null &&
+          confirmPassWordRef.current !== null
+        ) {
+          await createUserAccount(
+            userNameRef.current.value,
+            userPasswordRef.current.value,
+            confirmPassWordRef.current.value,
+          );
+
+          toggleAccountCreation();
+
+          // Clears text inputs
+          userNameRef.current.value = "";
+          userPasswordRef.current.value = "";
+          confirmPassWordRef.current.value = "";
+        }
       } else {
         if (userNameRef.current !== null && userPasswordRef.current !== null) {
-            await validateLogin(userNameRef.current.value, userPasswordRef.current.value);
-            router.push("/");
+          await validateLogin(
+            userNameRef.current.value,
+            userPasswordRef.current.value,
+          );
+          router.push("/");
+
+          // Clears text inputs
+          userNameRef.current.value = "";
+          userPasswordRef.current.value = "";
         }
       }
     } catch (error) {
@@ -52,7 +87,7 @@ export default function AccountForm({validateLogin}: AccountFormProps) {
         setErrorMessage("An Unknown Error has Occurred!");
       }
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   }
 
