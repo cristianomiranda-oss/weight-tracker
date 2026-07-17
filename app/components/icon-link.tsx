@@ -6,11 +6,19 @@ interface IconLinkProps {
     className?: string;
     icon: IconDefinition;
     href: string;
+    disabled: boolean;
 }
 
-export default function IconLink({ className, icon, href }: IconLinkProps) {
+export default function IconLink({ className, icon, href, disabled }: IconLinkProps) {
+    
+    function checkIfDisabled(e: MouseEvent) {
+        if (disabled) {
+            e.preventDefault();
+        }
+    }
+
     return (
-        <Link className={className} href={href}>
+        <Link className={className} href={href} aria-disabled={disabled} onClick={(e) => checkIfDisabled(e)}>
             <FontAwesomeIcon className="text-4xl md:text-5xl hover:text-cool-sky-300" icon={icon} />
         </Link>
     )
