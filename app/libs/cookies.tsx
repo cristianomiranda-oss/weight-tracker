@@ -12,3 +12,20 @@ export async function createUserCookie(userId: number) {
         return false;
     }
 }
+
+export async function getUserCookie() {
+    try {
+        const cookieStore = await cookies();
+        
+        // Converts the number value to a string
+        const userCookie = cookieStore.get("user_id");
+
+        if (userCookie === undefined) {
+            return null;
+        }
+
+        return userCookie;
+    } catch (error) {
+        return null;
+    }
+}

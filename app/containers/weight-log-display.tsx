@@ -10,43 +10,52 @@ import Card from "../components/card";
 import Footer from "../components/footer";
 import type { WeightEntryType } from "../libs/types";
 import WeightEntry from "../components/weight-entry";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface WeightLogDisplayProps {
   removeWeightEntry: (entryId: number, userId: number) => Promise<void>;
+  getWeightEntries: () => Promise<WeightEntryType[]>;
 }
 
 export default function WeightLogDisplay({
+  getWeightEntries,
   removeWeightEntry,
 }: WeightLogDisplayProps) {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [weightEntries, setWeightEntries] = useState<WeightEntryType[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const tempWeightArr: WeightEntryType[] = [
-    {
-      userId: 0,
-      weightDate: new Date(),
-      weightValue: 143.01,
-      WeightEntryId: 0,
-    },
-    {
-      userId: 0,
-      weightDate: new Date(),
-      weightValue: 141.01,
-      WeightEntryId: 1,
-    },
-    {
-      userId: 0,
-      weightDate: new Date(),
-      weightValue: 142.01,
-      WeightEntryId: 2,
-    },
-    {
-      userId: 0,
-      weightDate: new Date(),
-      weightValue: 145.01,
-      WeightEntryId: 3,
-    },
-  ];
+  useEffect(() => {
+      async function loadWeightEntries() {
+        // Sets the loading boolean and clears the error message 
+        setIsLoading(true);
+        setErrorMessage("");
+
+        try {
+          const userWeightEntries = await getWeightEntries();
+          setWeightEntries(userWeightEntries);
+        } catch (error) {
+          // Checks if error is a known error
+          if (error instanceof Error && error.cause) {
+            // Checks the cause of the error
+            if (error.cause === "invalid-user-cookie") {
+              router.push("/accounts");
+            } else {
+              setErrorMessage(error.message);
+            }
+          } else {
+            setErrorMessage("An unknown error has occurred");
+          }
+        } finally {
+            setIsLoading(false);
+        }
+      }
+
+      loadWeightEntries();
+  }, []);
+
 
   return (
     <>
@@ -67,7 +76,7 @@ export default function WeightLogDisplay({
               <h2 className="w-2/12 text-center">X</h2>
             </div>
 
-            {tempWeightArr.map((entry) => (
+            {weightEntries.map((entry) => (
               <WeightEntry
                 key={entry.WeightEntryId}
                 weightEntryObj={entry}
