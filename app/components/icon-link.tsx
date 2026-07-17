@@ -11,7 +11,8 @@ interface IconLinkProps {
 
 export default function IconLink({ className, icon, href, disabled }: IconLinkProps) {
     
-    function checkIfDisabled(e: MouseEvent) {
+    
+    function checkIfDisabled(e: React.MouseEvent) {
         if (disabled) {
             e.preventDefault();
         }
