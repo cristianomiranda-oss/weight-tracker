@@ -11,7 +11,7 @@ interface IconLinkProps {
 export default function IconLink({ className, icon, href }: IconLinkProps) {
     return (
         <Link className={className} href={href}>
-            <FontAwesomeIcon className="text-4xl hover:text-cool-sky-300" icon={icon} />
+            <FontAwesomeIcon className="text-4xl md:text-5xl hover:text-cool-sky-300" icon={icon} />
         </Link>
     )
 }
