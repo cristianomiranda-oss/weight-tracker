@@ -25,7 +25,7 @@ export default function WeightLogHome() {
   return (
     <main className="w-full h-full">
       <Header>
-        <IconLink className="hidden lg:block" icon={faArrowRightFromBracket} href="/"/>
+        <IconLink className="hidden lg:block" icon={faArrowRightFromBracket} href="/accounts"/>
       </Header>
       <div className="w-full h-[calc(100%-10rem)] p-8">
         <Card className="p-0">
@@ -43,7 +43,7 @@ export default function WeightLogHome() {
       <Footer className="flex justify-center items-center">
         <IconLink className="w-1/3 text-center" icon={faWeightScale} href="/entry"/>
         <IconLink className="w-1/3 text-center" icon={faCirclePlus} href="/entry"/>
-        <IconLink className="w-1/3 text-center block lg:hidden" icon={faArrowRightFromBracket} href="/"/>
+        <IconLink className="w-1/3 text-center block lg:hidden" icon={faArrowRightFromBracket} href="/accounts"/>
       </Footer>
     </main>
   );

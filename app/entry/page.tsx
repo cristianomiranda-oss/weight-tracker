@@ -6,6 +6,7 @@ import LabeledInput from "../components/labeled-input";
 import Button from "../components/button";
 import Footer from "../components/footer";
 import { useRouter } from "next/navigation";
+import GoalTypeSelector from "../components/goal-type-selector";
 
 export default function EntryPage() {
   const router = useRouter();
@@ -27,8 +28,8 @@ export default function EntryPage() {
           </h2>
 
           <LabeledInput id="weightValue" label="Weight" inputType="number" />
-          {!isWeightGoalEntry && <LabeledInput id="weightDate" label="Date" inputType="datetime-local" />}
-          {isWeightGoalEntry && <LabeledInput id="goalType" label="Goal Type" inputType="text" />}
+          {!isWeightGoalEntry && <LabeledInput id="weightDate" label="Date" inputType="date" />}
+          {isWeightGoalEntry && <GoalTypeSelector id="goalType" label="Goal Type"/>}
 
           <Button onClick={navigateToHome}>Enter</Button>
           <Button type="warning" onClick={toggleWeightGoalEntry}>

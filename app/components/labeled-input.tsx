@@ -10,9 +10,9 @@ interface LabeledInputProps {
 
 export default function LabeledInput({id, label, inputType}: LabeledInputProps) {
   return (
-    <div className="w-full flex flex-col">
-      <label className="text-4xl" htmlFor={id}>{label}</label>
-      <input className="bg-graphite-800 text-3xl" type={inputType} id={id} />
+    <div className="w-full flex flex-col gap-1">
+      <label className="text-4xl md:text-5xl" htmlFor={id}>{label}</label>
+      <input className="bg-graphite-800 text-3xl md:text-4xl p-2" type={inputType} id={id} />
     </div>
   );
 }

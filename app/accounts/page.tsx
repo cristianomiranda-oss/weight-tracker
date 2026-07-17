@@ -21,11 +21,11 @@ export default function AccountsPage() {
       <Header />
       <div className="w-full h-[calc(100%-10rem)] p-8">
         <Card>
-            <h2 className="text-5xl">{isAccountCreationEnabled ? "Create Account" : "Sign In"}</h2>
+            <h2 className="text-5xl md:text-6xl">{isAccountCreationEnabled ? "Create Account" : "Sign In"}</h2>
             
             <LabeledInput id="userName" label="Username" inputType="text" />
             <LabeledInput id="passWord" label="Password" inputType="password" />
-            {isAccountCreationEnabled && <LabeledInput id="passWord" label="Confirm Password" inputType="password" />}
+            {isAccountCreationEnabled && <LabeledInput id="confirmPassWord" label="Confirm Password" inputType="password" />}
 
             {!isAccountCreationEnabled && <>
               <Button onClick={navigateToHome}>Login</Button>
