@@ -125,7 +125,9 @@ export default function WeightLogDisplay({
         <IconLink
           className="hidden lg:block"
           icon={faArrowRightFromBracket}
-          href="/accounts"
+          hrefObj={{
+            pathname: "/accounts",
+          }}
           disabled={isLoading}
         />
       </Header>
@@ -141,19 +143,31 @@ export default function WeightLogDisplay({
         <IconLink
           className="text-center"
           icon={faWeightScale}
-          href="/entry"
+          hrefObj={{
+            pathname: "/entry",
+            query: {
+              type: "goal-weight-entry"
+            }
+          }}
           disabled={isLoading}
         />
         <IconLink
           className="text-center"
           icon={faCirclePlus}
-          href="/entry"
+          hrefObj={{
+            pathname: "/entry",
+            query: {
+              type: "weight-entry"
+            }
+          }}
           disabled={isLoading}
         />
         <IconLink
           className="text-center block lg:hidden"
           icon={faArrowRightFromBracket}
-          href="/accounts"
+          hrefObj={{
+            pathname: "/accounts",
+          }}
           disabled={isLoading}
         />
       </Footer>
