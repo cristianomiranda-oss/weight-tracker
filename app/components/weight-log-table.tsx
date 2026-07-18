@@ -3,7 +3,7 @@ import WeightEntry from "./weight-entry";
 
 interface WeightLogTableProps {
     weightEntries: WeightEntryType[];
-    deleteWeightEntry: (entryId: number, userId: number) => Promise<void>;
+    triggerEntryRemoval: (entryId: number, userId: number) => Promise<void>;
 }
 
 /**
@@ -14,7 +14,7 @@ interface WeightLogTableProps {
  *
  * @returns {JSX.Element}
  */
-export default function WeightLogTable({ weightEntries, deleteWeightEntry }: WeightLogTableProps) {
+export default function WeightLogTable({ weightEntries, triggerEntryRemoval }: WeightLogTableProps) {
   return (
     <div className="w-full h-full flex flex-col bg-dusty-taupe-500 overflow-y-scroll scrollbar-track-dusty-taupe-700 scrollbar-thumb-turf-green-600">
       <div className="w-full h-10 md:h-12 sticky top-0 flex justify-center items-center border-b-2 text-3xl md:text-4xl bg-dusty-taupe-700">
@@ -28,7 +28,7 @@ export default function WeightLogTable({ weightEntries, deleteWeightEntry }: Wei
           key={entry.WeightEntryId}
           weightEntryObj={entry}
           removeEntry={() =>
-            deleteWeightEntry(entry.WeightEntryId, entry.userId)
+            triggerEntryRemoval(entry.WeightEntryId, entry.userId)
           }
         />
       ))}

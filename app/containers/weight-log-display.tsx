@@ -14,93 +14,28 @@ import { useRouter } from "next/navigation";
 import WeightLogTableTable from "../components/weight-log-table";
 
 interface WeightLogDisplayProps {
-  removeWeightEntry: (entryId: number, userId: number) => Promise<void>;
   getWeightEntries: () => Promise<WeightEntryType[]>;
+  getGoalWeightEntry: () => Promise<GoalWeightEntryType>;
+  deleteWeightEntry: (entryId: number, userId: number) => Promise<void>;
 }
-
-const tempGoalEntry: GoalWeightEntryType = {
-  GoalWeightEntryId: 1,
-  weightValue: 140,
-  goalType: "Loss",
-  userId: 1,
-};
 
 export default function WeightLogDisplay({
   getWeightEntries,
-  removeWeightEntry,
+  getGoalWeightEntry,
+  deleteWeightEntry,
 }: WeightLogDisplayProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [weightEntries, setWeightEntries] = useState<WeightEntryType[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  useEffect(() => {
-    async function checkGoalWeight(currentWeight: number) {
-      let isGoalWeightAchieved = false;
-
-      // TODO: Add getGoalWeight function
-      const goalWeightEntry: GoalWeightEntryType = tempGoalEntry;
-
-      if (goalWeightEntry.goalType === "Loss") {
-        isGoalWeightAchieved = goalWeightEntry.weightValue >= currentWeight;
-      } else if (goalWeightEntry.goalType === "Maintenance") {
-        isGoalWeightAchieved = goalWeightEntry.weightValue === currentWeight;
-      } else if (goalWeightEntry.goalType === "Gain") {
-        isGoalWeightAchieved = goalWeightEntry.weightValue <= currentWeight;
-      }
-
-      return isGoalWeightAchieved;
-    }
-
-    async function loadWeightEntries() {
-      // Sets the loading boolean and clears the error message
-      setIsLoading(true);
-      setErrorMessage("");
-
-      try {
-        // Gathers the user's weight entries
-        const userWeightEntries = await getWeightEntries();
-        setWeightEntries(userWeightEntries);
-
-        // Checks if the returned array has at least one entry
-        if (userWeightEntries.length >= 1) {
-          // Checks if the user's goal weight is achieved
-          const isGoalWeightAchieved = await checkGoalWeight(
-            userWeightEntries[0].weightValue,
-          );
-
-          // TODO: Replace with Success Popup Element window
-          if (isGoalWeightAchieved) {
-            alert("Goal Weight Achieved!");
-          }
-        }
-      } catch (error) {
-        // Checks if error is a known error
-        if (error instanceof Error && error.cause) {
-          // Checks the cause of the error
-          if (error.cause === "invalid-user-cookie") {
-            router.push("/accounts");
-          } else {
-            setErrorMessage(error.message);
-          }
-        } else {
-          setErrorMessage("An unknown error has occurred");
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadWeightEntries();
-  }, []);
-
-  async function deleteWeightEntry(entryId: number, userId: number) {
+  async function triggerEntryRemoval(entryId: number, userId: number) {
     // Sets the loading boolean and clears the error message
     setIsLoading(true);
     setErrorMessage("");
 
     try {
-      await removeWeightEntry(entryId, userId);
+      await deleteWeightEntry(entryId, userId);
     } catch (error) {
       // Checks if error is a known error
       if (error instanceof Error && error.cause) {
@@ -112,6 +47,66 @@ export default function WeightLogDisplay({
       setIsLoading(false);
     }
   }
+
+  async function checkGoalWeight(currentWeight: number) {
+    let isGoalWeightAchieved = false;
+
+    // TODO: Add getGoalWeight function
+    const goalWeightEntry: GoalWeightEntryType = await getGoalWeightEntry();
+
+    if (goalWeightEntry.goalType === "Loss") {
+      isGoalWeightAchieved = goalWeightEntry.weightValue >= currentWeight;
+    } else if (goalWeightEntry.goalType === "Maintenance") {
+      isGoalWeightAchieved = goalWeightEntry.weightValue === currentWeight;
+    } else if (goalWeightEntry.goalType === "Gain") {
+      isGoalWeightAchieved = goalWeightEntry.weightValue <= currentWeight;
+    }
+
+    return isGoalWeightAchieved;
+  }
+
+  async function loadWeightEntries() {
+    // Sets the loading boolean and clears the error message
+    setIsLoading(true);
+    setErrorMessage("");
+
+    try {
+      // Gathers the user's weight entries
+      const userWeightEntries = await getWeightEntries();
+      setWeightEntries(userWeightEntries);
+
+      // Checks if the returned array has at least one entry
+      if (userWeightEntries.length >= 1) {
+        // Checks if the user's goal weight is achieved
+        const isGoalWeightAchieved = await checkGoalWeight(
+          userWeightEntries[0].weightValue,
+        );
+
+        // TODO: Replace with Success Popup Element
+        if (isGoalWeightAchieved) {
+          alert("Goal Weight Achieved!");
+        }
+      }
+    } catch (error) {
+      // Checks if error is a known error
+      if (error instanceof Error && error.cause) {
+        // Checks the cause of the error
+        if (error.cause === "invalid-user-cookie") {
+          router.push("/accounts");
+        } else {
+          setErrorMessage(error.message);
+        }
+      } else {
+        setErrorMessage("An unknown error has occurred");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadWeightEntries();
+  }, []);
 
   return (
     <>
@@ -127,7 +122,7 @@ export default function WeightLogDisplay({
         <Card className="p-0">
           <WeightLogTableTable
             weightEntries={weightEntries}
-            deleteWeightEntry={deleteWeightEntry}
+            triggerEntryRemoval={triggerEntryRemoval}
           />
         </Card>
       </div>

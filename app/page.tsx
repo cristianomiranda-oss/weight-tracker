@@ -1,4 +1,4 @@
-import type { WeightEntryType } from "./libs/types";
+import type { GoalWeightEntryType, WeightEntryType } from "./libs/types";
 import WeightLogDisplay from "./containers/weight-log-display";
 import { getUserCookie } from "./libs/cookies";
 
@@ -30,6 +30,32 @@ const tempWeightArr: WeightEntryType[] = [
   ];
 
 export default function WeightLogHome() {
+  async function getGoalWeightEntry() {
+    "use server";
+    const userCookie = await getUserCookie();
+
+    if (userCookie === null) {
+      throw new Error("Invalid user account", {
+        cause: "invalid-user-cookie",
+      });
+    }
+
+    // TODO: Add database method top get goal weight entry
+    // const userGoalWeightEntry: GoalWeightEntryType = readGoalWeightEntry(userCookie);
+    const userGoalWeightEntry: GoalWeightEntryType = {
+      GoalWeightEntryId: 1,
+      weightValue: 140,
+      goalType: "Loss",
+      userId: 1,
+    };
+
+    if (userGoalWeightEntry === null) {
+      throw new Error("Failed to access weight entries");
+    } else {
+      return userGoalWeightEntry;
+    }
+  }
+
   async function getWeightEntries() {
     "use server";
     const userCookie = await getUserCookie();
@@ -41,6 +67,7 @@ export default function WeightLogHome() {
     }
 
     // TODO: Add database method
+    // const userWeightEntries: WeightEntryType[] = await readWeightEntries(userCookie);
     const userWeightEntries: WeightEntryType[] = tempWeightArr;
 
     if (userWeightEntries === null) {
@@ -50,14 +77,14 @@ export default function WeightLogHome() {
     }
   }
 
-  async function removeWeightEntry(entryId: number, userId: number) {
+  async function deleteWeightEntry(entryId: number, userId: number) {
     "use server";
     console.log("TODO: Add entry removal");
   }
 
   return (
     <main className="w-full h-full">
-      <WeightLogDisplay getWeightEntries={getWeightEntries} removeWeightEntry={removeWeightEntry} />
+      <WeightLogDisplay getGoalWeightEntry={getGoalWeightEntry} getWeightEntries={getWeightEntries} deleteWeightEntry={deleteWeightEntry} />
     </main>
   );
 }
