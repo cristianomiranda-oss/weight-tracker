@@ -77,9 +77,25 @@ export default function WeightLogHome() {
     }
   }
 
-  async function deleteWeightEntry(entryId: number, userId: number) {
+  async function deleteWeightEntry(entryId: number) {
     "use server";
-    console.log("TODO: Add entry removal");
+    const userCookie = await getUserCookie();
+
+    if (userCookie === null) {
+      throw new Error("Invalid user account", {
+        cause: "invalid-user-cookie",
+      });
+    }
+
+    // TODO: Add database method
+    // const isEntryDeleted: boolean = await deleteWeightEntry(entryId, userCookie);
+    const isEntryDeleted: boolean = true;
+
+    if (isEntryDeleted) {
+      return isEntryDeleted;
+    } else {
+      throw new Error("Failed to access weight entries");
+    }
   }
 
   return (

@@ -16,7 +16,7 @@ import WeightLogTableTable from "../components/weight-log-table";
 interface WeightLogDisplayProps {
   getWeightEntries: () => Promise<WeightEntryType[]>;
   getGoalWeightEntry: () => Promise<GoalWeightEntryType>;
-  deleteWeightEntry: (entryId: number, userId: number) => Promise<void>;
+  deleteWeightEntry: (entryId: number) => Promise<boolean>;
 }
 
 export default function WeightLogDisplay({
@@ -29,13 +29,17 @@ export default function WeightLogDisplay({
   const [weightEntries, setWeightEntries] = useState<WeightEntryType[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  async function triggerEntryRemoval(entryId: number, userId: number) {
+  async function triggerEntryRemoval(entryId: number) {
     // Sets the loading boolean and clears the error message
     setIsLoading(true);
     setErrorMessage("");
 
     try {
-      await deleteWeightEntry(entryId, userId);
+      const isEntryRemoved = await deleteWeightEntry(entryId);
+
+      if (!isEntryRemoved) {
+        throw new Error("Failed to remove entry");
+      }
     } catch (error) {
       // Checks if error is a known error
       if (error instanceof Error && error.cause) {
@@ -45,24 +49,31 @@ export default function WeightLogDisplay({
       }
     } finally {
       setIsLoading(false);
+
+      // Reloads the weight entries
+      loadWeightEntries();
     }
   }
 
   async function checkGoalWeight(currentWeight: number) {
-    let isGoalWeightAchieved = false;
+      let isGoalWeightAchieved = false;
+  
+      // TODO: Add getGoalWeight function
+      const goalWeightEntry: GoalWeightEntryType = await getGoalWeightEntry();
 
-    // TODO: Add getGoalWeight function
-    const goalWeightEntry: GoalWeightEntryType = await getGoalWeightEntry();
-
-    if (goalWeightEntry.goalType === "Loss") {
-      isGoalWeightAchieved = goalWeightEntry.weightValue >= currentWeight;
-    } else if (goalWeightEntry.goalType === "Maintenance") {
-      isGoalWeightAchieved = goalWeightEntry.weightValue === currentWeight;
-    } else if (goalWeightEntry.goalType === "Gain") {
-      isGoalWeightAchieved = goalWeightEntry.weightValue <= currentWeight;
-    }
-
-    return isGoalWeightAchieved;
+      if (goalWeightEntry === null) {
+        throw new Error("Failed to access goal weight entry");
+      }
+  
+      if (goalWeightEntry.goalType === "Loss") {
+        isGoalWeightAchieved = goalWeightEntry.weightValue >= currentWeight;
+      } else if (goalWeightEntry.goalType === "Maintenance") {
+        isGoalWeightAchieved = goalWeightEntry.weightValue === currentWeight;
+      } else if (goalWeightEntry.goalType === "Gain") {
+        isGoalWeightAchieved = goalWeightEntry.weightValue <= currentWeight;
+      }
+  
+      return isGoalWeightAchieved;
   }
 
   async function loadWeightEntries() {
