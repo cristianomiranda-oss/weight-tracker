@@ -34,10 +34,10 @@ const tempWeightArr: WeightEntryType[] = [
  */
 export default function WeightLogHome(): React.JSX.Element {
   /**
-     * Middleware for accessing a goal weight entries associated with a user.
-     * The currently stored user account cookie is used for identifying what entry is associated with the user.
-     * @throws Signals the process failed
-     */
+   * Middleware for accessing a goal weight entries associated with a user.
+   * The currently stored user account cookie is used for identifying what entry is associated with the user.
+   * @throws Signals the process failed
+   */
   async function getGoalWeightEntry(): Promise<GoalWeightEntryType> {
     "use server";
 
@@ -68,10 +68,10 @@ export default function WeightLogHome(): React.JSX.Element {
   }
 
   /**
-     * Middleware for accessing weight entries associated with a user cookie.
-     * The currently stored user account cookie is used for identifying what entry is associated with the user.
-     * @throws Signals the process failed
-     */
+   * Middleware for accessing weight entries associated with a user cookie.
+   * The currently stored user account cookie is used for identifying what entry is associated with the user.
+   * @throws Signals the process failed
+   */
   async function getWeightEntries() {
     "use server";
     const userCookie = await getUserCookie();
@@ -96,11 +96,11 @@ export default function WeightLogHome(): React.JSX.Element {
   }
 
   /**
-     * Middleware for removing specific weight entries from the database.
-     * Entries are identified based on the stored user account cookie and the passed in entryId value.
-     * @param entryId Id value for the entry to be removed.
-     * @throws Signals the process failed
-     */
+   * Middleware for removing specific weight entries from the database.
+   * Entries are identified based on the stored user account cookie and the passed in entryId value.
+   * @param entryId Id value for the entry to be removed.
+   * @throws Signals the process failed
+   */
   async function deleteWeightEntry(entryId: number) {
     "use server";
     const userCookie = await getUserCookie();

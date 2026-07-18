@@ -16,9 +16,9 @@ interface AccountFormProps {
 }
 
 /**
-     * Contains the components for displaying the account sign in and account creation interface and
-     * handles interactions made with the interface. 
-     */
+ * Contains the components for displaying the account sign in and account creation interface and
+ * handles interactions made with the interface.
+ */
 export default function AccountForm({
   validateLogin,
   createUserAccount,
@@ -30,7 +30,7 @@ export default function AccountForm({
   const [isAccountCreationEnabled, setIsAccountCreationEnabled] =
     useState<boolean>(false);
 
-  // Initializes state for storing the loading flag and error messages 
+  // Initializes state for storing the loading flag and error messages
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -40,10 +40,10 @@ export default function AccountForm({
   const confirmPassWordRef = useRef<HTMLInputElement | null>(null);
 
   /**
-     * Changes the current screen to reveal the necessary elements for either the account sign in or account creation screens.
-     * Change does not occur if any function call is already loading.
-     */
-  function toggleAccountCreation() {
+   * Changes the current screen to reveal the necessary elements for either the account sign in or account creation screens.
+   * Change does not occur if any function call is already loading.
+   */
+  function toggleAccountCreation(): void {
     // Only swaps screens if no calls are loading
     if (!isLoading) {
       setIsAccountCreationEnabled((curr) => !curr);
@@ -51,11 +51,13 @@ export default function AccountForm({
   }
 
   /**
-     * Handles the submission of the form based on the current active screen.
-     *
-     * @param e The data associated with the submit event
-     */
-  async function submitForm(e: React.SubmitEvent<HTMLFormElement>) {
+   * Handles the submission of the form based on the current active screen.
+   *
+   * @param e The data associated with the submit event
+   */
+  async function submitForm(
+    e: React.SubmitEvent<HTMLFormElement>,
+  ): Promise<void> {
     try {
       // Prevents the form submission event
       e.preventDefault();
@@ -65,7 +67,8 @@ export default function AccountForm({
       setErrorMessage("");
 
       // Checks the currently active screen
-      if (isAccountCreationEnabled) { // Account Creation Screen
+      if (isAccountCreationEnabled) {
+        // Account Creation Screen
         // Checks that confirmPassword ref to associated text input is established
         if (
           userNameRef.current !== null &&
@@ -87,7 +90,8 @@ export default function AccountForm({
           userPasswordRef.current.value = "";
           confirmPassWordRef.current.value = "";
         }
-      } else { // Account Sign In Screen
+      } else {
+        // Account Sign In Screen
         // Checks that the username and password input refs are established
         if (userNameRef.current !== null && userPasswordRef.current !== null) {
           // Calls the method to validate the user's login
@@ -109,7 +113,8 @@ export default function AccountForm({
       // Checks if the error is an established error
       if (error instanceof Error) {
         setErrorMessage(error.message);
-      } else { // Indicates an unusual error has occurred
+      } else {
+        // Indicates an unusual error has occurred
         setErrorMessage("An Unknown Error has Occurred!");
       }
     } finally {

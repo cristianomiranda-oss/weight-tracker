@@ -4,9 +4,22 @@ import Header from "../components/header";
 import { createUserCookie } from "../libs/cookies";
 import AccountForm from "./components/account-form";
 
-export default function AccountsPage() {
-  async function createUserAccount(userName: string, userPassword: string, confirmPassWord: string) {
-    //Marks the function as a server function
+/**
+ * Contains the logic and comments for hte accounts page
+ */
+export default function AccountsPage(): React.JSX.Element {
+  /**
+   * Middleware for accessing the database to create a new user account
+   * @param userName Username for the account to be created - Must be within 6 - 25 characters
+   * @param userPassword Password for the account to be created - Must be within 8 - 30 characters
+   * @param confirmPassWord Retying of the password for the account to be created - Must match the userPassword
+   * @throws Signals the process failed
+   */
+  async function createUserAccount(
+    userName: string,
+    userPassword: string,
+    confirmPassWord: string,
+  ): Promise<void> {
     "use server";
     if (userName === "" || userPassword === "") {
       throw new Error("Username and Password cannot be blank");
@@ -39,7 +52,16 @@ export default function AccountsPage() {
     }
   }
 
-  async function validateLogin(userName: string, userPassword: string) {
+  /**
+   * Middleware for validating the user's provided credentials with the values stored in the database.
+   * @param userName - Username for the account that will be accessed
+   * @param userPassword - Password for comparing against the one associated with the account that will be accessed
+   * @throws Signals the process failed
+   */
+  async function validateLogin(
+    userName: string,
+    userPassword: string,
+  ): Promise<void> {
     //Marks the function as a server function
     "use server";
     if (userName === "" || userPassword === "") {
@@ -76,7 +98,10 @@ export default function AccountsPage() {
       <Header />
       <div className="w-full h-[calc(100%-10rem)] p-8">
         <Card>
-          <AccountForm createUserAccount={createUserAccount} validateLogin={validateLogin} />
+          <AccountForm
+            createUserAccount={createUserAccount}
+            validateLogin={validateLogin}
+          />
         </Card>
       </div>
       <Footer />
