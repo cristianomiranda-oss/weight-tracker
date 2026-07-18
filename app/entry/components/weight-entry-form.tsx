@@ -19,6 +19,7 @@ interface WeightEntryFormProps {
   getGoalWeightEntry: () => Promise<GoalWeightEntryType | null>;
 }
 
+
 export default function WeightEntryForm({
   addWeightEntry,
   addGoalWeightEntry,
