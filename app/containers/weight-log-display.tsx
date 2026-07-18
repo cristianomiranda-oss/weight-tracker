@@ -29,6 +29,22 @@ export default function WeightLogDisplay({
   const [weightEntries, setWeightEntries] = useState<WeightEntryType[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
+  async function triggerEntryUpdate(entryId: number) {
+    try {
+      // Constructs a url with the to be updated entry's id as a search parameter
+      const navigationURL = `/entry?entryId=${entryId}`;
+
+      router.push(navigationURL);
+    } catch (error) {
+      // Checks if error is a known error
+      if (error instanceof Error && error.cause) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("An unknown error has occurred");
+      }
+    }
+  }
+
   async function triggerEntryRemoval(entryId: number) {
     // Sets the loading boolean and clears the error message
     setIsLoading(true);
@@ -52,24 +68,24 @@ export default function WeightLogDisplay({
   }
 
   async function checkGoalWeight(currentWeight: number) {
-      let isGoalWeightAchieved = false;
-  
-      // TODO: Add getGoalWeight function
-      const goalWeightEntry: GoalWeightEntryType = await getGoalWeightEntry();
+    let isGoalWeightAchieved = false;
 
-      if (goalWeightEntry === null) {
-        throw new Error("Failed to access goal weight entry");
-      }
-  
-      if (goalWeightEntry.goalType === "Loss") {
-        isGoalWeightAchieved = goalWeightEntry.weightValue >= currentWeight;
-      } else if (goalWeightEntry.goalType === "Maintenance") {
-        isGoalWeightAchieved = goalWeightEntry.weightValue === currentWeight;
-      } else if (goalWeightEntry.goalType === "Gain") {
-        isGoalWeightAchieved = goalWeightEntry.weightValue <= currentWeight;
-      }
-  
-      return isGoalWeightAchieved;
+    // TODO: Add getGoalWeight function
+    const goalWeightEntry: GoalWeightEntryType = await getGoalWeightEntry();
+
+    if (goalWeightEntry === null) {
+      throw new Error("Failed to access goal weight entry");
+    }
+
+    if (goalWeightEntry.goalType === "Loss") {
+      isGoalWeightAchieved = goalWeightEntry.weightValue >= currentWeight;
+    } else if (goalWeightEntry.goalType === "Maintenance") {
+      isGoalWeightAchieved = goalWeightEntry.weightValue === currentWeight;
+    } else if (goalWeightEntry.goalType === "Gain") {
+      isGoalWeightAchieved = goalWeightEntry.weightValue <= currentWeight;
+    }
+
+    return isGoalWeightAchieved;
   }
 
   async function loadWeightEntries() {
@@ -132,6 +148,7 @@ export default function WeightLogDisplay({
           <WeightLogTableTable
             weightEntries={weightEntries}
             triggerEntryRemoval={triggerEntryRemoval}
+            triggerEntryUpdate={triggerEntryUpdate}
           />
         </Card>
       </div>
@@ -142,8 +159,8 @@ export default function WeightLogDisplay({
           hrefObj={{
             pathname: "/entry",
             query: {
-              type: "goal-weight-entry"
-            }
+              type: "goal-weight-entry",
+            },
           }}
           disabled={isLoading}
         />
@@ -153,8 +170,8 @@ export default function WeightLogDisplay({
           hrefObj={{
             pathname: "/entry",
             query: {
-              type: "weight-entry"
-            }
+              type: "weight-entry",
+            },
           }}
           disabled={isLoading}
         />

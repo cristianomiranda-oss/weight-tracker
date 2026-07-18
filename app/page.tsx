@@ -43,7 +43,7 @@ export default function WeightLogHome() {
     // TODO: Add database method top get goal weight entry
     // const userGoalWeightEntry: GoalWeightEntryType = readGoalWeightEntry(userCookie);
     const userGoalWeightEntry: GoalWeightEntryType = {
-      GoalWeightEntryId: 1,
+      goalWeightEntryId: 1,
       weightValue: 140,
       goalType: "Loss",
       userId: 1,
