@@ -7,7 +7,18 @@ import SubmitButton from "@/app/components/submit-button";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
 
-export default function WeightEntryForm() {
+interface WeightEntryFormProps {
+  addWeightEntry: (weightValue: number, weighInDate: Date) => Promise<void>;
+  addGoalWeightEntry: (
+    weightValue: number,
+    goalType: "Loss" | "Maintenance" | "Gain",
+  ) => Promise<void>;
+}
+
+export default function WeightEntryForm({
+  addWeightEntry,
+  addGoalWeightEntry,
+}: WeightEntryFormProps) {
   const searchParameters = useSearchParams();
   const isWeightGoalEntry =
     searchParameters.get("type") === "goal-weight-entry";
@@ -20,20 +31,77 @@ export default function WeightEntryForm() {
   const weighInDateInputRef = useRef<HTMLInputElement | null>(null);
   const goalTypeSelectorRef = useRef<HTMLSelectElement | null>(null);
 
-  function handleFormSubmission(e: React.SubmitEvent) {
-    e.preventDefault();
-
+  async function addNewWeightEntry() {
     // Sets the loading flag and clears the current error message
     setIsLoading(true);
     setErrorMessage("");
 
     try {
-      if (isWeightGoalEntry) {
-      } else {
+      if (
+        weightValueInputRef.current !== null &&
+        weighInDateInputRef.current !== null
+      ) {
+        const weightValue = parseFloat(weightValueInputRef.current.value);
+        const weighInDate = new Date(weighInDateInputRef.current.value);
+
+        await addWeightEntry(weightValue, weighInDate);
+
+        navigateToHome();
       }
     } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("An Unknown Error has Occurred!");
+      }
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function addNewGoalWeightEntry() {
+    // Sets the loading flag and clears the current error message
+    setIsLoading(true);
+    setErrorMessage("");
+
+    try {
+      if (
+        weightValueInputRef.current !== null &&
+        goalTypeSelectorRef.current !== null
+      ) {
+        const weightValue = parseFloat(weightValueInputRef.current.value);
+        const goalType = goalTypeSelectorRef.current.value;
+
+        if (
+          goalType === "Maintenance" ||
+          goalType === "Gain" ||
+          goalType === "Loss"
+        ) {
+          await addGoalWeightEntry(weightValue, goalType);
+
+          navigateToHome();
+        } else {
+          throw new Error("Select a valid goal type");
+        }
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("An Unknown Error has Occurred!");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  function handleFormSubmission(e: React.SubmitEvent) {
+    e.preventDefault();
+
+    if (isWeightGoalEntry) {
+      addNewGoalWeightEntry();
+    } else {
+      addNewWeightEntry();
     }
   }
 
@@ -49,6 +117,8 @@ export default function WeightEntryForm() {
       <h2 className="text-5xl">
         {isWeightGoalEntry ? "Goal Weight Entry" : "Weight Entry"}
       </h2>
+
+      <h3 className="text-3xl text-red-700 text-center">{errorMessage}</h3>
 
       <LabeledInput
         id="weightValue"
@@ -67,7 +137,11 @@ export default function WeightEntryForm() {
         />
       )}
       {isWeightGoalEntry && (
-        <GoalTypeSelector id="goalType" label="Goal Type" ref={goalTypeSelectorRef} />
+        <GoalTypeSelector
+          id="goalType"
+          label="Goal Type"
+          ref={goalTypeSelectorRef}
+        />
       )}
 
       <SubmitButton disabled={isLoading}>Enter</SubmitButton>

@@ -5,6 +5,8 @@ export type WeightEntryType = {
     userId: number
 }
 
+export type GoalOption = "Loss" | "Maintenance" | "Gain";
+
 export type GoalWeightEntryType = {
     GoalWeightEntryId: number
     weightValue: number

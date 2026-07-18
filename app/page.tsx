@@ -92,7 +92,7 @@ export default function WeightLogHome() {
     const isEntryDeleted: boolean = true;
 
     if (isEntryDeleted) {
-      return isEntryDeleted;
+      return;
     } else {
       throw new Error("Failed to access weight entries");
     }

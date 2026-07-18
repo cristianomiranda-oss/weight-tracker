@@ -16,7 +16,7 @@ import WeightLogTableTable from "../components/weight-log-table";
 interface WeightLogDisplayProps {
   getWeightEntries: () => Promise<WeightEntryType[]>;
   getGoalWeightEntry: () => Promise<GoalWeightEntryType>;
-  deleteWeightEntry: (entryId: number) => Promise<boolean>;
+  deleteWeightEntry: (entryId: number) => Promise<void>;
 }
 
 export default function WeightLogDisplay({
@@ -35,11 +35,7 @@ export default function WeightLogDisplay({
     setErrorMessage("");
 
     try {
-      const isEntryRemoved = await deleteWeightEntry(entryId);
-
-      if (!isEntryRemoved) {
-        throw new Error("Failed to remove entry");
-      }
+      await deleteWeightEntry(entryId);
     } catch (error) {
       // Checks if error is a known error
       if (error instanceof Error && error.cause) {

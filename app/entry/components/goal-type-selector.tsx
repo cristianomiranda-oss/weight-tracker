@@ -1,3 +1,4 @@
+import { GoalOption } from "@/app/libs/types";
 import { Ref, useCallback, useReducer } from "react";
 
 interface GoalTypeSelectorProps {
@@ -7,7 +8,7 @@ interface GoalTypeSelectorProps {
 }
 
 export default function GoalTypeSelector({ id, label, ref }: GoalTypeSelectorProps) {
-  const goalTypes = ["Loss", "Gain", "Maintenance"];
+  const goalTypes: GoalOption[] = ["Loss", "Gain", "Maintenance"];
 
   const GoalOptions = goalTypes.map((type) => (
     <option className="bg-graphite-800" key={type} value={type}>
