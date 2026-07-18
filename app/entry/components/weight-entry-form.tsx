@@ -1,19 +1,24 @@
 "use client";
 
 import Button from "@/app/components/button";
-import GoalTypeSelector from "@/app/components/goal-type-selector";
+import GoalTypeSelector from "@/app/entry/components/goal-type-selector";
 import LabeledInput from "@/app/components/labeled-input";
 import SubmitButton from "@/app/components/submit-button";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export default function WeightEntryForm() {
   const searchParameters = useSearchParams();
-  const isWeightGoalEntry = searchParameters.get("type") === "goal-weight-entry";
+  const isWeightGoalEntry =
+    searchParameters.get("type") === "goal-weight-entry";
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+
+  const weightValueInputRef = useRef<HTMLInputElement | null>(null);
+  const weighInDateInputRef = useRef<HTMLInputElement | null>(null);
+  const goalTypeSelectorRef = useRef<HTMLSelectElement | null>(null);
 
   function handleFormSubmission(e: React.SubmitEvent) {
     e.preventDefault();
@@ -23,9 +28,10 @@ export default function WeightEntryForm() {
     setErrorMessage("");
 
     try {
-      
+      if (isWeightGoalEntry) {
+      } else {
+      }
     } catch (error) {
-      
     } finally {
       setIsLoading(false);
     }
@@ -44,12 +50,24 @@ export default function WeightEntryForm() {
         {isWeightGoalEntry ? "Goal Weight Entry" : "Weight Entry"}
       </h2>
 
-      <LabeledInput id="weightValue" label="Weight" inputType="number" disabled={isLoading} />
+      <LabeledInput
+        id="weightValue"
+        label="Weight"
+        inputType="number"
+        disabled={isLoading}
+        ref={weightValueInputRef}
+      />
       {!isWeightGoalEntry && (
-        <LabeledInput id="weightDate" label="Date" inputType="date" disabled={isLoading} />
+        <LabeledInput
+          id="weighInDate"
+          label="Date"
+          inputType="date"
+          disabled={isLoading}
+          ref={weighInDateInputRef}
+        />
       )}
       {isWeightGoalEntry && (
-        <GoalTypeSelector id="goalType" label="Goal Type" />
+        <GoalTypeSelector id="goalType" label="Goal Type" ref={goalTypeSelectorRef} />
       )}
 
       <SubmitButton disabled={isLoading}>Enter</SubmitButton>
