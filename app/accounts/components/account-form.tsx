@@ -44,7 +44,7 @@ export default function AccountForm(): React.JSX.Element {
    *
    * @param e The data associated with the submit event
    */
-  async function submitForm(
+  async function handleFormSubmission(
     e: React.SubmitEvent<HTMLFormElement>,
   ): Promise<void> {
     try {
@@ -115,7 +115,7 @@ export default function AccountForm(): React.JSX.Element {
   return (
     <form
       className="w-full h-full flex flex-col justify-around items-center"
-      onSubmit={(e) => submitForm(e)}
+      onSubmit={(e) => handleFormSubmission(e)}
     >
       <h2 className="text-5xl md:text-6xl">
         {isAccountCreationEnabled ? "Create Account" : "Sign In"}

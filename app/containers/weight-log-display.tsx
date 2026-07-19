@@ -12,22 +12,14 @@ import type { GoalWeightEntryType, WeightEntryType } from "../libs/types";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import WeightLogTableTable from "../components/weight-log-table";
-
-interface WeightLogDisplayProps {
-  getWeightEntries: () => Promise<WeightEntryType[]>;
-  getGoalWeightEntry: () => Promise<GoalWeightEntryType>;
-  deleteWeightEntry: (entryId: number) => Promise<void>;
-}
+import { deleteWeightEntry, getWeightEntries } from "../actions/middleware/weight-entry";
+import { getGoalWeightEntry } from "../actions/middleware/goal-weight-entry";
 
 /**
  * Contains the components for displaying the weight log interface and
  * handles user interactions made with the interface.
  */
-export default function WeightLogDisplay({
-  getWeightEntries,
-  getGoalWeightEntry,
-  deleteWeightEntry,
-}: WeightLogDisplayProps) {
+export default function WeightLogDisplay() {
   // Initializes a router to allow for navigation
   const router = useRouter();
 
