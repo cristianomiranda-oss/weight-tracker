@@ -6,14 +6,14 @@ interface CardProps {
 }
 
 /**
-   * Main display component for the web application
-   */
+ * Main display component for the web application
+ */
 export default function Card({ className, children }: CardProps) {
   // Prioritizes the passed in classes
   const finalClassName = twMerge(
     "w-full lg:w-1/2 lg:translate-x-1/2 h-full bg-graphite-700 items-center p-2",
-    className
-  )
+    className,
+  );
 
   return <div className={finalClassName}>{children}</div>;
 }
