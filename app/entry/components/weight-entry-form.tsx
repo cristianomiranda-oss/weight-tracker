@@ -6,8 +6,15 @@ import LabeledInput from "@/app/components/labeled-input";
 import SubmitButton from "@/app/components/submit-button";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
-import { addWeightEntry, changeWeighEntry } from "@/app/actions/middleware/weight-entry";
-import { addGoalWeightEntry, changeGoalWeighEntry, getGoalWeightEntry } from "@/app/actions/middleware/goal-weight-entry";
+import {
+  addWeightEntry,
+  changeWeighEntry,
+} from "@/app/actions/middleware/weight-entry";
+import {
+  addGoalWeightEntry,
+  changeGoalWeighEntry,
+  getGoalWeightEntry,
+} from "@/app/actions/middleware/goal-weight-entry";
 
 /**
  * Contains the components for display the weight entry and goal weight entry interfaces
