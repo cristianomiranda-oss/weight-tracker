@@ -14,91 +14,129 @@ interface WeightEntryFormProps {
     weightValue: number,
     goalType: "Loss" | "Maintenance" | "Gain",
   ) => Promise<void>;
-  changeWeighEntry: (weightEntryId: number, weightValue: number, weighInDate: Date) => Promise<void>;
-  changeGoalWeighEntry: (goalWeightEntryId: number, weightValue: number, goalType: GoalOption) => Promise<void>;
+  changeWeighEntry: (
+    weightEntryId: number,
+    weightValue: number,
+    weighInDate: Date,
+  ) => Promise<void>;
+  changeGoalWeighEntry: (
+    goalWeightEntryId: number,
+    weightValue: number,
+    goalType: GoalOption,
+  ) => Promise<void>;
   getGoalWeightEntry: () => Promise<GoalWeightEntryType | null>;
 }
 
-
+/**
+ * Contains the components for display the weight entry and goal weight entry interfaces
+ * and handles the user interactions for the interface
+ */
 export default function WeightEntryForm({
   addWeightEntry,
   addGoalWeightEntry,
   changeWeighEntry,
   changeGoalWeighEntry,
-  getGoalWeightEntry
-}: WeightEntryFormProps) {
-  const searchParameters = useSearchParams();
-  const isWeightGoalEntry =
-    searchParameters.get("type") === "goal-weight-entry";
-  const updateEntryId = searchParameters.get("entryId");
+  getGoalWeightEntry,
+}: WeightEntryFormProps): React.JSX.Element {
+  // Initializes a router for navigation
   const router = useRouter();
 
+  // Accesses the search parameter api
+  const searchParameters = useSearchParams();
+  // Pulls the 'type' search parameter to determine which screen to display
+  const isWeightGoalEntry =
+    searchParameters.get("type") === "goal-weight-entry";
+  // Pulls the 'entryId' search parameter to determine if an already existing weight entry is to be updated
+  const updateEntryId = searchParameters.get("entryId");
+
+  // Initializes state for storing the loading flag and error messages
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
+  // Initializes various references to the html input elements in the form
   const weightValueInputRef = useRef<HTMLInputElement | null>(null);
   const weighInDateInputRef = useRef<HTMLInputElement | null>(null);
   const goalTypeSelectorRef = useRef<HTMLSelectElement | null>(null);
 
-  async function addNewWeightEntry() {
+  /**
+   * Handles the adding of a new weight entry
+   */
+  async function addNewWeightEntry(): Promise<void> {
     // Sets the loading flag and clears the current error message
     setIsLoading(true);
     setErrorMessage("");
 
     try {
+      // Checks if the weight value and weigh in date input refs are established
       if (
         weightValueInputRef.current !== null &&
         weighInDateInputRef.current !== null
       ) {
+        // Converts the input values to their appropriate types
         const weightValue = parseFloat(weightValueInputRef.current.value);
         const weighInDate = new Date(weighInDateInputRef.current.value);
 
+        // Calls the method to add a new weight entry
         await addWeightEntry(weightValue, weighInDate);
 
         navigateToHome();
       }
     } catch (error) {
+      // Checks if the error is an established error
       if (error instanceof Error) {
         setErrorMessage(error.message);
       } else {
         setErrorMessage("An Unknown Error has Occurred!");
       }
     } finally {
+      // Change the loading boolean to indicate the function is no longer running
       setIsLoading(false);
     }
   }
 
-  async function triggerWeightEntryChange() {
+  /**
+   * Handles the updating of a weight entry
+   */
+  async function triggerWeightEntryChange(): Promise<void> {
     // Sets the loading flag and clears the current error message
     setIsLoading(true);
     setErrorMessage("");
 
     try {
+      // Checks if the weight value and weigh in date input refs are established and if the updateEntryId search parameter is valid
       if (
         weightValueInputRef.current !== null &&
         weighInDateInputRef.current !== null &&
         updateEntryId !== null
       ) {
+        // Converts the input values to their appropriate types
         const weightEntryId = parseInt(updateEntryId);
         const weightValue = parseFloat(weightValueInputRef.current.value);
         const weighInDate = new Date(weighInDateInputRef.current.value);
 
+        // Calls the method to update the weight entry
         await changeWeighEntry(weightEntryId, weightValue, weighInDate);
 
         navigateToHome();
       }
     } catch (error) {
       if (error instanceof Error) {
+        // Checks if the error is an established error
         setErrorMessage(error.message);
       } else {
         setErrorMessage("An Unknown Error has Occurred!");
       }
     } finally {
+      // Change the loading boolean to indicate the function is no longer running
       setIsLoading(false);
     }
   }
 
- async function handleGoalWeightEntry() {
+  /**
+   * Handles the creating or updating of a goal weight entry.
+   * The back-end method called is dependant on if the user already has an existing goal weight entry in the database
+   */
+  async function handleGoalWeightEntry(): Promise<void> {
     // Sets the loading flag and clears the current error message
     setIsLoading(true);
     setErrorMessage("");
@@ -112,10 +150,9 @@ export default function WeightEntryForm({
         weightValueInputRef.current !== null &&
         goalTypeSelectorRef.current !== null
       ) {
-        // Converts the weight value input ref values to a number 
+        // Converts the weight value input ref values to a number
         const weightValue = parseFloat(weightValueInputRef.current.value);
 
-        
         const goalType = goalTypeSelectorRef.current.value;
 
         // Checks if the goalType is a valid goal
@@ -124,15 +161,20 @@ export default function WeightEntryForm({
           goalType === "Gain" ||
           goalType === "Loss"
         ) {
-
           // Checks if a goal weight entry is already contained in the database
-          if (goalWeightEntry === null) { // Null indicates this will be a new goal weight entry
+          if (goalWeightEntry === null) {
+            // Null indicates this will be a new goal weight entry
             await addGoalWeightEntry(weightValue, goalType);
-  
+
             navigateToHome();
-          } else { // Else updated the existing goalWeightEntry
-            await changeGoalWeighEntry(goalWeightEntry.goalWeightEntryId, weightValue, goalType);
-  
+          } else {
+            // Else updated the existing goalWeightEntry
+            await changeGoalWeighEntry(
+              goalWeightEntry.goalWeightEntryId,
+              weightValue,
+              goalType,
+            );
+
             navigateToHome();
           }
         } else {
@@ -140,30 +182,47 @@ export default function WeightEntryForm({
         }
       }
     } catch (error) {
+      // Checks if the error is an established error
       if (error instanceof Error) {
         setErrorMessage(error.message);
       } else {
         setErrorMessage("An Unknown Error has Occurred!");
       }
     } finally {
+      // Change the loading boolean to indicate the function is no longer running
       setIsLoading(false);
     }
   }
 
-  function handleFormSubmission(e: React.SubmitEvent) {
+  /**
+   * Handles form the submission of hte form based on the currently active screen
+   *
+   * @param e The data associated with the submit event
+   */
+  function handleFormSubmission(e: React.SubmitEvent): void {
+    // Prevents the default form submission
     e.preventDefault();
 
+    // Checks the currently active page
     if (isWeightGoalEntry) {
+      // Calls the method to handle a goal weight entry
       handleGoalWeightEntry();
     } else {
+      // Checks if the updateEntryId search parameter is invalid
       if (updateEntryId === "" || updateEntryId === null) {
+        // If invalid
+        // Calls the method to add a new weight entry
         addNewWeightEntry();
       } else {
+        // Calls the method to update the existing weight entry
         triggerWeightEntryChange();
       }
     }
   }
 
+  /**
+   * Navigates the user to the home screen
+   */
   function navigateToHome() {
     router.push("/");
   }

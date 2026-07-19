@@ -5,11 +5,20 @@ import WeightEntryForm from "./components/weight-entry-form";
 import { getUserCookie } from "../libs/cookies";
 import type { GoalOption, GoalWeightEntryType } from "../libs/types";
 
-export default function EntryPage() {
+/**
+ * Contains the components and back-end logic for the entry page
+ */
+export default function EntryPage(): React.JSX.Element {
+  /**
+   * Middleware for accessing the database to create new weight entry
+   * @param weightValue Number value for the new weight entry - Must be greater than zero
+   * @param weighInDate Date value for the new weight entry
+   * @throws Signals the process failed
+   */
   async function addWeightEntry(weightValue: number, weighInDate: Date) {
     "use server";
 
-    if (weightValue < 0) {
+    if (weightValue < 0 || Number.isNaN(weightValue)) {
       throw new Error("Weight value cannot be less than zero");
     }
 
@@ -36,6 +45,13 @@ export default function EntryPage() {
     }
   }
 
+  /**
+   * Middleware for accessing the database to update an existing weight entry
+   * @param weightEntryId Id for the associated weight entry to be changed - Must be greater than zero
+   * @param weightValue New number value for the weight entry - Must be greater than zero
+   * @param weighInDate New date value for the weight entry
+   * @throws Signals the process failed
+   */
   async function changeWeighEntry(
     weightEntryId: number,
     weightValue: number,
@@ -47,7 +63,7 @@ export default function EntryPage() {
       throw new Error("Existing weight entry invalid");
     }
 
-    if (weightValue < 0) {
+    if (weightValue < 0 || Number.isNaN(weightValue)) {
       throw new Error("Weight value cannot be less than zero");
     }
 
@@ -74,32 +90,42 @@ export default function EntryPage() {
     }
   }
 
+  /**
+   * Middleware for reading the user's goal weight entry in the database
+   * @throws Signals the process failed
+   */
   async function getGoalWeightEntry() {
-      "use server";
-      const userCookie = await getUserCookie();
-  
-      if (userCookie === null) {
-        throw new Error("Invalid user account", {
-          cause: "invalid-user-cookie",
-        });
-      }
-  
-      // TODO: Use database method for getting goal weight entry
-      // const userGoalWeightEntry: GoalWeightEntryType = readGoalWeightEntry(userCookie);
-      const userGoalWeightEntry: GoalWeightEntryType = {
-        goalWeightEntryId: 1,
-        weightValue: 140,
-        goalType: "Loss",
-        userId: 1,
-      };
-      
-      if (userGoalWeightEntry === null) {
-        return null;
-      } else {
-        return userGoalWeightEntry;
-      }
+    "use server";
+    const userCookie = await getUserCookie();
+
+    if (userCookie === null) {
+      throw new Error("Invalid user account", {
+        cause: "invalid-user-cookie",
+      });
     }
-  
+
+    // TODO: Use database method for getting goal weight entry
+    // const userGoalWeightEntry: GoalWeightEntryType = readGoalWeightEntry(userCookie);
+    const userGoalWeightEntry: GoalWeightEntryType = {
+      goalWeightEntryId: 1,
+      weightValue: 140,
+      goalType: "Loss",
+      userId: 1,
+    };
+
+    if (userGoalWeightEntry === null) {
+      return null;
+    } else {
+      return userGoalWeightEntry;
+    }
+  }
+
+  /**
+   * Middleware for accessing the database to create a new goal weight entry
+   * @param weightValue Number value for the new goal weight entry - Must be greater than zero
+   * @param goalType Goal type for the new goal weight entry - Must be "Loss", "Gain", or "Maintenance"
+   * @throws Signals the process failed
+   */
   async function addGoalWeightEntry(weightValue: number, goalType: GoalOption) {
     "use server";
 
@@ -134,6 +160,13 @@ export default function EntryPage() {
     }
   }
 
+  /**
+   * Middleware for accessing the database to create a new goal weight entry
+   * @param goalWeightEntryId New number value for the new goal weight entry - Must be greater than zero
+   * @param weightValue New number value for the existing goal weight entry - Must be greater than zero
+   * @param goalType New goal type for the existing goal weight entry - Must be "Loss", "Gain", or "Maintenance"
+   * @throws Signals the process failed
+   */
   async function changeGoalWeighEntry(
     goalWeightEntryId: number,
     weightValue: number,
