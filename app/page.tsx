@@ -7,25 +7,25 @@ const tempWeightArr: WeightEntryType[] = [
     userId: 0,
     weightDate: new Date(),
     weightValue: 143.01,
-    WeightEntryId: 0,
-  },
-  {
-    userId: 0,
-    weightDate: new Date(),
-    weightValue: 141.01,
     WeightEntryId: 1,
   },
   {
     userId: 0,
     weightDate: new Date(),
-    weightValue: 142.01,
+    weightValue: 141.01,
     WeightEntryId: 2,
   },
   {
     userId: 0,
     weightDate: new Date(),
-    weightValue: 145.01,
+    weightValue: 142.01,
     WeightEntryId: 3,
+  },
+  {
+    userId: 0,
+    weightDate: new Date(),
+    weightValue: 145.01,
+    WeightEntryId: 4,
   },
 ];
 

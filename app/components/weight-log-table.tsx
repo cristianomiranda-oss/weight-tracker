@@ -4,7 +4,7 @@ import WeightEntry from "./weight-entry";
 interface WeightLogTableProps {
   weightEntries: WeightEntryType[];
   triggerEntryRemoval: (entryId: number, userId: number) => Promise<void>;
-  triggerEntryUpdate: (entryId: number) => Promise<void>;
+  triggerEntryUpdate: (entryId: number) => void;
 }
 
 /**

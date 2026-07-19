@@ -19,21 +19,35 @@ interface WeightLogDisplayProps {
   deleteWeightEntry: (entryId: number) => Promise<void>;
 }
 
+/**
+ * Contains the components for displaying the weight log interface and
+ * handles user interactions made with the interface.
+ */
 export default function WeightLogDisplay({
   getWeightEntries,
   getGoalWeightEntry,
   deleteWeightEntry,
 }: WeightLogDisplayProps) {
+  // Initializes a router to allow for navigation
   const router = useRouter();
+
+  // Initializes state for storing the loading flag and error messages
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [weightEntries, setWeightEntries] = useState<WeightEntryType[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  async function triggerEntryUpdate(entryId: number) {
+  // Initializes state for storing all user weight entries
+  const [weightEntries, setWeightEntries] = useState<WeightEntryType[]>([]);
+
+  /**
+   * Handles the updating of weight entries
+   * @param entryId Id for the weight entry to be updated
+   */
+  function triggerEntryUpdate(entryId: number): void {
     try {
       // Constructs a url with the to be updated entry's id as a search parameter
       const navigationURL = `/entry?entryId=${entryId}`;
 
+      // Navigates to the created url
       router.push(navigationURL);
     } catch (error) {
       // Checks if error is a known error
@@ -45,12 +59,17 @@ export default function WeightLogDisplay({
     }
   }
 
-  async function triggerEntryRemoval(entryId: number) {
+  /**
+   * Handles the removal of weight entries
+   * @param entryId Id for the weight entry to be delete4d
+   */
+  async function triggerEntryRemoval(entryId: number): Promise<void> {
     // Sets the loading boolean and clears the error message
     setIsLoading(true);
     setErrorMessage("");
 
     try {
+      // Calls the method to delete weight entries
       await deleteWeightEntry(entryId);
     } catch (error) {
       // Checks if error is a known error
@@ -67,10 +86,14 @@ export default function WeightLogDisplay({
     }
   }
 
-  async function checkGoalWeight(currentWeight: number) {
+  /**
+   * Checks if the user has achieved their current weight goal based on their
+   * last logged weight value
+   * @param currentWeight User's most recently logged weight
+   */
+  async function checkGoalWeight(currentWeight: number): Promise<boolean> {
     let isGoalWeightAchieved = false;
 
-    // TODO: Add getGoalWeight function
     const goalWeightEntry: GoalWeightEntryType = await getGoalWeightEntry();
 
     if (goalWeightEntry === null) {
@@ -78,16 +101,22 @@ export default function WeightLogDisplay({
     }
 
     if (goalWeightEntry.goalType === "Loss") {
+      // Checks if the user's current weight is less than or equal to their goal weight
       isGoalWeightAchieved = goalWeightEntry.weightValue >= currentWeight;
     } else if (goalWeightEntry.goalType === "Maintenance") {
+      // Checks if the user's current weight is equal to their goal weight
       isGoalWeightAchieved = goalWeightEntry.weightValue === currentWeight;
     } else if (goalWeightEntry.goalType === "Gain") {
+      // Checks if the user's current weight is greater than or equal to their goal weight
       isGoalWeightAchieved = goalWeightEntry.weightValue <= currentWeight;
     }
 
     return isGoalWeightAchieved;
   }
 
+  /**
+   * Triggers the fetch to access the user's weight entries to the appropriate middleware method
+   */
   async function loadWeightEntries() {
     // Sets the loading boolean and clears the error message
     setIsLoading(true);
@@ -123,10 +152,12 @@ export default function WeightLogDisplay({
         setErrorMessage("An unknown error has occurred");
       }
     } finally {
+      // Change the loading boolean to indicate the function is no longer running
       setIsLoading(false);
     }
   }
 
+  // Triggers the loading of the user's weight entries upon page launch
   useEffect(() => {
     loadWeightEntries();
   }, []);

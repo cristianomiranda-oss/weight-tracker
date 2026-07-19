@@ -5,7 +5,7 @@ import { createUserCookie } from "../libs/cookies";
 import AccountForm from "./components/account-form";
 
 /**
- * Contains the logic and comments for hte accounts page
+ * Contains the logic and comments for the accounts page
  */
 export default function AccountsPage(): React.JSX.Element {
   /**
