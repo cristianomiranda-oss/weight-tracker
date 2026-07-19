@@ -1,7 +1,12 @@
 "use server";
 
 import { getUserCookie } from "@/app/libs/cookies";
+import { errorCausesObj, handleMiddleWareErrors } from "@/app/libs/errors";
 import type { GoalOption, GoalWeightEntryType } from "@/app/libs/types";
+
+function verifyGoalType() {
+  
+}
 
 /**
  * Middleware for accessing a goal weight entries associated with a user.
@@ -9,29 +14,37 @@ import type { GoalOption, GoalWeightEntryType } from "@/app/libs/types";
  * @throws Signals the process failed
  */
 export async function getGoalWeightEntry(): Promise<GoalWeightEntryType> {
-  const userCookie = await getUserCookie();
+  try {
+    const userCookie = await getUserCookie();
 
-  if (userCookie === null) {
-    throw new Error("Invalid user account", {
-      cause: "invalid-user-cookie",
-    });
-  }
+    if (userCookie === null) {
+      throw new Error("Invalid user account", {
+        cause: errorCausesObj.invalidUserCookie,
+      });
+    }
 
-  // TODO: Add database method top get goal weight entry
-  // const userGoalWeightEntry: GoalWeightEntryType = readGoalWeightEntry(userCookie);
+    // TODO: Add database method top get goal weight entry
+    // const userGoalWeightEntry: GoalWeightEntryType = readGoalWeightEntry(userCookie);
 
-  // * Temporarily uses a predefined object
-  const userGoalWeightEntry: GoalWeightEntryType = {
-    goalWeightEntryId: 1,
-    weightValue: 140,
-    goalType: "Loss",
-    userId: 1,
-  };
+    // * Temporarily uses a predefined object
+    const userGoalWeightEntry: GoalWeightEntryType = {
+      goalWeightEntryId: 1,
+      weightValue: 140,
+      goalType: "Loss",
+      userId: 1,
+    };
 
-  if (userGoalWeightEntry === null) {
-    throw new Error("Failed to access weight entries");
-  } else {
-    return userGoalWeightEntry;
+    if (userGoalWeightEntry === null) {
+      throw new Error("Failed to access weight entries", {
+        cause: errorCausesObj.processFail,
+      });
+    } else {
+      return userGoalWeightEntry;
+    }
+  } catch (error) {
+    // Calls the method to handle errors in middleware functions
+    const errorToThrow = handleMiddleWareErrors(error);
+    throw errorToThrow;
   }
 }
 
@@ -44,21 +57,33 @@ export async function getGoalWeightEntry(): Promise<GoalWeightEntryType> {
 export async function addGoalWeightEntry(
   weightValue: number,
   goalType: GoalOption,
-) {
-  if (weightValue < 0 || Number.isNaN(weightValue)) {
-    throw new Error("Weight value cannot be less than zero");
-  }
+): Promise<void> {
+  try {
+    if (weightValue < 0 || Number.isNaN(weightValue)) {
+      throw new Error("Weight value cannot be less than zero", {
+        cause: errorCausesObj.invalidParameterValue,
+      });
+    }
 
-  if (
-    goalType === "Maintenance" ||
-    goalType === "Gain" ||
-    goalType === "Loss"
-  ) {
+    let isValid = false;
+
+    for (const approvedType of ["Loss", "Gain", "Maintenance"]) {
+      if (approvedType === goalType) {
+        isValid = true;
+      }
+    }
+
+    if (!isValid) {
+      throw new Error("Invalid goal type", {
+        cause: errorCausesObj.invalidParameterValue,
+      });
+    }
+
     const userCookie = await getUserCookie();
 
     if (userCookie === null) {
       throw new Error("Invalid user account", {
-        cause: "invalid-user-cookie",
+        cause: errorCausesObj.invalidUserCookie,
       });
     }
 
@@ -69,10 +94,14 @@ export async function addGoalWeightEntry(
     if (isEntryAdded) {
       return;
     } else {
-      throw new Error("Failed to add new goal weight entry");
+      throw new Error("Failed to add new goal weight entry", {
+        cause: errorCausesObj.processFail,
+      });
     }
-  } else {
-    throw new Error("Invalid goal type");
+  } catch (error) {
+    // Calls the method to handle errors in middleware functions
+    const errorToThrow = handleMiddleWareErrors(error);
+    throw errorToThrow;
   }
 }
 
@@ -88,24 +117,38 @@ export async function changeGoalWeighEntry(
   weightValue: number,
   goalType: GoalOption,
 ) {
-  if (goalWeightEntryId <= 0) {
-    throw new Error("Existing goal weight entry invalid");
-  }
+  try {
+    if (goalWeightEntryId <= 0) {
+      throw new Error("Existing goal weight entry invalid", {
+        cause: errorCausesObj.invalidParameterValue,
+      });
+    }
 
-  if (weightValue < 0 || Number.isNaN(weightValue)) {
-    throw new Error("Weight value cannot be less than 0");
-  }
+    if (weightValue < 0 || Number.isNaN(weightValue)) {
+      throw new Error("Weight value cannot be less than 0", {
+        cause: errorCausesObj.invalidParameterValue,
+      });
+    }
 
-  if (
-    goalType === "Maintenance" ||
-    goalType === "Gain" ||
-    goalType === "Loss"
-  ) {
+    let isValid = false;
+
+    for (const approvedType of ["Loss", "Gain", "Maintenance"]) {
+      if (approvedType === goalType) {
+        isValid = true;
+      }
+    }
+
+    if (!isValid) {
+      throw new Error("Invalid goal type", {
+        cause: errorCausesObj.invalidParameterValue,
+      });
+    }
+
     const userCookie = await getUserCookie();
 
     if (userCookie === null) {
       throw new Error("Invalid user account", {
-        cause: "invalid-user-cookie",
+        cause: errorCausesObj.invalidUserCookie,
       });
     }
 
@@ -116,9 +159,13 @@ export async function changeGoalWeighEntry(
     if (isEntryUpdated) {
       return;
     } else {
-      throw new Error("Failed to update new weight entry");
+      throw new Error("Failed to update new weight entry", {
+        cause: errorCausesObj.processFail,
+      });
     }
-  } else {
-    throw new Error("Invalid goal type");
+  } catch (error) {
+    // Calls the method to handle errors in middleware functions
+    const errorToThrow = handleMiddleWareErrors(error);
+    throw errorToThrow;
   }
 }
