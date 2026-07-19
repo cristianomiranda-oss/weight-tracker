@@ -83,3 +83,82 @@ export async function deleteWeightEntry(entryId: number) {
     throw new Error("Failed to access weight entries");
   }
 }
+
+/**
+   * Middleware for accessing the database to create new weight entry
+   * @param weightValue Number value for the new weight entry - Must be greater than zero
+   * @param weighInDate Date value for the new weight entry
+   * @throws Signals the process failed
+   */
+  export async function addWeightEntry(weightValue: number, weighInDate: Date) {
+    "use server";
+
+    if (weightValue < 0 || Number.isNaN(weightValue)) {
+      throw new Error("Weight value cannot be less than zero");
+    }
+
+    if (weighInDate === null) {
+      throw new Error("Weigh in date cannot be blank");
+    }
+
+    const userCookie = await getUserCookie();
+
+    if (userCookie === null) {
+      throw new Error("Invalid user account", {
+        cause: "invalid-user-cookie",
+      });
+    }
+
+    // TODO: Create database method to add weight entries
+    // const isEntryAdded = createWeightEntry(weightValue, weighInDate, userCookie)
+    const isEntryAdded = true;
+
+    if (isEntryAdded) {
+      return;
+    } else {
+      throw new Error("Failed to add new weight entry");
+    }
+  }
+
+  /**
+   * Middleware for accessing the database to update an existing weight entry
+   * @param weightEntryId Id for the associated weight entry to be changed - Must be greater than zero
+   * @param weightValue New number value for the weight entry - Must be greater than zero
+   * @param weighInDate New date value for the weight entry
+   * @throws Signals the process failed
+   */
+  export async function changeWeighEntry(
+    weightEntryId: number,
+    weightValue: number,
+    weighInDate: Date,
+  ) {
+    if (weightEntryId <= 0) {
+      throw new Error("Existing weight entry invalid");
+    }
+
+    if (weightValue < 0 || Number.isNaN(weightValue)) {
+      throw new Error("Weight value cannot be less than zero");
+    }
+
+    if (weighInDate === null) {
+      throw new Error("Weigh in date cannot be blank");
+    }
+
+    const userCookie = await getUserCookie();
+
+    if (userCookie === null) {
+      throw new Error("Invalid user account", {
+        cause: "invalid-user-cookie",
+      });
+    }
+
+    // TODO: Create database method to update weight entry
+    // const isEntryUpdated = updateWeightEntry(weightValue, weighInDate, userCookie)
+    const isEntryUpdated = true;
+
+    if (isEntryUpdated) {
+      return;
+    } else {
+      throw new Error("Failed to update new weight entry");
+    }
+  }

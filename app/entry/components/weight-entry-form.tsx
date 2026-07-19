@@ -6,38 +6,14 @@ import LabeledInput from "@/app/components/labeled-input";
 import SubmitButton from "@/app/components/submit-button";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
-import type { GoalOption, GoalWeightEntryType } from "@/app/libs/types";
-
-interface WeightEntryFormProps {
-  addWeightEntry: (weightValue: number, weighInDate: Date) => Promise<void>;
-  addGoalWeightEntry: (
-    weightValue: number,
-    goalType: "Loss" | "Maintenance" | "Gain",
-  ) => Promise<void>;
-  changeWeighEntry: (
-    weightEntryId: number,
-    weightValue: number,
-    weighInDate: Date,
-  ) => Promise<void>;
-  changeGoalWeighEntry: (
-    goalWeightEntryId: number,
-    weightValue: number,
-    goalType: GoalOption,
-  ) => Promise<void>;
-  getGoalWeightEntry: () => Promise<GoalWeightEntryType | null>;
-}
+import { addWeightEntry, changeWeighEntry } from "@/app/actions/middleware/weight-entry";
+import { addGoalWeightEntry, changeGoalWeighEntry, getGoalWeightEntry } from "@/app/actions/middleware/goal-weight-entry";
 
 /**
  * Contains the components for display the weight entry and goal weight entry interfaces
  * and handles the user interactions for the interface
  */
-export default function WeightEntryForm({
-  addWeightEntry,
-  addGoalWeightEntry,
-  changeWeighEntry,
-  changeGoalWeighEntry,
-  getGoalWeightEntry,
-}: WeightEntryFormProps): React.JSX.Element {
+export default function WeightEntryForm(): React.JSX.Element {
   // Initializes a router for navigation
   const router = useRouter();
 
