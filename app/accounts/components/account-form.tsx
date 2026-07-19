@@ -1,28 +1,17 @@
 "use client";
 
+import { createUserAccount, validateLogin } from "@/app/actions/middleware/accounts";
 import Button from "@/app/components/button";
 import LabeledInput from "@/app/components/labeled-input";
 import SubmitButton from "@/app/components/submit-button";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
-interface AccountFormProps {
-  validateLogin: (userName: string, userPassword: string) => Promise<void>;
-  createUserAccount: (
-    userName: string,
-    userPassword: string,
-    confirmPassWord: string,
-  ) => Promise<void>;
-}
-
 /**
  * Contains the components for displaying the account sign in and account creation interface and
  * handles interactions made with the interface.
  */
-export default function AccountForm({
-  validateLogin,
-  createUserAccount,
-}: AccountFormProps): React.JSX.Element {
+export default function AccountForm(): React.JSX.Element {
   // Initializes a router to allow for navigation
   const router = useRouter();
 
