@@ -8,12 +8,7 @@ interface WeightLogTableProps {
 }
 
 /**
- *
- *
- * @typedef {object} WeightLogTableProps
- * @property {}
- *
- * @returns {JSX.Element}
+ * Displays the weight log table and the various weight entries within it
  */
 export default function WeightLogTable({
   weightEntries,

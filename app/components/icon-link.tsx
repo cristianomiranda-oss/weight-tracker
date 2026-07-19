@@ -10,9 +10,18 @@ interface IconLinkProps {
     disabled: boolean;
 }
 
+/**
+ * Component for a link icon
+ */
 export default function IconLink({ className, icon, hrefObj, disabled }: IconLinkProps) {
+    /**
+       * Checks if user interaction is disabled and prevents navigation if so 
+       * 
+       * @param e The mouse data that trigger the event
+       */
     function checkIfDisabled(e: React.MouseEvent) {
         if (disabled) {
+            // Prevents the icon link from triggering
             e.preventDefault();
         }
     }

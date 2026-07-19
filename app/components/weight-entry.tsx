@@ -6,6 +6,9 @@ interface WeightEntryProps {
     changeEntry: () => void;
 }
 
+/**
+ * Component for displaying a weight entry
+ */
 export default function WeightEntry({ weightEntryObj, removeEntry, changeEntry }: WeightEntryProps) {
     return (
         <div className="w-full h-8 md:h-10 text-xl md:text-3xl flex justify-around items-center bg-dusty-taupe-600">

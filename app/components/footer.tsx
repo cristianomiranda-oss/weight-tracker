@@ -5,6 +5,9 @@ interface HeaderProps {
   children?: React.ReactNode;
 }
 
+/**
+ * Component for displaying the main header of the web application
+ */
 export default function Footer({ className, children }: HeaderProps) {
   // Prioritizes the passed in classes
   const finalClassName = twMerge(

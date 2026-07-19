@@ -5,6 +5,9 @@ interface CardProps {
   children: React.ReactNode;
 }
 
+/**
+   * Main display component for the web application
+   */
 export default function Card({ className, children }: CardProps) {
   // Prioritizes the passed in classes
   const finalClassName = twMerge(

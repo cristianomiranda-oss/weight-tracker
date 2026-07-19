@@ -10,6 +10,9 @@ interface LabeledInputProps {
     ref?: Ref<HTMLInputElement>;
 }
 
+/**
+ * Component for displaying an input and a label
+ */
 export default function LabeledInput({id, label, inputType, disabled, ref}: LabeledInputProps) {
   return (
     <div className="w-full flex flex-col gap-1">
