@@ -7,6 +7,7 @@ export const errorCausesObj = {
   invalidComparison: "invalid-comparison",
   processFail: "process-fail",
   unknownError: "unknown-error",
+  databaseInitializationError: "database-initialization-error"
 };
 
 /**
@@ -21,6 +22,10 @@ export function handleMiddleWareErrors(error: unknown): Error {
     // Checks if the error is due to a problematic cause
     if (error.cause === errorCausesObj.processFail) {
       // Displays the error before returning it if it is a failure with the main process
+      console.error(error);
+      return error;
+    } else if (error.cause === errorCausesObj.databaseInitializationError) {
+      // Displays the error before returning it if it is a failure with the creation of the database
       console.error(error);
       return error;
     } else {
@@ -39,5 +44,4 @@ export function handleMiddleWareErrors(error: unknown): Error {
     );
     return newError;
   }
-
 }
