@@ -1,3 +1,4 @@
+import { getDisplayDate } from "../libs/date";
 import type { WeightEntryType } from "../libs/types";
 
 interface WeightEntryProps {
@@ -17,7 +18,7 @@ export default function WeightEntry({
   return (
     <div className="w-full h-8 md:h-10 text-xl md:text-3xl flex justify-around items-center bg-dusty-taupe-600">
       <p className="w-5/12 text-center" onDoubleClick={changeEntry}>
-        {weightEntryObj.weighInDate.getDay()}
+        {getDisplayDate(weightEntryObj.weighInDate)}
       </p>
       <p className="w-5/12 text-center" onDoubleClick={changeEntry}>
         {weightEntryObj.weightValue}

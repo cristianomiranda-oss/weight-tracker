@@ -235,7 +235,7 @@ export default function WeightEntryForm(): React.JSX.Element {
           <LabeledInput
             id="weighInDate"
             label="Date"
-            inputType="date"
+            inputType="datetime-local"
             disabled={isLoading}
             ref={weighInDateInputRef}
           />
