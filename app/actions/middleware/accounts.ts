@@ -1,6 +1,7 @@
-"use server";
+"use client";
 import { createUserCookie } from "@/app/libs/cookies";
 import { errorCausesObj, handleMiddleWareErrors } from "@/app/libs/errors";
+import { IndexedDB } from "@/app/libs/indexedDB";
 
 /**
  * Middleware for accessing the database to create a new user account
@@ -48,6 +49,8 @@ export async function createUserAccount(
     }
 
     // TODO: Add database method
+    const value = await IndexedDB.createNewUserAccount(userName, userPassword);
+    console.log("Fake Value: ", value)
     // const isAccountCreated = createUserAccount();
     const isAccountCreated = true;
 
