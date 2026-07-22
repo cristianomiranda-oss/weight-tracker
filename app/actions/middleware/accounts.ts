@@ -48,13 +48,11 @@ export async function createUserAccount(
       });
     }
 
-    // TODO: Add database method
     const value = await IndexedDB.createNewUserAccount(userName, userPassword);
-    console.log("Fake Value: ", value)
-    // const isAccountCreated = createUserAccount();
-    const isAccountCreated = true;
 
-    if (isAccountCreated) {
+    // Checks if a valid value was returned by the database method
+    if (value) {
+      // Exits the function as the account was created
       return;
     } else {
       throw new Error("Account Creation failed", {
@@ -79,6 +77,7 @@ export async function validateLogin(
   userPassword: string,
 ): Promise<void> {
   try {
+    
     if (userName === "" || userPassword === "") {
       throw new Error("Username and Password cannot be blank", {
         cause: errorCausesObj.invalidParameterValue,
@@ -90,20 +89,18 @@ export async function validateLogin(
         cause: errorCausesObj.invalidParameterValue,
       });
     }
-
+    
     if (userPassword.length < 8 || userPassword.length > 30) {
       throw new Error("Password is invalid", {
         cause: errorCausesObj.invalidParameterValue,
       });
     }
-
-    // TODO: Add database method
-    // const userId = validateUserAccount();
-    const userId = 1;
+    
+    const userId = await IndexedDB.validateUserAccount(userName, userPassword);
 
     if (userId === null) {
-      throw new Error("Account Login Failed", {
-        cause: errorCausesObj.processFail,
+      throw new Error("Username or Password is invalid", {
+        cause: errorCausesObj.accessDenied,
       });
     }
 

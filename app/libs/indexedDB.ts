@@ -1,5 +1,9 @@
-import { errorCausesObj } from "./errors";
-import type { DataBaseAccessType, DataBaseIndex, DataBaseStore } from "./types";
+import type {
+  DataBaseAccessType,
+  DataBaseIndex,
+  DataBaseStore,
+  UserAccount,
+} from "./types";
 
 export class IndexedDB {
   // Database info
@@ -82,7 +86,7 @@ export class IndexedDB {
     });
   }
 
-    /**
+  /**
    * Private method that returns an accessible object stored based on the parameter types passed in
    * @throws Signals that the process failed
    */
@@ -103,14 +107,14 @@ export class IndexedDB {
     }
   }
 
-   /**
+  /**
    * CRUD method for adding a new user account and returns with the new entry's id
    * @throws Signals that the process failed
    */
   static async createNewUserAccount(userName: string, userPassword: string) {
     try {
       // Accesses the user account object store to write a new entry to it
-        const accountsStore = await this._openDBStore(
+      const accountsStore = await this._openDBStore(
         this.USER_ACCOUNT_STORE,
         "readwrite",
       );
@@ -140,7 +144,55 @@ export class IndexedDB {
         }
       });
     } catch (error) {
-        // Throws any error back to the middleware function
+      // Throws any error back to the middleware function
+      throw error;
+    }
+  }
+
+  static async validateUserAccount(userName: string, userPassword: string) {
+    try {
+      // Accesses the user account object store to read an entry from it
+      const accountsStore = await this._openDBStore(
+        this.USER_ACCOUNT_STORE,
+        "readonly",
+      );
+
+      const userNameIndex = accountsStore.index(this.USER_NAME_INDEX);
+
+      // Returns a new promise that will resolve with the existing entry's id or null if the user name is not associated with an entry
+      // or reject with the event that caused the error
+      return await new Promise<number | null>((resolve, reject) => {
+        try {
+          const entryResult = userNameIndex.get(userName);
+
+          entryResult.onerror = (e) => {
+            reject(e);
+          };
+
+          entryResult.onsuccess = (e) => {
+            const entryData: UserAccount | undefined = entryResult.result;
+
+            // checks if any entry matched the passed in userName;
+            if (entryData === undefined) {
+              // Resolves with null to indicate no entry matches the userName
+              resolve(null);
+            } else {
+              // checks the user's credentials
+              if (userPassword === entryData.userPassword) {
+                // Resolves with the user's id value
+                resolve(entryData.userId);
+              } else {
+                // Resolves with null to indicate the passed in credentials are invalid
+                resolve(null);
+              }
+            }
+          };
+        } catch (error) {
+          reject(error);
+        }
+      });
+    } catch (error) {
+      // Throws any error back to the middleware function
       throw error;
     }
   }

@@ -7,7 +7,8 @@ export const errorCausesObj = {
   invalidComparison: "invalid-comparison",
   processFail: "process-fail",
   unknownError: "unknown-error",
-  databaseInitializationError: "database-initialization-error"
+  databaseInitializationError: "database-initialization-error",
+  accessDenied: "access-denied"
 };
 
 /**
