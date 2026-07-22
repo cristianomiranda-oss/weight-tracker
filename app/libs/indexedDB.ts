@@ -4,6 +4,7 @@ import type {
   DataBaseIndex,
   DataBaseStore,
   GoalOption,
+  GoalWeightEntryType,
   UserAccount,
   WeightEntryType,
 } from "./types";
@@ -494,6 +495,53 @@ export class IndexedDB {
               resolve(newGoalWeightEntryId);
             } else {
               reject("Invalid entry id");
+            }
+          };
+        } catch (error) {
+          reject(error);
+        }
+      });
+    } catch (error) {
+      // Throws any error back to the middleware function
+      throw error;
+    }
+  }
+
+  /**
+   * CRUD method for reading a weight entry. Returns the weight entry data if found and null if no entry is found
+   * @throws Signals that the process failed
+   */
+  static async readGoalWeightEntry(userId: number) {
+    try {
+      // Accesses the user account object store to read an entry from it
+      const goalWeightEntryStore = await this._openDBStore(
+        this.GOAL_WEIGHT_ENTRY_STORE,
+        "readonly",
+      );
+
+      const userIdIndex = goalWeightEntryStore.index(this.USER_ID_INDEX);
+
+      // Returns a new promise that will resolve with the goal weight entry data or null if there is no entry
+      // or reject with the event that caused the error
+      return await new Promise<GoalWeightEntryType | null>((resolve, reject) => {
+        try {
+          const readResult = userIdIndex.get(userId);
+
+          readResult.onerror = () => {
+            const error = readResult.error;
+            reject(error);
+          };
+
+          readResult.onsuccess = () => {
+            const entryData: GoalWeightEntryType | undefined = readResult.result;
+
+            // checks if any entry matched the passed in userName;
+            if (entryData === undefined) {
+              // Resolves with null to indicate no entry matches the userName
+              resolve(null);
+            } else {
+              // Resolves with the entry data
+              resolve(entryData);
             }
           };
         } catch (error) {

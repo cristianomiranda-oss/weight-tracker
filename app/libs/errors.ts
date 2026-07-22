@@ -2,15 +2,16 @@
  * Object containing various error causes for the project
  */
 export const errorCausesObj = {
+  accessDenied: "access-denied",
+  processFail: "process-fail",
+  unknownError: "unknown-error",
   invalidUserCookie: "invalid-user-cookie",
   invalidParameterValue: "invalid-parameter-value",
   invalidComparison: "invalid-comparison",
-  processFail: "process-fail",
-  unknownError: "unknown-error",
   databaseInitializationError: "database-initialization-error",
   databaseCrudError: "database-crud-error",
-  accessDenied: "access-denied",
-  databaseConstraintIssue: "database-constraint-issue"
+  databaseConstraintIssue: "database-constraint-issue",
+  noUserEntry: "no-user-entry"
 };
 
 /**

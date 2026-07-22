@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import WeightLogTableTable from "../components/weight-log-table";
 import { removeWeightEntry, getWeightEntries } from "../actions/middleware/weight-entry";
 import { getGoalWeightEntry } from "../actions/middleware/goal-weight-entry";
+import { errorCausesObj } from "../libs/errors";
 
 /**
  * Contains the components for displaying the weight log interface and
@@ -86,24 +87,26 @@ export default function WeightLogDisplay() {
   async function checkGoalWeight(currentWeight: number): Promise<boolean> {
     let isGoalWeightAchieved = false;
 
-    const goalWeightEntry: GoalWeightEntryType = await getGoalWeightEntry();
+    const goalWeightEntry = await getGoalWeightEntry();
 
     if (goalWeightEntry === null) {
-      throw new Error("Failed to access goal weight entry");
+      // If no goal weight entry exists for the user, navigates them to the entry page
+      const navigationURL = '/entry?type=goal-weight-entry';
+      router.push(navigationURL)
+      throw new Error("Failed to access goal weight entry", {cause: errorCausesObj.noUserEntry})
+    } else {
+      if (goalWeightEntry.goalType === "Loss") {
+        // Checks if the user's current weight is less than or equal to their goal weight
+        isGoalWeightAchieved = goalWeightEntry.weightValue >= currentWeight;
+      } else if (goalWeightEntry.goalType === "Maintenance") {
+        // Checks if the user's current weight is equal to their goal weight
+        isGoalWeightAchieved = goalWeightEntry.weightValue === currentWeight;
+      } else if (goalWeightEntry.goalType === "Gain") {
+        // Checks if the user's current weight is greater than or equal to their goal weight
+        isGoalWeightAchieved = goalWeightEntry.weightValue <= currentWeight;
+      }
+      return isGoalWeightAchieved;
     }
-
-    if (goalWeightEntry.goalType === "Loss") {
-      // Checks if the user's current weight is less than or equal to their goal weight
-      isGoalWeightAchieved = goalWeightEntry.weightValue >= currentWeight;
-    } else if (goalWeightEntry.goalType === "Maintenance") {
-      // Checks if the user's current weight is equal to their goal weight
-      isGoalWeightAchieved = goalWeightEntry.weightValue === currentWeight;
-    } else if (goalWeightEntry.goalType === "Gain") {
-      // Checks if the user's current weight is greater than or equal to their goal weight
-      isGoalWeightAchieved = goalWeightEntry.weightValue <= currentWeight;
-    }
-
-    return isGoalWeightAchieved;
   }
 
   /**

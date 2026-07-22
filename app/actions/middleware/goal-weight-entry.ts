@@ -46,14 +46,17 @@ export async function addGoalWeightEntry(
 
     const userId = parseInt(userCookie.value);
 
-    // TODO: Create database method to add goal weight entries
-    const newGoalWeightEntryId = await IndexedDB.createGoalWeightEntry(weightValue, goalType, userId)
+    const newGoalWeightEntryId = await IndexedDB.createGoalWeightEntry(
+      weightValue,
+      goalType,
+      userId,
+    );
 
     if (newGoalWeightEntryId) {
       return;
     } else {
       throw new Error("Failed to add new goal weight entry", {
-        cause: errorCausesObj.processFail,
+        cause: errorCausesObj.databaseCrudError,
       });
     }
   } catch (error) {
@@ -66,9 +69,10 @@ export async function addGoalWeightEntry(
 /**
  * Middleware for accessing a goal weight entries associated with a user.
  * The currently stored user account cookie is used for identifying what entry is associated with the user.
+ * Returns a null value if no goal weight entry is stored for the user.
  * @throws Signals the process failed
  */
-export async function getGoalWeightEntry(): Promise<GoalWeightEntryType> {
+export async function getGoalWeightEntry(): Promise<GoalWeightEntryType | null> {
   try {
     const userCookie = await getUserCookie();
 
@@ -78,24 +82,11 @@ export async function getGoalWeightEntry(): Promise<GoalWeightEntryType> {
       });
     }
 
-    // TODO: Add database method top get goal weight entry
-    // const userGoalWeightEntry: GoalWeightEntryType = readGoalWeightEntry(userCookie);
+    const userId = parseInt(userCookie.value);
 
-    // * Temporarily uses a predefined object
-    const userGoalWeightEntry: GoalWeightEntryType = {
-      goalWeightEntryId: 1,
-      weightValue: 140,
-      goalType: "Loss",
-      userId: 1,
-    };
+    const userGoalWeightEntry = await IndexedDB.readGoalWeightEntry(userId);
 
-    if (userGoalWeightEntry === null) {
-      throw new Error("Failed to access weight entries", {
-        cause: errorCausesObj.processFail,
-      });
-    } else {
-      return userGoalWeightEntry;
-    }
+    return userGoalWeightEntry;
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToThrow = handleMiddleWareErrors(error);
