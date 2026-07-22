@@ -3,6 +3,7 @@ import type {
   DataBaseIndex,
   DataBaseStore,
   UserAccount,
+  WeightEntryType,
 } from "./types";
 
 export class IndexedDB {
@@ -149,6 +150,10 @@ export class IndexedDB {
     }
   }
 
+    /**
+   * CRUD method for validating an existing account. Returns with the entry's id if the passed in credentials are valid
+   * @throws Signals that the process failed
+   */
   static async validateUserAccount(userName: string, userPassword: string) {
     try {
       // Accesses the user account object store to read an entry from it
@@ -196,4 +201,80 @@ export class IndexedDB {
       throw error;
     }
   }
+
+  static async createWeightEntry(weightValue: number, weighInDate: Date, userId: number) {
+    try {
+      // Accesses the user account object store to read an entry from it
+      const weightEntryStore = await this._openDBStore(
+        this.WEIGHT_ENTRY_STORE,
+        "readwrite",
+      );
+
+      const newWeightEntry = {weightValue, weighInDate, userId};
+
+      // Returns a new promise that will resolve with the existing entry's id or null if the user name is not associated with an entry
+      // or reject with the event that caused the error
+      return await new Promise<number | null>((resolve, reject) => {
+        try {
+          const addResult = weightEntryStore.add(newWeightEntry);
+
+          addResult.onerror = (e) => {
+            reject(e);
+          };
+
+          addResult.onsuccess = (e) => {
+            const newWeightEntryId = addResult.result;
+
+            if (typeof newWeightEntryId === "number") {
+              resolve(newWeightEntryId);
+            } else {
+              reject("Invalid entry id");
+            }
+          }
+        } catch (error) {
+          reject(error);
+        }
+      });
+    } catch (error) {
+      // Throws any error back to the middleware function
+      throw error;
+    }
+  }
+
+  static async readWeightEntries(userId: number) {
+    try {
+      // Accesses the user account object store to read an entry from it
+      const weightEntryStore = await this._openDBStore(
+        this.WEIGHT_ENTRY_STORE,
+        "readonly",
+      );
+
+      const userIdIndex = weightEntryStore.index(this.USER_ID_INDEX);
+
+      // Returns a new promise that will resolve with the existing entry's id or null if the user name is not associated with an entry
+      // or reject with the event that caused the error
+      return await new Promise<WeightEntryType[] | null>((resolve, reject) => {
+        try {
+          const entriesResult = userIdIndex.getAll(userId);
+
+          entriesResult.onerror = (e) => {
+            reject(e);
+          };
+
+          entriesResult.onsuccess = (e) => {
+            const entryData = entriesResult.result;
+
+            resolve(entryData);
+          }
+        } catch (error) {
+          reject(error);
+        }
+      });
+    } catch (error) {
+      // Throws any error back to the middleware function
+      throw error;
+    }
+  }
+
+  
 }

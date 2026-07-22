@@ -1,36 +1,9 @@
-"use server";
+"use client";
 
 import { getUserCookie } from "@/app/libs/cookies";
 import { errorCausesObj, handleMiddleWareErrors } from "@/app/libs/errors";
+import { IndexedDB } from "@/app/libs/indexedDB";
 import type { WeightEntryType } from "@/app/libs/types";
-
-// Temporary Weight Entry Array
-const tempWeightArr: WeightEntryType[] = [
-  {
-    userId: 0,
-    weightDate: new Date(),
-    weightValue: 143.01,
-    WeightEntryId: 1,
-  },
-  {
-    userId: 0,
-    weightDate: new Date(),
-    weightValue: 141.01,
-    WeightEntryId: 2,
-  },
-  {
-    userId: 0,
-    weightDate: new Date(),
-    weightValue: 142.01,
-    WeightEntryId: 3,
-  },
-  {
-    userId: 0,
-    weightDate: new Date(),
-    weightValue: 145.01,
-    WeightEntryId: 4,
-  },
-];
 
 /**
  * Middleware for accessing weight entries associated with a user cookie.
@@ -47,11 +20,9 @@ export async function getWeightEntries(): Promise<WeightEntryType[]> {
       });
     }
 
-    // TODO: Add database method
-    // const userWeightEntries: WeightEntryType[] = await readWeightEntries(userCookie);
+    const userId = parseInt(userCookie.value);
 
-    // * Temporarily uses a predefined weightArr
-    const userWeightEntries: WeightEntryType[] = tempWeightArr;
+    const userWeightEntries = await IndexedDB.readWeightEntries(userId);
 
     if (userWeightEntries === null) {
       throw new Error("Failed to access weight entry", {
@@ -128,11 +99,11 @@ export async function addWeightEntry(
       });
     }
 
-    // TODO: Create database method to add weight entries
-    // const isEntryAdded = createWeightEntry(weightValue, weighInDate, userCookie)
-    const isEntryAdded = true;
+    const userId = parseInt(userCookie.value);
 
-    if (isEntryAdded) {
+    const newEntryId = await IndexedDB.createWeightEntry(weightValue, weighInDate, userId)
+
+    if (newEntryId ) {
       return;
     } else {
       throw new Error("Failed to add new weight entry", {

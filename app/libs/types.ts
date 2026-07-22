@@ -1,7 +1,7 @@
 export type WeightEntryType = {
-  WeightEntryId: number;
+  weightEntryId: number;
   weightValue: number;
-  weightDate: Date;
+  weighInDate: Date;
   userId: number;
 };
 
