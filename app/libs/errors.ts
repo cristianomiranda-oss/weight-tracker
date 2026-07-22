@@ -9,7 +9,8 @@ export const errorCausesObj = {
   unknownError: "unknown-error",
   databaseInitializationError: "database-initialization-error",
   databaseCrudError: "database-crud-error",
-  accessDenied: "access-denied"
+  accessDenied: "access-denied",
+  databaseConstraintIssue: "database-constraint-issue"
 };
 
 /**

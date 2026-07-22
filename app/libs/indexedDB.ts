@@ -1,7 +1,9 @@
+import { errorCausesObj } from "./errors";
 import type {
   DataBaseAccessType,
   DataBaseIndex,
   DataBaseStore,
+  GoalOption,
   UserAccount,
   WeightEntryType,
 } from "./types";
@@ -32,8 +34,9 @@ export class IndexedDB {
         const dbRequest = window.indexedDB.open(this.dbName, this.dbVersion);
 
         // Initializes error handle in the event the database request fails
-        dbRequest.onerror = (e) => {
-          reject(e);
+        dbRequest.onerror = () => {
+          const error = dbRequest.error;
+          reject(error);
         };
 
         dbRequest.onupgradeneeded = () => {
@@ -128,10 +131,11 @@ export class IndexedDB {
         try {
           const addResult = accountsStore.add(newUserAccount);
 
-          addResult.onerror = (e) => {
-            reject(e);
+          addResult.onerror = () => {
+            const error = addResult.error;
+            reject(error);
           };
-          addResult.onsuccess = (e) => {
+          addResult.onsuccess = () => {
             const newId = addResult.result;
 
             if (typeof newId === "number") {
@@ -145,7 +149,13 @@ export class IndexedDB {
         }
       });
     } catch (error) {
-      // Throws any error back to the middleware function
+      // Checks if the error is a constraint error
+      if (error instanceof Error && error.name === "ConstraintError") {
+        // throws an error detailing that the username is already in use
+        throw new Error("Username already taken", {cause: errorCausesObj.databaseConstraintIssue});
+      }
+
+      // Throws any error back to the middleware function 
       throw error;
     }
   }
@@ -171,11 +181,12 @@ export class IndexedDB {
         try {
           const entryResult = userNameIndex.get(userName);
 
-          entryResult.onerror = (e) => {
-            reject(e);
+          entryResult.onerror = () => {
+            const error = entryResult.error;
+            reject(error);
           };
 
-          entryResult.onsuccess = (e) => {
+          entryResult.onsuccess = () => {
             const entryData: UserAccount | undefined = entryResult.result;
 
             // checks if any entry matched the passed in userName;
@@ -221,17 +232,18 @@ export class IndexedDB {
 
       const newWeightEntry = { weightValue, weighInDate, userId };
 
-      // Returns a new promise that will resolve with the existing entry's id or null if the user name is not associated with an entry
+      // Returns a new promise that will resolve with the new weight entry's id
       // or reject with the event that caused the error
       return await new Promise<number>((resolve, reject) => {
         try {
           const addResult = weightEntryStore.add(newWeightEntry);
 
-          addResult.onerror = (e) => {
-            reject(e);
+          addResult.onerror = () => {
+            const error = addResult.error;
+            reject(error);
           };
 
-          addResult.onsuccess = (e) => {
+          addResult.onsuccess = () => {
             const newWeightEntryId = addResult.result;
 
             if (typeof newWeightEntryId === "number") {
@@ -264,17 +276,18 @@ export class IndexedDB {
 
       const userIdIndex = weightEntryStore.index(this.USER_ID_INDEX);
 
-      // Returns a new promise that will resolve with the existing entry's id or null if the user name is not associated with an entry
+      // Returns a new promise that will resolve with an array of entry data
       // or reject with the event that caused the error
       return await new Promise<WeightEntryType[]>((resolve, reject) => {
         try {
           const entriesResult = userIdIndex.getAll(userId);
 
-          entriesResult.onerror = (e) => {
-            reject(e);
+          entriesResult.onerror = () => {
+            const error = entriesResult.error;
+            reject(error);
           };
 
-          entriesResult.onsuccess = (e) => {
+          entriesResult.onsuccess = () => {
             const entryData = entriesResult.result;
 
             // Resolves with the array populated with entries
@@ -303,17 +316,18 @@ export class IndexedDB {
         "readonly",
       );
 
-      // Returns a new promise that will resolve with the existing entry's id or null if the user name is not associated with an entry
+      // Returns a new promise that will resolve with the entry data or null if the user's id does not match the one associated the entry
       // or reject with the event that caused the error
       return await new Promise<WeightEntryType | null>((resolve, reject) => {
         try {
           const readResult = weightEntryStore.get(weightEntryId);
 
-          readResult.onerror = (e) => {
-            reject(e);
+          readResult.onerror = () => {
+            const error = readResult.error;
+            reject(error);
           };
 
-          readResult.onsuccess = (e) => {
+          readResult.onsuccess = () => {
             const entryData: WeightEntryType | undefined = readResult.result;
 
             // checks if any entry matched the passed in userName;
@@ -365,18 +379,19 @@ export class IndexedDB {
         userId,
       };
 
-      // Returns a new promise that will resolve with the existing entry's id or null if the user name is not associated with an entry
+      // Returns a new promise that will resolve with a boolean indicating if the updating was successful
       // or reject with the event that caused the error
       return await new Promise<boolean>((resolve, reject) => {
         try {
           // updates the data associated with the key
           const updateResult = weightEntryStore.put(newWeightEntry);
 
-          updateResult.onerror = (e) => {
-            reject(e);
+          updateResult.onerror = () => {
+            const error = updateResult.error;
+            reject(error);
           };
 
-          updateResult.onsuccess = (e) => {
+          updateResult.onsuccess = () => {
             const entryId = updateResult.result;
 
             // Checks if the entryId is the same as when passed in
@@ -409,18 +424,19 @@ export class IndexedDB {
         "readwrite",
       );
 
-      // Returns a new promise that will resolve with the existing entry's id or null if the user name is not associated with an entry
+      // Returns a new promise that will resolve with a boolean indicating if the deletion was successful
       // or reject with the event that caused the error
       return await new Promise<boolean>((resolve, reject) => {
         try {
           // updates the data associated with the key
           const deleteResult = weightEntryStore.delete(weightEntryId);
 
-          deleteResult.onerror = (e) => {
-            reject(e);
+          deleteResult.onerror = () => {
+            const error = deleteResult.error;
+            reject(error);
           };
 
-          deleteResult.onsuccess = (e) => {
+          deleteResult.onsuccess = () => {
             const result = deleteResult.result;
 
             // Checks that the result is undefined, which indicates the deletion was successful
@@ -429,7 +445,55 @@ export class IndexedDB {
               resolve(true);
             } else {
               // Resolve with false to indicate the deletion failed
-              resolve(false)
+              resolve(false);
+            }
+          };
+        } catch (error) {
+          reject(error);
+        }
+      });
+    } catch (error) {
+      // Throws any error back to the middleware function
+      throw error;
+    }
+  }
+
+  /**
+   * CRUD method for creating a new goal weight entry. Returns with the entry's id if creation is successful
+   * @throws Signals that the process failed
+   */
+  static async createGoalWeightEntry(
+    weightValue: number,
+    goalType: GoalOption,
+    userId: number,
+  ) {
+    try {
+      // Accesses the user account object store to read an entry from it
+      const goalWeightEntryStore = await this._openDBStore(
+        this.GOAL_WEIGHT_ENTRY_STORE,
+        "readwrite",
+      );
+
+      const newGoalWeightEntry = { weightValue, goalType, userId };
+
+      // Returns a new promise that will resolve with the existing entry's id
+      // or reject with the event that caused the error
+      return await new Promise<number>((resolve, reject) => {
+        try {
+          const addResult = goalWeightEntryStore.add(newGoalWeightEntry);
+
+          addResult.onerror = () => {
+            const error = addResult.error;
+            reject(error);
+          };
+
+          addResult.onsuccess = () => {
+            const newGoalWeightEntryId = addResult.result;
+
+            if (typeof newGoalWeightEntryId === "number") {
+              resolve(newGoalWeightEntryId);
+            } else {
+              reject("Invalid entry id");
             }
           };
         } catch (error) {

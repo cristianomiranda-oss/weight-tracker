@@ -34,7 +34,11 @@ export async function addWeightEntry(
 
     const userId = parseInt(userCookie.value);
 
-    const newEntryId = await IndexedDB.createWeightEntry(weightValue, weighInDate, userId)
+    const newEntryId = await IndexedDB.createWeightEntry(
+      weightValue,
+      weighInDate,
+      userId,
+    );
 
     if (newEntryId) {
       return;
@@ -88,7 +92,9 @@ export async function getWeightEntries(): Promise<WeightEntryType[]> {
  * The currently stored user account cookie is used for identifying what entry is associated with the user.
  * @throws Signals the process failed
  */
-export async function getWeightEntry(weightEntryId: number): Promise<WeightEntryType> {
+export async function getWeightEntry(
+  weightEntryId: number,
+): Promise<WeightEntryType> {
   try {
     const userCookie = await getUserCookie();
 
@@ -100,7 +106,10 @@ export async function getWeightEntry(weightEntryId: number): Promise<WeightEntry
 
     const userId = parseInt(userCookie.value);
 
-    const userWeightEntries = await IndexedDB.readWeightEntry(weightEntryId, userId);
+    const userWeightEntries = await IndexedDB.readWeightEntry(
+      weightEntryId,
+      userId,
+    );
 
     if (userWeightEntries === null) {
       throw new Error("Failed to access weight entry", {
@@ -157,7 +166,12 @@ export async function changeWeighEntry(
 
     const userId = parseInt(userCookie.value);
 
-    const isEntryUpdated = await IndexedDB.updateWeightEntry(weightEntryId, weightValue, weighInDate, userId)
+    const isEntryUpdated = await IndexedDB.updateWeightEntry(
+      weightEntryId,
+      weightValue,
+      weighInDate,
+      userId,
+    );
 
     if (isEntryUpdated) {
       return;
@@ -192,7 +206,7 @@ export async function removeWeightEntry(weightEntryId: number): Promise<void> {
     const userId = parseInt(userCookie.value);
 
     // Gathers the entry data
-    const entryData = await getWeightEntry(weightEntryId)
+    const entryData = await getWeightEntry(weightEntryId);
 
     // Confirms if the entry's user id matches the user's cookie value
     if (entryData.userId !== userId) {
@@ -201,7 +215,8 @@ export async function removeWeightEntry(weightEntryId: number): Promise<void> {
       });
     }
 
-    const isEntryDeleted: boolean = await IndexedDB.deleteWeightEntry(weightEntryId);
+    const isEntryDeleted: boolean =
+      await IndexedDB.deleteWeightEntry(weightEntryId);
 
     if (isEntryDeleted) {
       return;
