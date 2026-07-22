@@ -39,7 +39,7 @@ export default function IconLink({
       onClick={(e) => checkIfDisabled(e)}
     >
       <FontAwesomeIcon
-        className="text-4xl md:text-5xl hover:text-cool-sky-300"
+        className={`text-4xl md:text-5xl ${disabled ? "text-graphite-300" : "hover:text-cool-sky-300"}`}
         icon={icon}
       />
     </Link>

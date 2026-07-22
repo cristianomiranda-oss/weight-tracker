@@ -15,6 +15,7 @@ import WeightLogTableTable from "../components/weight-log-table";
 import { removeWeightEntry, getWeightEntries } from "../actions/middleware/weight-entry";
 import { getGoalWeightEntry } from "../actions/middleware/goal-weight-entry";
 import { errorCausesObj } from "../libs/errors";
+import LoadingIndicator from "../components/loading-indicator";
 
 /**
  * Contains the components for displaying the weight log interface and
@@ -25,7 +26,7 @@ export default function WeightLogDisplay() {
   const router = useRouter();
 
   // Initializes state for storing the loading flag and error messages
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   // Initializes state for storing all user weight entries
@@ -171,6 +172,7 @@ export default function WeightLogDisplay() {
       </Header>
       <div className="w-full h-[calc(100%-10rem)] p-8">
         <Card className="p-0">
+        {isLoading && <LoadingIndicator />}
           <WeightLogTableTable
             weightEntries={weightEntries}
             triggerEntryRemoval={triggerEntryRemoval}

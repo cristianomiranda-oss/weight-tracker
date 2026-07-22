@@ -15,6 +15,7 @@ import {
   changeGoalWeighEntry,
   getGoalWeightEntry,
 } from "@/app/actions/middleware/goal-weight-entry";
+import LoadingIndicator from "@/app/components/loading-indicator";
 
 /**
  * Contains the components for display the weight entry and goal weight entry interfaces
@@ -211,44 +212,47 @@ export default function WeightEntryForm(): React.JSX.Element {
   }
 
   return (
-    <form
-      className="w-full h-full flex flex-col justify-around items-center"
-      onSubmit={(e) => handleFormSubmission(e)}
-    >
-      <h2 className="text-5xl">
-        {isWeightGoalEntry ? "Goal Weight Entry" : "Weight Entry"}
-      </h2>
+    <>
+      {isLoading && <LoadingIndicator />}
+      <form
+        className="w-full h-full flex flex-col justify-around items-center"
+        onSubmit={(e) => handleFormSubmission(e)}
+      >
+        <h2 className="text-5xl">
+          {isWeightGoalEntry ? "Goal Weight Entry" : "Weight Entry"}
+        </h2>
 
-      <h3 className="text-3xl text-red-700 text-center">{errorMessage}</h3>
+        <h3 className="text-3xl text-red-700 text-center">{errorMessage}</h3>
 
-      <LabeledInput
-        id="weightValue"
-        label="Weight"
-        inputType="number"
-        disabled={isLoading}
-        ref={weightValueInputRef}
-      />
-      {!isWeightGoalEntry && (
         <LabeledInput
-          id="weighInDate"
-          label="Date"
-          inputType="date"
+          id="weightValue"
+          label="Weight"
+          inputType="number"
           disabled={isLoading}
-          ref={weighInDateInputRef}
+          ref={weightValueInputRef}
         />
-      )}
-      {isWeightGoalEntry && (
-        <GoalTypeSelector
-          id="goalType"
-          label="Goal Type"
-          ref={goalTypeSelectorRef}
-        />
-      )}
+        {!isWeightGoalEntry && (
+          <LabeledInput
+            id="weighInDate"
+            label="Date"
+            inputType="date"
+            disabled={isLoading}
+            ref={weighInDateInputRef}
+          />
+        )}
+        {isWeightGoalEntry && (
+          <GoalTypeSelector
+            id="goalType"
+            label="Goal Type"
+            ref={goalTypeSelectorRef}
+          />
+        )}
 
-      <SubmitButton disabled={isLoading}>Enter</SubmitButton>
-      <Button type="warning" onClick={navigateToHome}>
-        Cancel
-      </Button>
-    </form>
+        <SubmitButton disabled={isLoading}>Enter</SubmitButton>
+        <Button type="warning" onClick={navigateToHome}>
+          Cancel
+        </Button>
+      </form>
+    </>
   );
 }

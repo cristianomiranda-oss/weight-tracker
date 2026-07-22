@@ -1,8 +1,12 @@
 "use client";
 
-import { createUserAccount, validateLogin } from "@/app/actions/middleware/accounts";
+import {
+  createUserAccount,
+  validateLogin,
+} from "@/app/actions/middleware/accounts";
 import Button from "@/app/components/button";
 import LabeledInput from "@/app/components/labeled-input";
+import LoadingIndicator from "@/app/components/loading-indicator";
 import SubmitButton from "@/app/components/submit-button";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
@@ -113,63 +117,66 @@ export default function AccountForm(): React.JSX.Element {
   }
 
   return (
-    <form
-      className="w-full h-full flex flex-col justify-around items-center"
-      onSubmit={(e) => handleFormSubmission(e)}
-    >
-      <h2 className="text-5xl md:text-6xl">
-        {isAccountCreationEnabled ? "Create Account" : "Sign In"}
-      </h2>
+    <>
+      {isLoading && <LoadingIndicator />}
+      <form
+        className="w-full h-full flex flex-col justify-around items-center"
+        onSubmit={(e) => handleFormSubmission(e)}
+      >
+        <h2 className="text-5xl md:text-6xl">
+          {isAccountCreationEnabled ? "Create Account" : "Sign In"}
+        </h2>
 
-      <h3 className="text-3xl text-red-700 text-center">{errorMessage}</h3>
+        <h3 className="text-3xl text-red-700 text-center">{errorMessage}</h3>
 
-      <LabeledInput
-        id="userName"
-        label="Username"
-        inputType="text"
-        disabled={isLoading}
-        ref={userNameRef}
-      />
-      <LabeledInput
-        id="passWord"
-        label="Password"
-        inputType="password"
-        disabled={isLoading}
-        ref={userPasswordRef}
-      />
-      {isAccountCreationEnabled && (
         <LabeledInput
-          id="confirmPassWord"
-          label="Confirm Password"
+          id="userName"
+          label="Username"
+          inputType="text"
+          disabled={isLoading}
+          ref={userNameRef}
+        />
+        <LabeledInput
+          id="passWord"
+          label="Password"
           inputType="password"
           disabled={isLoading}
-          ref={confirmPassWordRef}
+          ref={userPasswordRef}
         />
-      )}
+        {isAccountCreationEnabled && (
+          <LabeledInput
+            id="confirmPassWord"
+            label="Confirm Password"
+            inputType="password"
+            disabled={isLoading}
+            ref={confirmPassWordRef}
+          />
+        )}
 
-      {!isAccountCreationEnabled && (
-        <>
-          <SubmitButton disabled={isLoading}>Login</SubmitButton>
-          <p>
-            New User?{" "}
-            <span
-              className="text-blue-600 cursor-pointer select-none"
-              onClick={toggleAccountCreation}
-            >
-              Create New Account
-            </span>
-          </p>
-        </>
-      )}
+        {!isAccountCreationEnabled && (
+          <>
+            <SubmitButton disabled={isLoading}>Login</SubmitButton>
+            <p>
+              New User?{" "}
+              <span
+                className="text-blue-600 cursor-pointer select-none"
+                onClick={toggleAccountCreation}
+              >
+                Create New Account
+              </span>
+            </p>
+          </>
+        )}
 
-      {isAccountCreationEnabled && (
-        <>
-          <SubmitButton disabled={isLoading}>Create Account</SubmitButton>
-          <Button type="warning" onClick={toggleAccountCreation}>
-            Cancel
-          </Button>
-        </>
-      )}
-    </form>
+        {isAccountCreationEnabled && (
+          <>
+            <SubmitButton disabled={isLoading}>Create Account</SubmitButton>
+            <Button type="warning" onClick={toggleAccountCreation}>
+              Cancel
+            </Button>
+          </>
+        )}
+      </form>
+    </>
   );
 }
