@@ -140,16 +140,16 @@ export async function changeGoalWeighEntry(
         cause: errorCausesObj.invalidUserCookie,
       });
     }
+    
+    const userId = parseInt(userCookie.value);
 
-    // TODO: Create database method to update goal weight entry
-    // const isEntryUpdated = updateWeightEntry(weightValue, weighInDate, userCookie)
-    const isEntryUpdated = true;
+    const isEntryUpdated = await IndexedDB.updateGoalWeightEntry(goalWeightEntryId, weightValue, goalType, userId)
 
     if (isEntryUpdated) {
       return;
     } else {
       throw new Error("Failed to update new weight entry", {
-        cause: errorCausesObj.processFail,
+        cause: errorCausesObj.databaseCrudError,
       });
     }
   } catch (error) {

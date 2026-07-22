@@ -553,4 +553,61 @@ export class IndexedDB {
       throw error;
     }
   }
+
+  /**
+   * CRUD method for updating a goal weight entry. Returns true if the update is successful and false if an entry is not found or the update fails
+   * @throws Signals that the process failed
+   */
+  static async updateGoalWeightEntry(
+    goalWeightEntryId: number,
+    weightValue: number,
+    goalType: GoalOption,
+    userId: number,
+  ) {
+    try {
+      // Accesses the user account object store to read an entry from it
+      const goalWeightEntryStore = await this._openDBStore(
+        this.GOAL_WEIGHT_ENTRY_STORE,
+        "readwrite",
+      );
+
+      const newGoalWeightEntry = {
+        goalWeightEntryId,
+        weightValue,
+        goalType,
+        userId,
+      };
+
+      // Returns a new promise that will resolve with a boolean indicating if the updating was successful
+      // or reject with the event that caused the error
+      return await new Promise<boolean>((resolve, reject) => {
+        try {
+          // updates the data associated with the key
+          const updateResult = goalWeightEntryStore.put(newGoalWeightEntry);
+
+          updateResult.onerror = () => {
+            const error = updateResult.error;
+            reject(error);
+          };
+
+          updateResult.onsuccess = () => {
+            const entryId = updateResult.result;
+
+            // Checks if the entryId is the same as when passed in
+            // to indicate the entry was updated
+            if (entryId === goalWeightEntryId) {
+              resolve(true);
+            } else {
+              resolve(false);
+            }
+          };
+        } catch (error) {
+          reject(error);
+        }
+      });
+    } catch (error) {
+      // Throws any error back to the middleware function
+      throw error;
+    }
+  }
 }
