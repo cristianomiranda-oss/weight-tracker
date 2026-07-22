@@ -6,73 +6,6 @@ import { IndexedDB } from "@/app/libs/indexedDB";
 import type { WeightEntryType } from "@/app/libs/types";
 
 /**
- * Middleware for accessing weight entries associated with a user cookie.
- * The currently stored user account cookie is used for identifying what entry is associated with the user.
- * @throws Signals the process failed
- */
-export async function getWeightEntries(): Promise<WeightEntryType[]> {
-  try {
-    const userCookie = await getUserCookie();
-
-    if (userCookie === null) {
-      throw new Error("Invalid user account", {
-        cause: errorCausesObj.invalidUserCookie,
-      });
-    }
-
-    const userId = parseInt(userCookie.value);
-
-    const userWeightEntries = await IndexedDB.readWeightEntries(userId);
-
-    if (userWeightEntries === null) {
-      throw new Error("Failed to access weight entry", {
-        cause: errorCausesObj.processFail,
-      });
-    } else {
-      return userWeightEntries;
-    }
-  } catch (error) {
-    // Calls the method to handle errors in middleware functions
-    const errorToThrow = handleMiddleWareErrors(error);
-    throw errorToThrow;
-  }
-}
-
-/**
- * Middleware for removing specific weight entries from the database.
- * Entries are identified based on the stored user account cookie and the passed in entryId value.
- * @param entryId Id value for the entry to be removed.
- * @throws Signals the process failed
- */
-export async function deleteWeightEntry(entryId: number): Promise<void> {
-  try {
-    const userCookie = await getUserCookie();
-
-    if (userCookie === null) {
-      throw new Error("Invalid user account", {
-        cause: errorCausesObj.invalidUserCookie,
-      });
-    }
-
-    // TODO: Add database method
-    // const isEntryDeleted: boolean = await deleteWeightEntry(entryId, userCookie);
-    const isEntryDeleted: boolean = true;
-
-    if (isEntryDeleted) {
-      return;
-    } else {
-      throw new Error("Failed to access weight entries", {
-        cause: errorCausesObj.processFail,
-      });
-    }
-  } catch (error) {
-    // Calls the method to handle errors in middleware functions
-    const errorToThrow = handleMiddleWareErrors(error);
-    throw errorToThrow;
-  }
-}
-
-/**
  * Middleware for accessing the database to create new weight entry
  * @param weightValue Number value for the new weight entry - Must be greater than zero
  * @param weighInDate Date value for the new weight entry
@@ -103,12 +36,45 @@ export async function addWeightEntry(
 
     const newEntryId = await IndexedDB.createWeightEntry(weightValue, weighInDate, userId)
 
-    if (newEntryId ) {
+    if (newEntryId) {
       return;
     } else {
       throw new Error("Failed to add new weight entry", {
-        cause: errorCausesObj.processFail,
+        cause: errorCausesObj.databaseCrudError,
       });
+    }
+  } catch (error) {
+    // Calls the method to handle errors in middleware functions
+    const errorToThrow = handleMiddleWareErrors(error);
+    throw errorToThrow;
+  }
+}
+
+/**
+ * Middleware for accessing weight entries associated with a user cookie.
+ * The currently stored user account cookie is used for identifying what entry is associated with the user.
+ * @throws Signals the process failed
+ */
+export async function getWeightEntries(): Promise<WeightEntryType[]> {
+  try {
+    const userCookie = await getUserCookie();
+
+    if (userCookie === null) {
+      throw new Error("Invalid user account", {
+        cause: errorCausesObj.invalidUserCookie,
+      });
+    }
+
+    const userId = parseInt(userCookie.value);
+
+    const userWeightEntries = await IndexedDB.readWeightEntries(userId);
+
+    if (userWeightEntries === null) {
+      throw new Error("Failed to access weight entry", {
+        cause: errorCausesObj.databaseCrudError,
+      });
+    } else {
+      return userWeightEntries;
     }
   } catch (error) {
     // Calls the method to handle errors in middleware functions
@@ -156,14 +122,48 @@ export async function changeWeighEntry(
       });
     }
 
-    // TODO: Create database method to update weight entry
-    // const isEntryUpdated = updateWeightEntry(weightValue, weighInDate, userCookie)
-    const isEntryUpdated = true;
+    const userId = parseInt(userCookie.value);
+
+    const isEntryUpdated = await IndexedDB.updateWeightEntry(weightEntryId, weightValue, weighInDate, userId)
 
     if (isEntryUpdated) {
       return;
     } else {
       throw new Error("Failed to update weight entry", {
+        cause: errorCausesObj.databaseCrudError,
+      });
+    }
+  } catch (error) {
+    // Calls the method to handle errors in middleware functions
+    const errorToThrow = handleMiddleWareErrors(error);
+    throw errorToThrow;
+  }
+}
+
+/**
+ * Middleware for removing specific weight entries from the database.
+ * Entries are identified based on the stored user account cookie and the passed in entryId value.
+ * @param entryId Id value for the entry to be removed.
+ * @throws Signals the process failed
+ */
+export async function deleteWeightEntry(entryId: number): Promise<void> {
+  try {
+    const userCookie = await getUserCookie();
+
+    if (userCookie === null) {
+      throw new Error("Invalid user account", {
+        cause: errorCausesObj.invalidUserCookie,
+      });
+    }
+
+    // TODO: Add database method
+    // const isEntryDeleted: boolean = await deleteWeightEntry(entryId, userCookie);
+    const isEntryDeleted: boolean = true;
+
+    if (isEntryDeleted) {
+      return;
+    } else {
+      throw new Error("Failed to access weight entries", {
         cause: errorCausesObj.processFail,
       });
     }

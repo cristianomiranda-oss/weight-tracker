@@ -8,6 +8,7 @@ export const errorCausesObj = {
   processFail: "process-fail",
   unknownError: "unknown-error",
   databaseInitializationError: "database-initialization-error",
+  databaseCrudError: "database-crud-error",
   accessDenied: "access-denied"
 };
 
@@ -26,6 +27,10 @@ export function handleMiddleWareErrors(error: unknown): Error {
       console.error(error);
       return error;
     } else if (error.cause === errorCausesObj.databaseInitializationError) {
+      // Displays the error before returning it if it is a failure with the creation of the database
+      console.error(error);
+      return error;
+    } else if (error.cause === errorCausesObj.databaseCrudError) {
       // Displays the error before returning it if it is a failure with the creation of the database
       console.error(error);
       return error;
