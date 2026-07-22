@@ -12,7 +12,7 @@ import type { GoalWeightEntryType, WeightEntryType } from "../libs/types";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import WeightLogTableTable from "../components/weight-log-table";
-import { deleteWeightEntry, getWeightEntries } from "../actions/middleware/weight-entry";
+import { removeWeightEntry, getWeightEntries } from "../actions/middleware/weight-entry";
 import { getGoalWeightEntry } from "../actions/middleware/goal-weight-entry";
 
 /**
@@ -62,7 +62,7 @@ export default function WeightLogDisplay() {
 
     try {
       // Calls the method to delete weight entries
-      await deleteWeightEntry(entryId);
+      await removeWeightEntry(entryId);
     } catch (error) {
       // Checks if error is a known error
       if (error instanceof Error && error.cause) {
@@ -128,7 +128,7 @@ export default function WeightLogDisplay() {
 
         // TODO: Replace with Success Popup Element
         if (isGoalWeightAchieved) {
-          alert("Goal Weight Achieved!");
+          // alert("Goal Weight Achieved!");
         }
       }
     } catch (error) {

@@ -84,6 +84,39 @@ export async function getWeightEntries(): Promise<WeightEntryType[]> {
 }
 
 /**
+ * Middleware for accessing a weight entry associated with a user cookie.
+ * The currently stored user account cookie is used for identifying what entry is associated with the user.
+ * @throws Signals the process failed
+ */
+export async function getWeightEntry(weightEntryId: number): Promise<WeightEntryType> {
+  try {
+    const userCookie = await getUserCookie();
+
+    if (userCookie === null) {
+      throw new Error("Invalid user account", {
+        cause: errorCausesObj.invalidUserCookie,
+      });
+    }
+
+    const userId = parseInt(userCookie.value);
+
+    const userWeightEntries = await IndexedDB.readWeightEntry(weightEntryId, userId);
+
+    if (userWeightEntries === null) {
+      throw new Error("Failed to access weight entry", {
+        cause: errorCausesObj.databaseCrudError,
+      });
+    } else {
+      return userWeightEntries;
+    }
+  } catch (error) {
+    // Calls the method to handle errors in middleware functions
+    const errorToThrow = handleMiddleWareErrors(error);
+    throw errorToThrow;
+  }
+}
+
+/**
  * Middleware for accessing the database to update an existing weight entry
  * @param weightEntryId Id for the associated weight entry to be changed - Must be greater than zero
  * @param weightValue New number value for the weight entry - Must be greater than zero
@@ -146,7 +179,7 @@ export async function changeWeighEntry(
  * @param entryId Id value for the entry to be removed.
  * @throws Signals the process failed
  */
-export async function deleteWeightEntry(entryId: number): Promise<void> {
+export async function removeWeightEntry(weightEntryId: number): Promise<void> {
   try {
     const userCookie = await getUserCookie();
 
@@ -156,9 +189,19 @@ export async function deleteWeightEntry(entryId: number): Promise<void> {
       });
     }
 
-    // TODO: Add database method
-    // const isEntryDeleted: boolean = await deleteWeightEntry(entryId, userCookie);
-    const isEntryDeleted: boolean = true;
+    const userId = parseInt(userCookie.value);
+
+    // Gathers the entry data
+    const entryData = await getWeightEntry(weightEntryId)
+
+    // Confirms if the entry's user id matches the user's cookie value
+    if (entryData.userId !== userId) {
+      throw new Error("Unauthorized access to entry", {
+        cause: errorCausesObj.accessDenied,
+      });
+    }
+
+    const isEntryDeleted: boolean = await IndexedDB.deleteWeightEntry(weightEntryId);
 
     if (isEntryDeleted) {
       return;

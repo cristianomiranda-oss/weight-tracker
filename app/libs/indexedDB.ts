@@ -396,4 +396,49 @@ export class IndexedDB {
       throw error;
     }
   }
+
+  /**
+   * CRUD method for deleting a weight entry. Returns true if deletion was successful and false if the deletion failed or was not found
+   * @throws Signals that the process failed
+   */
+  static async deleteWeightEntry(weightEntryId: number) {
+    try {
+      // Accesses the user account object store to read an entry from it
+      const weightEntryStore = await this._openDBStore(
+        this.WEIGHT_ENTRY_STORE,
+        "readwrite",
+      );
+
+      // Returns a new promise that will resolve with the existing entry's id or null if the user name is not associated with an entry
+      // or reject with the event that caused the error
+      return await new Promise<boolean>((resolve, reject) => {
+        try {
+          // updates the data associated with the key
+          const deleteResult = weightEntryStore.delete(weightEntryId);
+
+          deleteResult.onerror = (e) => {
+            reject(e);
+          };
+
+          deleteResult.onsuccess = (e) => {
+            const result = deleteResult.result;
+
+            // Checks that the result is undefined, which indicates the deletion was successful
+            if (result === undefined) {
+              // Resolves with true to indicate the deletion succeeded
+              resolve(true);
+            } else {
+              // Resolve with false to indicate the deletion failed
+              resolve(false)
+            }
+          };
+        } catch (error) {
+          reject(error);
+        }
+      });
+    } catch (error) {
+      // Throws any error back to the middleware function
+      throw error;
+    }
+  }
 }
