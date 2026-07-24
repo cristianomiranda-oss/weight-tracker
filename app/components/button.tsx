@@ -27,7 +27,7 @@ export default function Button({
   // Removes any conflicting classes found
   // Prioritizes the passed in classes
   const finalClassName = twMerge(
-    `w-1/2 md:w-3/5 h-12 text-2xl md:text-4xl rounded-2xl cursor-pointer ${bgColor} ${bgColorHover}`,
+    `w-fit h-fit text-2xl md:text-4xl rounded-2xl cursor-pointer ${bgColor} ${bgColorHover}`,
     className,
   );
 

@@ -1,5 +1,6 @@
 import { getDisplayDate } from "../libs/date";
 import type { WeightEntryType } from "../libs/types";
+import Button from "./button";
 
 interface WeightEntryProps {
   weightEntryObj: WeightEntryType;
@@ -23,9 +24,9 @@ export default function WeightEntry({
       <p className="w-5/12 text-center" onDoubleClick={changeEntry}>
         {weightEntryObj.weightValue}
       </p>
-      <p className="w-2/12 text-center" onClick={removeEntry}>
+      <Button className="w-2/12 text-center" onClick={removeEntry}>
         X
-      </p>
+      </Button>
     </div>
   );
 }

@@ -248,10 +248,12 @@ export default function WeightEntryForm(): React.JSX.Element {
           />
         )}
 
-        <SubmitButton disabled={isLoading}>Enter</SubmitButton>
-        <Button type="warning" onClick={navigateToHome}>
-          Cancel
-        </Button>
+        <div className="w-1/2 md:w-3/5 h-26 flex flex-col justify-around align-middle">
+          <SubmitButton className="w-full h-12" disabled={isLoading}>Enter</SubmitButton>
+          <Button className="w-full h-12" type="warning" onClick={navigateToHome}>
+            Cancel
+          </Button>
+        </div>
       </form>
     </>
   );

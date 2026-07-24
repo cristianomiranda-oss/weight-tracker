@@ -154,9 +154,9 @@ export default function AccountForm(): React.JSX.Element {
         )}
 
         {!isAccountCreationEnabled && (
-          <>
-            <SubmitButton disabled={isLoading}>Login</SubmitButton>
-            <p>
+          <div className="w-1/2 md:w-3/5 h-26 flex flex-col justify-around items-center">
+            <SubmitButton className="w-full h-1/2" disabled={isLoading}>Login</SubmitButton>
+            <p className="w-full h-fit text-center">
               New User?{" "}
               <span
                 className="text-blue-600 cursor-pointer select-none"
@@ -165,16 +165,16 @@ export default function AccountForm(): React.JSX.Element {
                 Create New Account
               </span>
             </p>
-          </>
+          </div>
         )}
 
         {isAccountCreationEnabled && (
-          <>
-            <SubmitButton disabled={isLoading}>Create Account</SubmitButton>
-            <Button type="warning" onClick={toggleAccountCreation}>
+          <div className="w-1/2 md:w-3/5 h-26 flex flex-col justify-around items-center">
+            <SubmitButton className="w-full h-12" disabled={isLoading}>Create Account</SubmitButton>
+            <Button className="w-full h-12" type="warning" onClick={toggleAccountCreation}>
               Cancel
             </Button>
-          </>
+          </div>
         )}
       </form>
     </>
