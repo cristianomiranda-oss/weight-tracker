@@ -17,14 +17,14 @@ export default function WeightEntry({
   changeEntry,
 }: WeightEntryProps) {
   return (
-    <div className="w-full h-8 md:h-10 text-xl md:text-3xl flex justify-around items-center bg-dusty-taupe-600">
-      <p className="w-5/12 text-center" onDoubleClick={changeEntry}>
+    <div className="w-full h-12 md:h-14 text-xl lg:text-3xl flex justify-around items-center bg-dusty-taupe-600 border-y-2">
+      <p className="w-6/12 text-center" onDoubleClick={changeEntry}>
         {getDisplayDate(weightEntryObj.weighInDate)}
       </p>
       <p className="w-5/12 text-center" onDoubleClick={changeEntry}>
         {weightEntryObj.weightValue}
       </p>
-      <Button className="w-2/12 text-center" onClick={removeEntry}>
+      <Button className="w-1/12 h-full rounded-none text-center" onClick={removeEntry}>
         X
       </Button>
     </div>
