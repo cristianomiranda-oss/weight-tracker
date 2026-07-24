@@ -12,7 +12,10 @@ import type { GoalWeightEntryType, WeightEntryType } from "../libs/types";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import WeightLogTableTable from "../components/weight-log-table";
-import { removeWeightEntry, getWeightEntries } from "../actions/middleware/weight-entry";
+import {
+  removeWeightEntry,
+  getWeightEntries,
+} from "../actions/middleware/weight-entry";
 import { getGoalWeightEntry } from "../actions/middleware/goal-weight-entry";
 import { errorCausesObj } from "../libs/errors";
 import LoadingIndicator from "../components/loading-indicator";
@@ -81,33 +84,48 @@ export default function WeightLogDisplay() {
   }
 
   /**
-   * Checks if the user has achieved their current weight goal based on their
-   * last logged weight value
-   * @param currentWeight User's most recently logged weight
+   * Checks if the user has entered a goal weight. If an entry is associated with their user id, teh entry is returned,
+   * else the user is redirected to the goal weight entry page
    */
-  async function checkGoalWeight(currentWeight: number): Promise<boolean> {
-    let isGoalWeightAchieved = false;
-
+  async function checkGoalWeightEntry(): Promise<GoalWeightEntryType> {
     const goalWeightEntry = await getGoalWeightEntry();
 
     if (goalWeightEntry === null) {
       // If no goal weight entry exists for the user, navigates them to the entry page
-      const navigationURL = '/entry?type=goal-weight-entry';
-      router.push(navigationURL)
-      throw new Error("Failed to access goal weight entry", {cause: errorCausesObj.noUserEntry})
+      alert("No goal entry recorded, navigating to goal entry page...");
+      const navigationURL = "/entry?type=goal-weight-entry";
+      router.push(navigationURL);
+      throw new Error("Failed to access goal weight entry", {
+        cause: errorCausesObj.noUserEntry,
+      });
     } else {
-      if (goalWeightEntry.goalType === "Loss") {
-        // Checks if the user's current weight is less than or equal to their goal weight
-        isGoalWeightAchieved = goalWeightEntry.weightValue >= currentWeight;
-      } else if (goalWeightEntry.goalType === "Maintenance") {
-        // Checks if the user's current weight is equal to their goal weight
-        isGoalWeightAchieved = goalWeightEntry.weightValue === currentWeight;
-      } else if (goalWeightEntry.goalType === "Gain") {
-        // Checks if the user's current weight is greater than or equal to their goal weight
-        isGoalWeightAchieved = goalWeightEntry.weightValue <= currentWeight;
-      }
-      return isGoalWeightAchieved;
+      return goalWeightEntry;
     }
+  }
+
+  /**
+   * Checks if the user has achieved their current weight goal based on their
+   * last logged weight value
+   * @param currentWeight User's most recently logged weight
+   */
+  async function checkGoalWeightProgress(
+    currentWeight: number,
+  ): Promise<boolean> {
+    let isGoalWeightAchieved = false;
+
+    const goalWeightEntry = await checkGoalWeightEntry();
+
+    if (goalWeightEntry.goalType === "Loss") {
+      // Checks if the user's current weight is less than or equal to their goal weight
+      isGoalWeightAchieved = goalWeightEntry.weightValue >= currentWeight;
+    } else if (goalWeightEntry.goalType === "Maintenance") {
+      // Checks if the user's current weight is equal to their goal weight
+      isGoalWeightAchieved = goalWeightEntry.weightValue === currentWeight;
+    } else if (goalWeightEntry.goalType === "Gain") {
+      // Checks if the user's current weight is greater than or equal to their goal weight
+      isGoalWeightAchieved = goalWeightEntry.weightValue <= currentWeight;
+    }
+    return isGoalWeightAchieved;
   }
 
   /**
@@ -126,7 +144,7 @@ export default function WeightLogDisplay() {
       // Checks if the returned array has at least one entry
       if (userWeightEntries.length >= 1) {
         // Checks if the user's goal weight is achieved
-        const isGoalWeightAchieved = await checkGoalWeight(
+        const isGoalWeightAchieved = await checkGoalWeightProgress(
           userWeightEntries[0].weightValue,
         );
 
@@ -134,12 +152,16 @@ export default function WeightLogDisplay() {
         if (isGoalWeightAchieved) {
           // alert("Goal Weight Achieved!");
         }
+      } else {
+        // If no entries, still checks if the user has a goal weight entry
+        await checkGoalWeightEntry();
       }
     } catch (error) {
       // Checks if error is a known error
       if (error instanceof Error && error.cause) {
         // Checks the cause of the error
-        if (error.cause === "invalid-user-cookie") {
+        if (error.cause === errorCausesObj.invalidUserCookie) {
+          alert("Invalid Signing, returning to signing page...");
           router.push("/accounts");
         } else {
           setErrorMessage(error.message);
@@ -172,7 +194,7 @@ export default function WeightLogDisplay() {
       </Header>
       <div className="w-full h-[calc(100%-10rem)] p-8">
         <Card className="p-0">
-        {isLoading && <LoadingIndicator />}
+          {isLoading && <LoadingIndicator />}
           <WeightLogTableTable
             weightEntries={weightEntries}
             triggerEntryRemoval={triggerEntryRemoval}
