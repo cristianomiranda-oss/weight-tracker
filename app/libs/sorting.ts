@@ -1,4 +1,4 @@
-import { WeightEntryType } from "./types";
+import { sortOrder, WeightEntryType } from "./types";
 
 // Credit: GeeksforGeeks https://www.geeksforgeeks.org/dsa/merge-sort/
 // Based merge sort functions are based on their initial code but have been adapted to work with different object types
@@ -12,7 +12,7 @@ import { WeightEntryType } from "./types";
    * @param right End position of the elements to be sorted
    * @param comparisonKey Key value used to determine how elements are being sorted
    */
-function mergeEntries(entriesArray: WeightEntryType[], left: number, mid: number, right: number, comparisonKey: keyof WeightEntryType) {
+function mergeEntries(entriesArray: WeightEntryType[], left: number, mid: number, right: number, comparisonKey: keyof WeightEntryType, sortOrder: sortOrder) {
     const index1 = mid - left + 1; // Last index of the left half of the array
     const index2 = right - mid; // Last index of the right half of the array
 
@@ -35,15 +35,28 @@ function mergeEntries(entriesArray: WeightEntryType[], left: number, mid: number
     let startingIndex: number = left;
 
     while (leftIndex < index1 && rightIndex < index2) {
-        // Checks if left array has a lower or equal value to the right array
-        if (tempLeftArray[leftIndex][comparisonKey] <= tempRightArray[rightIndex][comparisonKey]) {
-            // Inserts element from the left array
-            entriesArray[startingIndex] = tempLeftArray[leftIndex];
-            leftIndex++;
+        if (sortOrder === "ASC") {
+            // Checks if left array has a lower or equal value to the right array
+            if (tempLeftArray[leftIndex][comparisonKey] <= tempRightArray[rightIndex][comparisonKey]) {
+                // Inserts element from the left array
+                entriesArray[startingIndex] = tempLeftArray[leftIndex];
+                leftIndex++;
+            } else {
+                // Inserts element from the right array
+                entriesArray[startingIndex] = tempRightArray[rightIndex];
+                rightIndex++;
+            }
         } else {
-            // Inserts element from the right array
-            entriesArray[startingIndex] = tempRightArray[rightIndex];
-            rightIndex++;
+            // Checks if left array has a lower or equal value to the right array
+            if (tempLeftArray[leftIndex][comparisonKey] > tempRightArray[rightIndex][comparisonKey]) {
+                // Inserts element from the left array
+                entriesArray[startingIndex] = tempLeftArray[leftIndex];
+                leftIndex++;
+            } else {
+                // Inserts element from the right array
+                entriesArray[startingIndex] = tempRightArray[rightIndex];
+                rightIndex++;
+            }
         }
 
         startingIndex++;
@@ -73,7 +86,7 @@ function mergeEntries(entriesArray: WeightEntryType[], left: number, mid: number
    * @param right End position of the elements to be sorted
    * @param comparisonKey Key value used to determine how elements are being sorted
    */
-export function mergeSortEntries(entriesArray: WeightEntryType[], left: number, right: number, comparisonKey: keyof WeightEntryType) {
+export function mergeSortEntries(entriesArray: WeightEntryType[], left: number, right: number, comparisonKey: keyof WeightEntryType, sortOrder: sortOrder) {
     if (left >= right) {
         // Array segment is sorted and the function can be exited
         return;
@@ -83,9 +96,9 @@ export function mergeSortEntries(entriesArray: WeightEntryType[], left: number, 
     const mid = Math.floor(left + (right - left) / 2);
 
     // Recursively calls the function to sort the left side and right side of the array 
-    mergeSortEntries(entriesArray, left, mid, comparisonKey);
-    mergeSortEntries(entriesArray, mid + 1, right, comparisonKey);
+    mergeSortEntries(entriesArray, left, mid, comparisonKey, sortOrder);
+    mergeSortEntries(entriesArray, mid + 1, right, comparisonKey, sortOrder);
 
     // Calls the method to sort the entries in the current array
-    mergeEntries(entriesArray, left, mid, right, comparisonKey);
+    mergeEntries(entriesArray, left, mid, right, comparisonKey, sortOrder);
 }

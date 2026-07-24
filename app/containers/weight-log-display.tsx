@@ -8,7 +8,7 @@ import Header from "../components/header";
 import IconLink from "../components/icon-link";
 import Card from "../components/card";
 import Footer from "../components/footer";
-import type { GoalWeightEntryType, WeightEntryType } from "../libs/types";
+import type { GoalWeightEntryType, sortOrder, WeightEntryType } from "../libs/types";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import WeightLogTableTable from "../components/weight-log-table";
@@ -142,6 +142,10 @@ export default function WeightLogDisplay() {
     return isGoalWeightAchieved;
   }
 
+  function sortWeightEntries(sortOrder: sortOrder, objKey: "weightValue" | "weighInDate") {
+
+  }
+
   /**
    * Triggers the fetch to access the user's weight entries to the appropriate middleware method
    */
@@ -153,7 +157,8 @@ export default function WeightLogDisplay() {
       // Gathers the user's weight entries
       const userWeightEntries = await getWeightEntries();
 
-      mergeSortEntries(userWeightEntries, 0, userWeightEntries.length - 1, "weighInDate");
+      // Sorts the weight entries to the default order
+      mergeSortEntries(userWeightEntries, 0, userWeightEntries.length - 1, "weighInDate", "DESC");
 
       setWeightEntries(userWeightEntries);
 
