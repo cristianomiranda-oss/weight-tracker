@@ -1,0 +1,35 @@
+import { getDisplayDate } from "../libs/date";
+import type { WeightEntryType } from "../libs/types";
+import Button from "./button";
+
+interface WeightEntryProps {
+  weightEntryObj: WeightEntryType;
+  removeEntry: () => void;
+  changeEntry: () => void;
+}
+
+/**
+ * Component for displaying a weight entry
+ */
+export default function WeightEntry({
+  weightEntryObj,
+  removeEntry,
+  changeEntry,
+}: WeightEntryProps) {
+  return (
+    <div className="w-full h-12 md:h-18 text-xl md:text-3xl flex justify-around items-center bg-dusty-taupe-600 border-y-2">
+      <p className="w-6/12 text-center" onDoubleClick={changeEntry}>
+        {getDisplayDate(weightEntryObj.weighInDate)}
+      </p>
+      <p className="w-5/12 text-center" onDoubleClick={changeEntry}>
+        {weightEntryObj.weightValue}
+      </p>
+      <Button
+        className="w-1/12 h-full rounded-none text-center"
+        onClick={removeEntry}
+      >
+        X
+      </Button>
+    </div>
+  );
+}
