@@ -20,6 +20,7 @@ import { getGoalWeightEntry } from "../actions/middleware/goal-weight-entry";
 import { errorCausesObj } from "../libs/errors";
 import LoadingIndicator from "../components/loading-indicator";
 import MessageDisplay from "../components/message-display";
+import { mergeSortEntries } from "../libs/sorting";
 
 /**
  * Contains the components for displaying the weight log interface and
@@ -151,6 +152,9 @@ export default function WeightLogDisplay() {
     try {
       // Gathers the user's weight entries
       const userWeightEntries = await getWeightEntries();
+
+      mergeSortEntries(userWeightEntries, 0, userWeightEntries.length - 1, "weighInDate");
+
       setWeightEntries(userWeightEntries);
 
       // Checks if the returned array has at least one entry
@@ -224,7 +228,7 @@ export default function WeightLogDisplay() {
           disabled={isLoading}
         />
       </Header>
-      <div className="w-full h-[calc(100%-10rem)] min-h-min  p-8">
+      <div className="w-full h-[calc(100%-10rem)] min-h-min p-8">
         <Card className="p-0">
           {isLoading && <LoadingIndicator />}
           <WeightLogTableTable
