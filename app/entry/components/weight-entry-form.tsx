@@ -16,6 +16,7 @@ import {
   getGoalWeightEntry,
 } from "@/app/actions/middleware/goal-weight-entry";
 import LoadingIndicator from "@/app/components/loading-indicator";
+import { errorCausesObj } from "@/app/libs/errors";
 
 /**
  * Contains the components for display the weight entry and goal weight entry interfaces
@@ -68,7 +69,12 @@ export default function WeightEntryForm(): React.JSX.Element {
     } catch (error) {
       // Checks if the error is an established error
       if (error instanceof Error) {
-        setErrorMessage(error.message);
+        if (error.cause === errorCausesObj.invalidUserCookie) {
+          alert("Invalid Signing, returning to signing page...");
+          router.push("/accounts");
+        } else {
+          setErrorMessage(error.message);
+        }
       } else {
         setErrorMessage("An Unknown Error has Occurred!");
       }
@@ -105,8 +111,12 @@ export default function WeightEntryForm(): React.JSX.Element {
       }
     } catch (error) {
       if (error instanceof Error) {
-        // Checks if the error is an established error
-        setErrorMessage(error.message);
+        if (error.cause === errorCausesObj.invalidUserCookie) {
+          alert("Invalid Signing, returning to signing page...");
+          router.push("/accounts");
+        } else {
+          setErrorMessage(error.message);
+        }
       } else {
         setErrorMessage("An Unknown Error has Occurred!");
       }
@@ -168,7 +178,12 @@ export default function WeightEntryForm(): React.JSX.Element {
     } catch (error) {
       // Checks if the error is an established error
       if (error instanceof Error) {
-        setErrorMessage(error.message);
+        if (error.cause === errorCausesObj.invalidUserCookie) {
+          alert("Invalid Signing, returning to signing page...");
+          router.push("/accounts");
+        } else {
+          setErrorMessage(error.message);
+        }
       } else {
         setErrorMessage("An Unknown Error has Occurred!");
       }
@@ -249,8 +264,14 @@ export default function WeightEntryForm(): React.JSX.Element {
         )}
 
         <div className="w-1/2 md:w-3/5 h-26 flex flex-col justify-around align-middle">
-          <SubmitButton className="w-full h-12" disabled={isLoading}>Enter</SubmitButton>
-          <Button className="w-full h-12" type="warning" onClick={navigateToHome}>
+          <SubmitButton className="w-full h-12" disabled={isLoading}>
+            Enter
+          </SubmitButton>
+          <Button
+            className="w-full h-12"
+            type="warning"
+            onClick={navigateToHome}
+          >
             Cancel
           </Button>
         </div>

@@ -17,11 +17,16 @@ export async function addWeightEntry(
 ): Promise<void> {
   try {
     if (weightValue < 0 || Number.isNaN(weightValue)) {
-      throw new Error("Weight value cannot be less than zero");
+      throw new Error("Weight value cannot be less than zero", {
+        cause: errorCausesObj.invalidParameterValue,
+      });
     }
 
-    if (weighInDate === null) {
-      throw new Error("Weigh in date cannot be blank");
+    // Checks if the passed in date defaults to "Invalid Date"
+    if (weighInDate.toString() === "Invalid Date") {
+      throw new Error("Weigh in date cannot be blank", {
+        cause: errorCausesObj.invalidParameterValue,
+      });
     }
 
     const userCookie = await getUserCookie();
