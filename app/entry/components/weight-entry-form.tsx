@@ -291,7 +291,7 @@ export default function WeightEntryForm(): React.JSX.Element {
     <>
       {isLoading && <LoadingIndicator />}
       <form
-        className="w-full h-full flex flex-col justify-around items-center"
+        className="w-full h-full min-h-min flex flex-col justify-around items-center"
         onSubmit={(e) => handleFormSubmission(e)}
       >
         <h2 className="text-5xl">

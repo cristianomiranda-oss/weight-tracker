@@ -222,7 +222,7 @@ export default function WeightLogDisplay() {
           disabled={isLoading}
         />
       </Header>
-      <div className="w-full h-[calc(100%-10rem)] p-8">
+      <div className="w-full h-[calc(100%-10rem)] min-h-min  p-8">
         <Card className="p-0">
           {isLoading && <LoadingIndicator />}
           <WeightLogTableTable

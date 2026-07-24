@@ -12,7 +12,7 @@ export default function EntryPage(): React.JSX.Element {
   return (
     <main className="w-full h-full">
       <Header />
-      <div className="w-full h-[calc(100%-10rem)] p-8">
+      <div className="w-full h-[calc(100%-10rem)] min-h-min p-8">
         <Card>
           <Suspense fallback={<LoadingIndicator />}>
             <WeightEntryForm />

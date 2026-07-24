@@ -10,7 +10,7 @@ export default function AccountsPage(): React.JSX.Element {
   return (
     <main className="w-full h-full">
       <Header />
-      <div className="w-full h-[calc(100%-10rem)] p-8">
+      <div className="w-full h-[calc(100%-10rem)] min-h-min p-8">
         <Card>
           <AccountForm />
         </Card>

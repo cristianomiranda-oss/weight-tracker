@@ -17,7 +17,7 @@ export default function WeightEntry({
   changeEntry,
 }: WeightEntryProps) {
   return (
-    <div className="w-full h-12 md:h-14 text-xl lg:text-3xl flex justify-around items-center bg-dusty-taupe-600 border-y-2">
+    <div className="w-full h-12 md:h-18 text-xl md:text-3xl flex justify-around items-center bg-dusty-taupe-600 border-y-2">
       <p className="w-6/12 text-center" onDoubleClick={changeEntry}>
         {getDisplayDate(weightEntryObj.weighInDate)}
       </p>

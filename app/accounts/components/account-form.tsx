@@ -120,7 +120,7 @@ export default function AccountForm(): React.JSX.Element {
     <>
       {isLoading && <LoadingIndicator />}
       <form
-        className="w-full h-full flex flex-col justify-around items-center gap-1"
+        className="w-full h-full min-h-min flex flex-col justify-around items-center gap-1"
         onSubmit={(e) => handleFormSubmission(e)}
       >
         <h2 className="text-5xl md:text-6xl">
