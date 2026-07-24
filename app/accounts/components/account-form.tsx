@@ -120,7 +120,7 @@ export default function AccountForm(): React.JSX.Element {
     <>
       {isLoading && <LoadingIndicator />}
       <form
-        className="w-full h-full flex flex-col justify-around items-center"
+        className="w-full h-full flex flex-col justify-around items-center gap-1"
         onSubmit={(e) => handleFormSubmission(e)}
       >
         <h2 className="text-5xl md:text-6xl">
@@ -154,9 +154,9 @@ export default function AccountForm(): React.JSX.Element {
         )}
 
         {!isAccountCreationEnabled && (
-          <div className="w-1/2 md:w-3/5 h-26 flex flex-col justify-around items-center">
-            <SubmitButton className="w-full h-1/2" disabled={isLoading}>Login</SubmitButton>
-            <p className="w-full h-fit text-center">
+          <div className="w-3/4 md:w-3/5 h-26 flex flex-col justify-around items-center">
+            <SubmitButton className="w-full h-12" disabled={isLoading}>Login</SubmitButton>
+            <p className="w-full text-md text-center">
               New User?{" "}
               <span
                 className="text-blue-600 cursor-pointer select-none"
@@ -169,7 +169,7 @@ export default function AccountForm(): React.JSX.Element {
         )}
 
         {isAccountCreationEnabled && (
-          <div className="w-1/2 md:w-3/5 h-26 flex flex-col justify-around items-center">
+          <div className="w-3/4 md:w-3/5 h-26 flex flex-col justify-around items-center">
             <SubmitButton className="w-full h-12" disabled={isLoading}>Create Account</SubmitButton>
             <Button className="w-full h-12" type="warning" onClick={toggleAccountCreation}>
               Cancel
