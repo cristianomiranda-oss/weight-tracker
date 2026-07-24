@@ -19,6 +19,7 @@ import {
 import { getGoalWeightEntry } from "../actions/middleware/goal-weight-entry";
 import { errorCausesObj } from "../libs/errors";
 import LoadingIndicator from "../components/loading-indicator";
+import MessageDisplay from "../components/message-display";
 
 /**
  * Contains the components for displaying the weight log interface and
@@ -31,6 +32,7 @@ export default function WeightLogDisplay() {
   // Initializes state for storing the loading flag and error messages
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [infoMessage, setInfoMessage] = useState<string>("");
 
   // Initializes state for storing all user weight entries
   const [weightEntries, setWeightEntries] = useState<WeightEntryType[]>([]);
@@ -40,6 +42,9 @@ export default function WeightLogDisplay() {
    * @param entryId Id for the weight entry to be updated
    */
   function triggerEntryUpdate(entryId: number): void {
+    // Sets the loading boolean and clears the error message and info message
+    setIsLoading(true);
+
     try {
       // Constructs a url with the to be updated entry's id as a search parameter
       const navigationURL = `/entry?entryId=${entryId}`;
@@ -53,6 +58,8 @@ export default function WeightLogDisplay() {
       } else {
         setErrorMessage("An unknown error has occurred");
       }
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -61,13 +68,17 @@ export default function WeightLogDisplay() {
    * @param entryId Id for the weight entry to be delete4d
    */
   async function triggerEntryRemoval(entryId: number): Promise<void> {
-    // Sets the loading boolean and clears the error message
+    // Sets the loading boolean and clears the error message and info message
     setIsLoading(true);
-    setErrorMessage("");
 
     try {
-      // Calls the method to delete weight entries
-      await removeWeightEntry(entryId);
+      const userConfirmation = confirm("Are you sure you want to remove this entry?");
+
+      if (userConfirmation) {
+        // Calls the method to delete weight entries
+        await removeWeightEntry(entryId);
+        setInfoMessage("Entry removed");
+      }
     } catch (error) {
       // Checks if error is a known error
       if (error instanceof Error && error.cause) {
@@ -132,9 +143,8 @@ export default function WeightLogDisplay() {
    * Triggers the fetch to access the user's weight entries to the appropriate middleware method
    */
   async function loadWeightEntries() {
-    // Sets the loading boolean and clears the error message
+    // Sets the loading boolean and clears the error message and info message
     setIsLoading(true);
-    setErrorMessage("");
 
     try {
       // Gathers the user's weight entries
@@ -180,6 +190,26 @@ export default function WeightLogDisplay() {
     loadWeightEntries();
   }, []);
 
+  useEffect(() => {
+    // Instantiates a timeout 
+    let eraseTimeOut: NodeJS.Timeout | null = null;
+    // Checks if any message variable is populated
+    if (infoMessage !== "" || errorMessage !== "") {
+      // Creates a clear timeout that clears both messages after 5 seconds
+      eraseTimeOut = setTimeout(() => {
+        setInfoMessage("");
+        setErrorMessage("");
+      }, 5000);
+    }
+
+    // If the effect updates or the page changes, the clear timeout is closed if it is not null
+    return () => {
+      if (eraseTimeOut !== null) {
+        clearTimeout(eraseTimeOut);
+      }
+    }
+  }, [infoMessage, errorMessage])
+
   return (
     <>
       <Header>
@@ -200,6 +230,7 @@ export default function WeightLogDisplay() {
             triggerEntryRemoval={triggerEntryRemoval}
             triggerEntryUpdate={triggerEntryUpdate}
           />
+          <MessageDisplay errorMessage={errorMessage} infoMessage={infoMessage} />
         </Card>
       </div>
       <Footer className="flex justify-around lg:justify-center gap-0 lg:gap-36 items-center">
