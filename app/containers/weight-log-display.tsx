@@ -20,7 +20,7 @@ import { getGoalWeightEntry } from "../actions/middleware/goal-weight-entry";
 import { errorCausesObj } from "../libs/errors";
 import LoadingIndicator from "../components/loading-indicator";
 import MessageDisplay from "../components/message-display";
-import { mergeSortEntries } from "../libs/sorting";
+import { sortEntriesArray } from "../libs/sorting";
 
 /**
  * Contains the components for displaying the weight log interface and
@@ -143,7 +143,16 @@ export default function WeightLogDisplay() {
   }
 
   function sortWeightEntries(sortOrder: sortOrder, objKey: "weightValue" | "weighInDate") {
+    setWeightEntries(prevEntries => {
+      // Copies the array
+      const sortedEntries = [...prevEntries];
 
+      // Calls the method to sort the array using the passed in parameters
+      sortEntriesArray(sortedEntries, objKey, sortOrder);
+
+      // Returns the sorted array
+      return sortedEntries;
+    })
   }
 
   /**
@@ -157,8 +166,8 @@ export default function WeightLogDisplay() {
       // Gathers the user's weight entries
       const userWeightEntries = await getWeightEntries();
 
-      // Sorts the weight entries to the default order
-      mergeSortEntries(userWeightEntries, 0, userWeightEntries.length - 1, "weighInDate", "DESC");
+      // Sorts the weight entries to the default order, by date and in descending order
+      sortEntriesArray(userWeightEntries, "weighInDate", "DESC");
 
       setWeightEntries(userWeightEntries);
 
@@ -240,6 +249,7 @@ export default function WeightLogDisplay() {
             weightEntries={weightEntries}
             triggerEntryRemoval={triggerEntryRemoval}
             triggerEntryUpdate={triggerEntryUpdate}
+            sortWeightEntries={sortWeightEntries}
           />
           <MessageDisplay
             errorMessage={errorMessage}
