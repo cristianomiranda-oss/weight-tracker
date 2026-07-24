@@ -1,5 +1,5 @@
 import { GoalOption } from "@/app/libs/types";
-import { Ref, useCallback, useReducer } from "react";
+import { Ref } from "react";
 
 interface GoalTypeSelectorProps {
   id: string;

@@ -20,7 +20,7 @@ export default function LabeledInput({
   inputType,
   disabled,
   ref,
-  placeHolder
+  placeHolder,
 }: LabeledInputProps) {
   return (
     <div className="w-full flex flex-col gap-1">

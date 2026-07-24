@@ -77,7 +77,6 @@ export async function validateLogin(
   userPassword: string,
 ): Promise<void> {
   try {
-    
     if (userName === "" || userPassword === "") {
       throw new Error("Username and Password cannot be blank", {
         cause: errorCausesObj.invalidParameterValue,
@@ -89,13 +88,13 @@ export async function validateLogin(
         cause: errorCausesObj.invalidParameterValue,
       });
     }
-    
+
     if (userPassword.length < 8 || userPassword.length > 30) {
       throw new Error("Password is invalid", {
         cause: errorCausesObj.invalidParameterValue,
       });
     }
-    
+
     const userId = await IndexedDB.validateUserAccount(userName, userPassword);
 
     if (userId === null) {

@@ -72,7 +72,9 @@ export default function WeightLogDisplay() {
     setIsLoading(true);
 
     try {
-      const userConfirmation = confirm("Are you sure you want to remove this entry?");
+      const userConfirmation = confirm(
+        "Are you sure you want to remove this entry?",
+      );
 
       if (userConfirmation) {
         // Calls the method to delete weight entries
@@ -191,7 +193,7 @@ export default function WeightLogDisplay() {
   }, []);
 
   useEffect(() => {
-    // Instantiates a timeout 
+    // Instantiates a timeout
     let eraseTimeOut: NodeJS.Timeout | null = null;
     // Checks if any message variable is populated
     if (infoMessage !== "" || errorMessage !== "") {
@@ -207,8 +209,8 @@ export default function WeightLogDisplay() {
       if (eraseTimeOut !== null) {
         clearTimeout(eraseTimeOut);
       }
-    }
-  }, [infoMessage, errorMessage])
+    };
+  }, [infoMessage, errorMessage]);
 
   return (
     <>
@@ -230,7 +232,10 @@ export default function WeightLogDisplay() {
             triggerEntryRemoval={triggerEntryRemoval}
             triggerEntryUpdate={triggerEntryUpdate}
           />
-          <MessageDisplay errorMessage={errorMessage} infoMessage={infoMessage} />
+          <MessageDisplay
+            errorMessage={errorMessage}
+            infoMessage={infoMessage}
+          />
         </Card>
       </div>
       <Footer className="flex justify-around lg:justify-center gap-0 lg:gap-36 items-center">

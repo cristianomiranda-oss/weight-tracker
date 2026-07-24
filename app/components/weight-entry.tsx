@@ -24,7 +24,10 @@ export default function WeightEntry({
       <p className="w-5/12 text-center" onDoubleClick={changeEntry}>
         {weightEntryObj.weightValue}
       </p>
-      <Button className="w-1/12 h-full rounded-none text-center" onClick={removeEntry}>
+      <Button
+        className="w-1/12 h-full rounded-none text-center"
+        onClick={removeEntry}
+      >
         X
       </Button>
     </div>

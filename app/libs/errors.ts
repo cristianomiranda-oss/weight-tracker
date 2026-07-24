@@ -11,14 +11,14 @@ export const errorCausesObj = {
   databaseInitializationError: "database-initialization-error",
   databaseCrudError: "database-crud-error",
   databaseConstraintIssue: "database-constraint-issue",
-  noUserEntry: "no-user-entry"
+  noUserEntry: "no-user-entry",
 };
 
 /**
- * Checks the type of error thrown. Common errors are returned and 
+ * Checks the type of error thrown. Common errors are returned and
  * errors relating to issues with the main process or with unknown
  * causes are logged to the console
- * 
+ *
  * @param error the error object being evaluated
  */
 export function handleMiddleWareErrors(error: unknown): Error {
@@ -42,7 +42,7 @@ export function handleMiddleWareErrors(error: unknown): Error {
   } else {
     // Displays the unexpected error before throwing a new error indicating an unknown issue occurred
     console.error(error);
-    
+
     // Creates a new error to return
     const newError = new Error(
       "An Unknown error has occurred in the account creation process",

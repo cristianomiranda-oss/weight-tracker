@@ -17,7 +17,11 @@ export default function MessageDisplay({
     return (
       <div className="w-full h-12 p-1 text-2xl fixed bottom-0 right-0 bg-dusty-taupe-900/50">
         {/* Prioritizes error messages over info messages */}
-        {errorMessage !== "" ? <p className="text-red-600">{errorMessage}</p> : <p className="text-yellow-600">{infoMessage}</p>}
+        {errorMessage !== "" ? (
+          <p className="text-red-600">{errorMessage}</p>
+        ) : (
+          <p className="text-yellow-600">{infoMessage}</p>
+        )}
       </div>
     );
   } else {

@@ -9,6 +9,9 @@ import type {
   WeightEntryType,
 } from "./types";
 
+/**
+ * Class containing the methods needs to access the Indexed DB database and the CRUD methods for managing the different stores
+ */
 export class IndexedDB {
   // Database info
   static dbName = "WEIGHT_TRACKER";
@@ -153,10 +156,11 @@ export class IndexedDB {
       // Checks if the error is a constraint error
       if (error instanceof Error && error.name === "ConstraintError") {
         // throws an error detailing that the username is already in use
-        throw new Error("Username already taken", {cause: errorCausesObj.databaseConstraintIssue});
+        throw new Error("Username already taken", {
+          cause: errorCausesObj.databaseConstraintIssue,
+        });
       }
-
-      // Throws any error back to the middleware function 
+      // Throws any error back to the middleware function
       throw error;
     }
   }
@@ -523,31 +527,34 @@ export class IndexedDB {
 
       // Returns a new promise that will resolve with the goal weight entry data or null if there is no entry
       // or reject with the event that caused the error
-      return await new Promise<GoalWeightEntryType | null>((resolve, reject) => {
-        try {
-          const readResult = userIdIndex.get(userId);
+      return await new Promise<GoalWeightEntryType | null>(
+        (resolve, reject) => {
+          try {
+            const readResult = userIdIndex.get(userId);
 
-          readResult.onerror = () => {
-            const error = readResult.error;
+            readResult.onerror = () => {
+              const error = readResult.error;
+              reject(error);
+            };
+
+            readResult.onsuccess = () => {
+              const entryData: GoalWeightEntryType | undefined =
+                readResult.result;
+
+              // checks if any entry matched the passed in userName;
+              if (entryData === undefined) {
+                // Resolves with null to indicate no entry matches the userName
+                resolve(null);
+              } else {
+                // Resolves with the entry data
+                resolve(entryData);
+              }
+            };
+          } catch (error) {
             reject(error);
-          };
-
-          readResult.onsuccess = () => {
-            const entryData: GoalWeightEntryType | undefined = readResult.result;
-
-            // checks if any entry matched the passed in userName;
-            if (entryData === undefined) {
-              // Resolves with null to indicate no entry matches the userName
-              resolve(null);
-            } else {
-              // Resolves with the entry data
-              resolve(entryData);
-            }
-          };
-        } catch (error) {
-          reject(error);
-        }
-      });
+          }
+        },
+      );
     } catch (error) {
       // Throws any error back to the middleware function
       throw error;

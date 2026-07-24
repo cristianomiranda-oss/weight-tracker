@@ -18,7 +18,7 @@ export type UserAccount = {
   userId: number;
   userName: string;
   userPassword: string;
-}
+};
 
 export type DataBaseStore =
   | "USER_ACCOUNT"

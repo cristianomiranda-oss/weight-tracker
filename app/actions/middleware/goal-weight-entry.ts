@@ -140,10 +140,15 @@ export async function changeGoalWeighEntry(
         cause: errorCausesObj.invalidUserCookie,
       });
     }
-    
+
     const userId = parseInt(userCookie.value);
 
-    const isEntryUpdated = await IndexedDB.updateGoalWeightEntry(goalWeightEntryId, weightValue, goalType, userId)
+    const isEntryUpdated = await IndexedDB.updateGoalWeightEntry(
+      goalWeightEntryId,
+      weightValue,
+      goalType,
+      userId,
+    );
 
     if (isEntryUpdated) {
       return;
