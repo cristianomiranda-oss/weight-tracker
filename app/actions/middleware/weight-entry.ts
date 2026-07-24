@@ -155,7 +155,8 @@ export async function changeWeighEntry(
       });
     }
 
-    if (weighInDate === null) {
+    // Checks if the passed in date defaults to "Invalid Date"
+    if (weighInDate.toString() === "Invalid Date") {
       throw new Error("Weigh in date cannot be blank", {
         cause: errorCausesObj.invalidParameterValue,
       });

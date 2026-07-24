@@ -5,10 +5,11 @@ import GoalTypeSelector from "@/app/entry/components/goal-type-selector";
 import LabeledInput from "@/app/components/labeled-input";
 import SubmitButton from "@/app/components/submit-button";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   addWeightEntry,
   changeWeighEntry,
+  getWeightEntry,
 } from "@/app/actions/middleware/weight-entry";
 import {
   addGoalWeightEntry,
@@ -42,6 +43,8 @@ export default function WeightEntryForm(): React.JSX.Element {
   const weightValueInputRef = useRef<HTMLInputElement | null>(null);
   const weighInDateInputRef = useRef<HTMLInputElement | null>(null);
   const goalTypeSelectorRef = useRef<HTMLSelectElement | null>(null);
+
+  const [ weightValuePlaceholder, setWeightValuePlaceholder ] = useState<string>("000.00");
 
   /**
    * Handles the adding of a new weight entry
@@ -226,6 +229,64 @@ export default function WeightEntryForm(): React.JSX.Element {
     router.push("/");
   }
 
+  /**
+     * Retrieves the previous weight value for the weight entry or goal entry being updated
+     */
+  async function getPlaceHolderData() {
+    // Sets the loading flag and clears the current error message
+    setIsLoading(true);
+    setErrorMessage("");
+
+    try {
+    // Checks the currently active page
+    if (isWeightGoalEntry) {
+      // Calls the function to retrieve a goal weight entry from the database
+      const goalWeightEntry = await getGoalWeightEntry();
+
+      // Checks if a goal weight entry already exists in the database
+      if (goalWeightEntry !== null) {
+        // Gets the entry's weight value
+        const goalWeightValue = goalWeightEntry.weightValue;
+
+        // Sets the place holder to the weight entry value
+        setWeightValuePlaceholder(`${goalWeightValue}`);
+      }
+    } else {
+      // Checks if the updateEntryId search parameter is valid
+      if (updateEntryId !== "" && updateEntryId !== null) {
+        // Converts the passed in entry id to a number
+        const weightEntryId = parseInt(updateEntryId);
+        
+        // Gets the weight entry's values
+        const entryData = await getWeightEntry(weightEntryId);
+
+        // Sets the place holder to the weight entry value
+        setWeightValuePlaceholder(`${entryData.weightValue}`);
+      }
+    }
+    } catch (error) {
+      // Checks if the error is an established error
+      if (error instanceof Error) {
+        if (error.cause === errorCausesObj.invalidUserCookie) {
+          alert("Invalid Signing, returning to signing page...");
+          router.push("/accounts");
+        } else {
+          setErrorMessage(error.message);
+        }
+      } else {
+        setErrorMessage("An Unknown Error has Occurred!");
+      }
+    } finally {
+      // Change the loading boolean to indicate the function is no longer running
+      setIsLoading(false);
+    }
+  }
+
+  // Calls the method to update placeholder data on page load
+  useEffect(() => {
+    getPlaceHolderData();
+  }, [])
+
   return (
     <>
       {isLoading && <LoadingIndicator />}
@@ -245,6 +306,7 @@ export default function WeightEntryForm(): React.JSX.Element {
           inputType="number"
           disabled={isLoading}
           ref={weightValueInputRef}
+          placeHolder={weightValuePlaceholder}
         />
         {!isWeightGoalEntry && (
           <LabeledInput

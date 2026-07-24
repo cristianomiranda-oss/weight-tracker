@@ -8,6 +8,7 @@ interface LabeledInputProps {
   inputType: HTMLInputTypeAttribute;
   disabled: boolean;
   ref?: Ref<HTMLInputElement>;
+  placeHolder?: string;
 }
 
 /**
@@ -19,6 +20,7 @@ export default function LabeledInput({
   inputType,
   disabled,
   ref,
+  placeHolder
 }: LabeledInputProps) {
   return (
     <div className="w-full flex flex-col gap-1">
@@ -31,6 +33,7 @@ export default function LabeledInput({
         id={id}
         disabled={disabled}
         ref={ref}
+        placeholder={placeHolder}
       />
     </div>
   );
