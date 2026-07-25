@@ -4,6 +4,7 @@ import { getUserCookie } from "@/app/libs/cookies";
 import { errorCausesObj, handleMiddleWareErrors } from "@/app/libs/errors";
 import { IndexedDB } from "@/app/libs/indexedDB";
 import type { WeightEntryType } from "@/app/libs/types";
+import { verifyAccountPayload } from "./payload-generation";
 
 /**
  * Middleware for accessing the database to create new weight entry
@@ -37,12 +38,13 @@ export async function addWeightEntry(
       });
     }
 
-    const userId = parseInt(userCookie.value);
+    // Calls the method to read and verify the payload string
+    const payloadData = await verifyAccountPayload(userCookie.value);
 
     const newEntryId = await IndexedDB.createWeightEntry(
       weightValue,
       weighInDate,
-      userId,
+      payloadData.userId,
     );
 
     if (newEntryId) {
@@ -74,9 +76,12 @@ export async function getWeightEntries(): Promise<WeightEntryType[]> {
       });
     }
 
-    const userId = parseInt(userCookie.value);
+    // Calls the method to read and verify the payload string
+    const payloadData = await verifyAccountPayload(userCookie.value);
 
-    const userWeightEntries = await IndexedDB.readWeightEntries(userId);
+    const userWeightEntries = await IndexedDB.readWeightEntries(
+      payloadData.userId,
+    );
 
     if (userWeightEntries === null) {
       throw new Error("Failed to access weight entry", {
@@ -109,11 +114,12 @@ export async function getWeightEntry(
       });
     }
 
-    const userId = parseInt(userCookie.value);
+    // Calls the method to read and verify the payload string
+    const payloadData = await verifyAccountPayload(userCookie.value);
 
     const userWeightEntries = await IndexedDB.readWeightEntry(
       weightEntryId,
-      userId,
+      payloadData.userId,
     );
 
     if (userWeightEntries === null) {
@@ -170,13 +176,14 @@ export async function changeWeighEntry(
       });
     }
 
-    const userId = parseInt(userCookie.value);
+    // Calls the method to read and verify the payload string
+    const payloadData = await verifyAccountPayload(userCookie.value);
 
     const isEntryUpdated = await IndexedDB.updateWeightEntry(
       weightEntryId,
       weightValue,
       weighInDate,
-      userId,
+      payloadData.userId,
     );
 
     if (isEntryUpdated) {
@@ -209,13 +216,14 @@ export async function removeWeightEntry(weightEntryId: number): Promise<void> {
       });
     }
 
-    const userId = parseInt(userCookie.value);
+    // Calls the method to read and verify the payload string
+    const payloadData = await verifyAccountPayload(userCookie.value);
 
     // Gathers the entry data
     const entryData = await getWeightEntry(weightEntryId);
 
     // Confirms if the entry's user id matches the user's cookie value
-    if (entryData.userId !== userId) {
+    if (entryData.userId !== payloadData.userId) {
       throw new Error("Unauthorized access to entry", {
         cause: errorCausesObj.accessDenied,
       });
