@@ -8,6 +8,11 @@ import type {
   UserAccount,
   WeightEntryType,
 } from "./types";
+import {
+  checkPassword,
+  hashPassword,
+} from "../actions/middleware/verification";
+import { getAccountPayload } from "../actions/middleware/payload-generation";
 
 /**
  * Class containing the methods needs to access the Indexed DB database and the CRUD methods for managing the different stores
@@ -15,7 +20,7 @@ import type {
 export class IndexedDB {
   // Database info
   static dbName = "WEIGHT_TRACKER";
-  static dbVersion = 1;
+  static dbVersion = 2;
 
   // Store names
   static USER_ACCOUNT_STORE: DataBaseStore = "USER_ACCOUNT";
@@ -50,7 +55,7 @@ export class IndexedDB {
           // Creates the user accounts store
           const userAccountsStore = db.createObjectStore(
             this.USER_ACCOUNT_STORE,
-            { keyPath: "userId", autoIncrement: true },
+            { keyPath: "userId" },
           );
           // Creates the userName index
           userAccountsStore.createIndex(this.USER_NAME_INDEX, "userName", {
@@ -60,7 +65,7 @@ export class IndexedDB {
           // Creates the weight entry store
           const weightEntryStore = db.createObjectStore(
             this.WEIGHT_ENTRY_STORE,
-            { keyPath: "weightEntryId", autoIncrement: true },
+            { keyPath: "weightEntryId" },
           );
           // Creates the weigh entry id index and the user id index
           weightEntryStore.createIndex(
@@ -75,7 +80,7 @@ export class IndexedDB {
           // Creates the goal weight entry store
           const goalWeightEntryStore = db.createObjectStore(
             this.GOAL_WEIGHT_ENTRY_STORE,
-            { keyPath: "goalWeightEntryId", autoIncrement: true },
+            { keyPath: "goalWeightEntryId" },
           );
           // Creates the user id index
           goalWeightEntryStore.createIndex(this.USER_ID_INDEX, "userId", {
@@ -121,20 +126,31 @@ export class IndexedDB {
    */
   static async createNewUserAccount(userName: string, userPassword: string) {
     try {
-      // Accesses the user account object store to write a new entry to it
+      // Generates a random uuid value for the entry id
+      const newUserId = crypto.randomUUID();
+
+      // Hashes the user's password before storing
+      const hashedPassword = await hashPassword(userPassword);
+
+      // A new user object is created without the userId, as it is added upon being inserting into the database
+      const newUserAccount: UserAccount = {
+        userId: newUserId,
+        userName,
+        userPassword: hashedPassword,
+      };
+
+      // Accesses the user account store to write a new entry to it
       const accountsStore = await this._openDBStore(
         this.USER_ACCOUNT_STORE,
         "readwrite",
       );
 
-      // A new user object is created without the userId, as it is added upon being inserting into the database
-      const newUserAccount = { userName, userPassword };
+      // Inserts the new entry into the store
+      const addResult = accountsStore.add(newUserAccount);
 
       // Returns a new promise that will resolve with the new entry's id or throw an error if any issue occurs
-      return await new Promise<number>((resolve, reject) => {
+      return await new Promise<string>((resolve, reject) => {
         try {
-          const addResult = accountsStore.add(newUserAccount);
-
           addResult.onerror = () => {
             const error = addResult.error;
             reject(error);
@@ -142,7 +158,7 @@ export class IndexedDB {
           addResult.onsuccess = () => {
             const newId = addResult.result;
 
-            if (typeof newId === "number") {
+            if (typeof newId === "string") {
               resolve(newId);
             } else {
               reject("Invalid entry id");
@@ -182,37 +198,59 @@ export class IndexedDB {
 
       // Returns a new promise that will resolve with the existing entry's id or null if the user name is not associated with an entry or the passed in credentials are invalid
       // or reject with the event that caused the error
-      return await new Promise<number | null>((resolve, reject) => {
-        try {
-          const entryResult = userNameIndex.get(userName);
+      let userAccountData = await new Promise<UserAccount | null>(
+        (resolve, reject) => {
+          try {
+            const entryResult = userNameIndex.get(userName);
 
-          entryResult.onerror = () => {
-            const error = entryResult.error;
-            reject(error);
-          };
+            entryResult.onerror = () => {
+              const error = entryResult.error;
+              reject(error);
+            };
 
-          entryResult.onsuccess = () => {
-            const entryData: UserAccount | undefined = entryResult.result;
+            entryResult.onsuccess = () => {
+              const entryData: UserAccount | undefined = entryResult.result;
 
-            // checks if any entry matched the passed in userName;
-            if (entryData === undefined) {
-              // Resolves with null to indicate no entry matches the userName
-              resolve(null);
-            } else {
-              // checks the user's credentials
-              if (userPassword === entryData.userPassword) {
-                // Resolves with the user's id value
-                resolve(entryData.userId);
-              } else {
-                // Resolves with null to indicate the passed in credentials are invalid
+              // checks if any entry matched the passed in userName;
+              if (entryData === undefined) {
+                // Resolves with null to indicate no entry matches the userName
                 resolve(null);
+              } else {
+                resolve(entryData);
               }
-            }
-          };
-        } catch (error) {
-          reject(error);
-        }
-      });
+            };
+          } catch (error) {
+            reject(error);
+          }
+        },
+      );
+
+      // Confirms the user account entry was found
+      if (userAccountData === null) {
+        // If no entry return null to signify no account was found
+        return null;
+      }
+
+      // Calls the method to compare the stored hashed password with the one entered by the user
+      const isPasswordValid = await checkPassword(
+        userPassword,
+        userAccountData.userPassword,
+      );
+
+      // Checks the user's credentials after obtaining the account data
+      if (isPasswordValid) {
+        // Generates a user account payload
+        const userPayload = await getAccountPayload(
+          userAccountData.userId,
+          userAccountData.userName,
+        );
+
+        // Resolves with the user's account obj
+        return userPayload;
+      } else {
+        // Return null
+        return null;
+      }
     } catch (error) {
       // Throws any error back to the middleware function
       throw error;
