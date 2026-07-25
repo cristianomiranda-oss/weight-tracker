@@ -156,6 +156,12 @@ export default function WeightLogDisplay() {
     return isGoalWeightAchieved;
   }
 
+  /**
+     * Sorts the weight entries based on the passed in parameters
+     *
+     * @param {sortOrder} sortOrder The order in which the array will be sorted, either ascending or descending
+     * @param {sortingKey} objKey The object key associated with the value that will be used to sort the weight entry array 
+     */
   function sortWeightEntries(
     sortOrder: sortOrder,
     objKey: "weightValue" | "weighInDate",
@@ -172,6 +178,13 @@ export default function WeightLogDisplay() {
     });
   }
 
+  /**
+     * Updates the current sorting option and resorts the weight entry array to reflect the change.
+     * If the sortingKey is already used to sort the array, the sort order will be toggled,
+     * else the new sortingKey will be used and the sort order will initially be descending
+     *
+     * @param {sortingKey} sortingKey The key associated with the sorting call, will toggle the sorting order if already active
+     */
   function updateSortingOption(sortingKey: sortingKey) {
     // Copies the current sorting options
     let newSortingOptions = { ...currentSortingOption };
@@ -213,8 +226,6 @@ export default function WeightLogDisplay() {
         sortOrder: "DESC",
       });
 
-      setWeightEntries(userWeightEntries);
-
       // Checks if the returned array has at least one entry
       if (userWeightEntries.length >= 1) {
         // Checks if the user's goal weight is achieved
@@ -227,6 +238,7 @@ export default function WeightLogDisplay() {
           // alert("Goal Weight Achieved!");
         }
       } else {
+        // TODO: Move goal weight entry check to separate function and have it occur after the initial sorting of the array
         // If no entries, still checks if the user has a goal weight entry
         await checkGoalWeightEntry();
       }
