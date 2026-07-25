@@ -8,10 +8,9 @@ interface WeightLogTableProps {
   weightEntries: WeightEntryType[];
   triggerEntryRemoval: (entryId: number, userId: number) => Promise<void>;
   triggerEntryUpdate: (entryId: number) => void;
-  sortWeightEntries: (
-    sortOrder: sortOrder,
-    objKey: "weightValue" | "weighInDate",
-  ) => void;
+  currentSortingOption: sortOptions
+  updateSortingOption: (sortingKey: sortingKey) => void;
+
 }
 
 /**
@@ -21,31 +20,9 @@ export default function WeightLogTable({
   weightEntries,
   triggerEntryRemoval,
   triggerEntryUpdate,
-  sortWeightEntries,
+  currentSortingOption,
+  updateSortingOption
 }: WeightLogTableProps) {
-  // Initializes the sorting filter state with the default sorting order
-  const [currentSortingOption, setCurrentSortingOption] = useState<sortOptions>({
-    sortingKey: "weighInDate",
-    sortOrder: "DESC",
-  });
-
-  function updateSortingOption(sortingKey: sortingKey) {
-    // Copies the current sorting options
-    let newSortingOptions = {...currentSortingOption};
-
-    // Checks if the currently active sort button is clicked
-    if (currentSortingOption.sortingKey === sortingKey) {
-      // Checks the current sort order and switches to the opposing one
-      newSortingOptions.sortOrder = currentSortingOption.sortOrder === "ASC" ? "DESC" : "ASC"
-    } else {
-      // If the opposing sort button is clicked it is activated
-      newSortingOptions.sortingKey = sortingKey;
-      newSortingOptions.sortOrder = "DESC";
-    }
-    
-    sortWeightEntries(newSortingOptions.sortOrder, newSortingOptions.sortingKey);
-    setCurrentSortingOption(newSortingOptions);
-  }
 
   return (
     <div className="w-full h-full min-h-46 flex flex-col bg-dusty-taupe-500 overflow-y-scroll scrollbar-track-dusty-taupe-700 scrollbar-thumb-turf-green-600">

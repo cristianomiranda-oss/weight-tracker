@@ -8,7 +8,13 @@ import Header from "../components/header";
 import IconLink from "../components/icon-link";
 import Card from "../components/card";
 import Footer from "../components/footer";
-import type { GoalWeightEntryType, sortOrder, WeightEntryType } from "../libs/types";
+import type {
+  GoalWeightEntryType,
+  sortingKey,
+  sortOptions,
+  sortOrder,
+  WeightEntryType,
+} from "../libs/types";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import WeightLogTableTable from "../components/weight-log-table";
@@ -37,6 +43,14 @@ export default function WeightLogDisplay() {
 
   // Initializes state for storing all user weight entries
   const [weightEntries, setWeightEntries] = useState<WeightEntryType[]>([]);
+
+  // Initializes the sorting filter state with the default sorting order
+  const [currentSortingOption, setCurrentSortingOption] = useState<sortOptions>(
+    {
+      sortingKey: "weighInDate",
+      sortOrder: "DESC",
+    },
+  );
 
   /**
    * Handles the updating of weight entries
@@ -142,8 +156,11 @@ export default function WeightLogDisplay() {
     return isGoalWeightAchieved;
   }
 
-  function sortWeightEntries(sortOrder: sortOrder, objKey: "weightValue" | "weighInDate") {
-    setWeightEntries(prevEntries => {
+  function sortWeightEntries(
+    sortOrder: sortOrder,
+    objKey: "weightValue" | "weighInDate",
+  ) {
+    setWeightEntries((prevEntries) => {
       // Copies the array
       const sortedEntries = [...prevEntries];
 
@@ -152,7 +169,29 @@ export default function WeightLogDisplay() {
 
       // Returns the sorted array
       return sortedEntries;
-    })
+    });
+  }
+
+  function updateSortingOption(sortingKey: sortingKey) {
+    // Copies the current sorting options
+    let newSortingOptions = { ...currentSortingOption };
+
+    // Checks if the currently active sort button is clicked
+    if (currentSortingOption.sortingKey === sortingKey) {
+      // Checks the current sort order and switches to the opposing one
+      newSortingOptions.sortOrder =
+        currentSortingOption.sortOrder === "ASC" ? "DESC" : "ASC";
+    } else {
+      // If the opposing sort button is clicked it is activated
+      newSortingOptions.sortingKey = sortingKey;
+      newSortingOptions.sortOrder = "DESC";
+    }
+
+    sortWeightEntries(
+      newSortingOptions.sortOrder,
+      newSortingOptions.sortingKey,
+    );
+    setCurrentSortingOption(newSortingOptions);
   }
 
   /**
@@ -168,6 +207,11 @@ export default function WeightLogDisplay() {
 
       // Sorts the weight entries to the default order, by date and in descending order
       sortEntriesArray(userWeightEntries, "weighInDate", "DESC");
+      // Updates the current sorting option to reflect the default sorting options
+      setCurrentSortingOption({
+        sortingKey: "weighInDate",
+        sortOrder: "DESC",
+      });
 
       setWeightEntries(userWeightEntries);
 
@@ -249,7 +293,8 @@ export default function WeightLogDisplay() {
             weightEntries={weightEntries}
             triggerEntryRemoval={triggerEntryRemoval}
             triggerEntryUpdate={triggerEntryUpdate}
-            sortWeightEntries={sortWeightEntries}
+            currentSortingOption={currentSortingOption}
+            updateSortingOption={updateSortingOption}
           />
           <MessageDisplay
             errorMessage={errorMessage}
