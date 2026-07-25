@@ -31,7 +31,7 @@ export async function getAccountPayload(userId: string, userName: string) {
 export async function verifyAccountPayload(payload: string) {
   try {
     // Credit: Radu Diță For explaining the need to cast a result as a specific type to define the payload object type
-    // https://stackoverflow.com/questions/50735675/typescript-jwt-verify-cannot-access-data 
+    // https://stackoverflow.com/questions/50735675/typescript-jwt-verify-cannot-access-data
     const payloadObj = jwt.verify(payload, secretKey) as UserPayloadObj;
     return payloadObj;
   } catch (error) {

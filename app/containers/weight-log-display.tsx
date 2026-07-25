@@ -228,7 +228,6 @@ export default function WeightLogDisplay() {
       // Updates state after sorting the temp array
       setWeightEntries(userWeightEntries);
 
-
       // Checks if the returned array has at least one entry
       if (userWeightEntries.length >= 1) {
         // Checks if the user's goal weight is achieved

@@ -2,9 +2,6 @@
 import { createUserCookie } from "@/app/libs/cookies";
 import { errorCausesObj, handleMiddleWareErrors } from "@/app/libs/errors";
 import { IndexedDB } from "@/app/libs/indexedDB";
-import { UserAccount } from "@/app/libs/types";
-import { getAccountPayload } from "./payload-generation";
-import { hashPassword } from "./verification";
 
 /**
  * Middleware for accessing the database to create a new user account

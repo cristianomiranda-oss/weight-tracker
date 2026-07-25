@@ -23,7 +23,7 @@ export type UserAccount = {
 export type UserPayloadObj = {
   userId: string;
   userName: string;
-}
+};
 
 export type DataBaseStore =
   | "USER_ACCOUNT"
@@ -40,5 +40,5 @@ export type sortingKey = "weightValue" | "weighInDate";
 
 export type sortOptions = {
   sortOrder: sortOrder;
-  sortingKey: "weightValue" | "weighInDate"
-}
+  sortingKey: "weightValue" | "weighInDate";
+};

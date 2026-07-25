@@ -276,7 +276,12 @@ export class IndexedDB {
       // Generates a random uuid value for the entry id
       const newEntryId = crypto.randomUUID();
 
-      const newWeightEntry: WeightEntryType = { weightEntryId: newEntryId, weightValue, weighInDate, userId };
+      const newWeightEntry: WeightEntryType = {
+        weightEntryId: newEntryId,
+        weightValue,
+        weighInDate,
+        userId,
+      };
 
       // Returns a new promise that will resolve with the new weight entry's id
       // or reject with the event that caused the error
@@ -523,7 +528,12 @@ export class IndexedDB {
       // Generates a random uuid value for the entry id
       const newEntryId = crypto.randomUUID();
 
-      const newGoalWeightEntry: GoalWeightEntryType = { goalWeightEntryId: newEntryId, weightValue, goalType, userId };
+      const newGoalWeightEntry: GoalWeightEntryType = {
+        goalWeightEntryId: newEntryId,
+        weightValue,
+        goalType,
+        userId,
+      };
 
       // Returns a new promise that will resolve with the existing entry's id
       // or reject with the event that caused the error
