@@ -103,9 +103,16 @@ export async function getWeightEntries(): Promise<WeightEntryType[]> {
  * @throws Signals the process failed
  */
 export async function getWeightEntry(
-  weightEntryId: number,
+  weightEntryId: string,
 ): Promise<WeightEntryType> {
   try {
+    // Checks if the entry id is the standard uuid length
+    if (weightEntryId.length !== 36) {
+      throw new Error("Existing weight entry id is invalid", {
+        cause: errorCausesObj.invalidParameterValue,
+      });
+    }
+
     const userCookie = await getUserCookie();
 
     if (userCookie === null) {
@@ -144,13 +151,14 @@ export async function getWeightEntry(
  * @throws Signals the process failed
  */
 export async function changeWeighEntry(
-  weightEntryId: number,
+  weightEntryId: string,
   weightValue: number,
   weighInDate: Date,
 ): Promise<void> {
   try {
-    if (weightEntryId <= 0) {
-      throw new Error("Weight entry id is invalid", {
+    // Checks if the entry id is the standard uuid length
+    if (weightEntryId.length !== 36) {
+      throw new Error("Existing weight entry id is invalid", {
         cause: errorCausesObj.invalidParameterValue,
       });
     }
@@ -206,8 +214,15 @@ export async function changeWeighEntry(
  * @param entryId Id value for the entry to be removed.
  * @throws Signals the process failed
  */
-export async function removeWeightEntry(weightEntryId: number): Promise<void> {
+export async function removeWeightEntry(weightEntryId: string): Promise<void> {
   try {
+    // Checks if the entry id is the standard uuid length
+    if (weightEntryId.length !== 36) {
+      throw new Error("Existing weight entry id is invalid", {
+        cause: errorCausesObj.invalidParameterValue,
+      });
+    }
+
     const userCookie = await getUserCookie();
 
     if (userCookie === null) {

@@ -2,7 +2,7 @@ export type WeightEntryType = {
   weightEntryId: string;
   weightValue: number;
   weighInDate: Date;
-  userId: number;
+  userId: string;
 };
 
 export type GoalOption = "Loss" | "Maintenance" | "Gain";
@@ -11,7 +11,7 @@ export type GoalWeightEntryType = {
   goalWeightEntryId: string;
   weightValue: number;
   goalType: "Loss" | "Maintenance" | "Gain";
-  userId: number;
+  userId: string;
 };
 
 export type UserAccount = {

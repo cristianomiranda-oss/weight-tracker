@@ -264,7 +264,7 @@ export class IndexedDB {
   static async createWeightEntry(
     weightValue: number,
     weighInDate: Date,
-    userId: number,
+    userId: string,
   ) {
     try {
       // Accesses the user account object store to read an entry from it
@@ -273,11 +273,14 @@ export class IndexedDB {
         "readwrite",
       );
 
-      const newWeightEntry = { weightValue, weighInDate, userId };
+      // Generates a random uuid value for the entry id
+      const newEntryId = crypto.randomUUID();
+
+      const newWeightEntry: WeightEntryType = { weightEntryId: newEntryId, weightValue, weighInDate, userId };
 
       // Returns a new promise that will resolve with the new weight entry's id
       // or reject with the event that caused the error
-      return await new Promise<number>((resolve, reject) => {
+      return await new Promise<string>((resolve, reject) => {
         try {
           const addResult = weightEntryStore.add(newWeightEntry);
 
@@ -289,7 +292,7 @@ export class IndexedDB {
           addResult.onsuccess = () => {
             const newWeightEntryId = addResult.result;
 
-            if (typeof newWeightEntryId === "number") {
+            if (typeof newWeightEntryId === "string") {
               resolve(newWeightEntryId);
             } else {
               reject("Invalid entry id");
@@ -309,7 +312,7 @@ export class IndexedDB {
    * CRUD method for reading all weight entry associated with a user id. Returns an array of all entries, but if no entries are found an empty array is returned
    * @throws Signals that the process failed
    */
-  static async readWeightEntries(userId: number) {
+  static async readWeightEntries(userId: string) {
     try {
       // Accesses the user account object store to read an entry from it
       const weightEntryStore = await this._openDBStore(
@@ -351,7 +354,7 @@ export class IndexedDB {
    * CRUD method for reading a weight entry. Returns the weight entry data if found and null if no entry is found
    * @throws Signals that the process failed
    */
-  static async readWeightEntry(weightEntryId: number, userId: number) {
+  static async readWeightEntry(weightEntryId: string, userId: string) {
     try {
       // Accesses the user account object store to read an entry from it
       const weightEntryStore = await this._openDBStore(
@@ -403,10 +406,10 @@ export class IndexedDB {
    * @throws Signals that the process failed
    */
   static async updateWeightEntry(
-    weightEntryId: number,
+    weightEntryId: string,
     weightValue: number,
     weighInDate: Date,
-    userId: number,
+    userId: string,
   ) {
     try {
       // Accesses the user account object store to read an entry from it
@@ -459,7 +462,7 @@ export class IndexedDB {
    * CRUD method for deleting a weight entry. Returns true if deletion was successful and false if the deletion failed or was not found
    * @throws Signals that the process failed
    */
-  static async deleteWeightEntry(weightEntryId: number) {
+  static async deleteWeightEntry(weightEntryId: string) {
     try {
       // Accesses the user account object store to read an entry from it
       const weightEntryStore = await this._openDBStore(
@@ -508,7 +511,7 @@ export class IndexedDB {
   static async createGoalWeightEntry(
     weightValue: number,
     goalType: GoalOption,
-    userId: number,
+    userId: string,
   ) {
     try {
       // Accesses the user account object store to read an entry from it
@@ -517,11 +520,14 @@ export class IndexedDB {
         "readwrite",
       );
 
-      const newGoalWeightEntry = { weightValue, goalType, userId };
+      // Generates a random uuid value for the entry id
+      const newEntryId = crypto.randomUUID();
+
+      const newGoalWeightEntry: GoalWeightEntryType = { goalWeightEntryId: newEntryId, weightValue, goalType, userId };
 
       // Returns a new promise that will resolve with the existing entry's id
       // or reject with the event that caused the error
-      return await new Promise<number>((resolve, reject) => {
+      return await new Promise<string>((resolve, reject) => {
         try {
           const addResult = goalWeightEntryStore.add(newGoalWeightEntry);
 
@@ -533,7 +539,7 @@ export class IndexedDB {
           addResult.onsuccess = () => {
             const newGoalWeightEntryId = addResult.result;
 
-            if (typeof newGoalWeightEntryId === "number") {
+            if (typeof newGoalWeightEntryId === "string") {
               resolve(newGoalWeightEntryId);
             } else {
               reject("Invalid entry id");
@@ -553,7 +559,7 @@ export class IndexedDB {
    * CRUD method for reading a weight entry. Returns the weight entry data if found and null if no entry is found
    * @throws Signals that the process failed
    */
-  static async readGoalWeightEntry(userId: number) {
+  static async readGoalWeightEntry(userId: string) {
     try {
       // Accesses the user account object store to read an entry from it
       const goalWeightEntryStore = await this._openDBStore(
@@ -604,10 +610,10 @@ export class IndexedDB {
    * @throws Signals that the process failed
    */
   static async updateGoalWeightEntry(
-    goalWeightEntryId: number,
+    goalWeightEntryId: string,
     weightValue: number,
     goalType: GoalOption,
-    userId: number,
+    userId: string,
   ) {
     try {
       // Accesses the user account object store to read an entry from it

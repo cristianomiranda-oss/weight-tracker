@@ -104,12 +104,11 @@ export default function WeightEntryForm(): React.JSX.Element {
         updateEntryId !== null
       ) {
         // Converts the input values to their appropriate types
-        const weightEntryId = parseInt(updateEntryId);
         const weightValue = parseFloat(weightValueInputRef.current.value);
         const weighInDate = new Date(weighInDateInputRef.current.value);
 
         // Calls the method to update the weight entry
-        await changeWeighEntry(weightEntryId, weightValue, weighInDate);
+        await changeWeighEntry(updateEntryId, weightValue, weighInDate);
 
         navigateToHome();
       }
@@ -256,10 +255,9 @@ export default function WeightEntryForm(): React.JSX.Element {
         // Checks if the updateEntryId search parameter is valid
         if (updateEntryId !== "" && updateEntryId !== null) {
           // Converts the passed in entry id to a number
-          const weightEntryId = parseInt(updateEntryId);
 
           // Gets the weight entry's values
-          const entryData = await getWeightEntry(weightEntryId);
+          const entryData = await getWeightEntry(updateEntryId);
 
           // Sets the place holder to the weight entry value
           setWeightValuePlaceholder(`${entryData.weightValue}`);
