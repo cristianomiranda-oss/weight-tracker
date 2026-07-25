@@ -30,3 +30,10 @@ export type DataBaseIndex = "USER_NAME" | "WEIGHT_ENTRY_ID" | "USER_ID";
 export type DataBaseAccessType = "readwrite" | "readonly";
 
 export type sortOrder = "ASC" | "DESC";
+
+export type sortingKey = "weightValue" | "weighInDate";
+
+export type sortOptions = {
+  sortOrder: sortOrder;
+  sortingKey: "weightValue" | "weighInDate"
+}
