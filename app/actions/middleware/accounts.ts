@@ -2,6 +2,9 @@
 import { createUserCookie } from "@/app/libs/cookies";
 import { errorCausesObj, handleMiddleWareErrors } from "@/app/libs/errors";
 import { IndexedDB } from "@/app/libs/indexedDB";
+import { UserAccount } from "@/app/libs/types";
+import { getAccountPayload } from "./payload-generation";
+import { hashPassword } from "./verification";
 
 /**
  * Middleware for accessing the database to create a new user account
@@ -97,11 +100,18 @@ export async function validateLogin(
 
     const userId = await IndexedDB.validateUserAccount(userName, userPassword);
 
+    
     if (userId === null) {
       throw new Error("Username or Password is invalid", {
         cause: errorCausesObj.accessDenied,
       });
     }
+
+    const userAccount: UserAccount = { userId: userId, userName, userPassword };
+
+    getAccountPayload(userAccount)
+
+    hashPassword(userPassword);
 
     const isCookieStored = await createUserCookie(userId);
 

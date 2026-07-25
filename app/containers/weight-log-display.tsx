@@ -157,11 +157,11 @@ export default function WeightLogDisplay() {
   }
 
   /**
-     * Sorts the weight entries based on the passed in parameters
-     *
-     * @param {sortOrder} sortOrder The order in which the array will be sorted, either ascending or descending
-     * @param {sortingKey} objKey The object key associated with the value that will be used to sort the weight entry array 
-     */
+   * Sorts the weight entries based on the passed in parameters
+   *
+   * @param {sortOrder} sortOrder The order in which the array will be sorted, either ascending or descending
+   * @param {sortingKey} objKey The object key associated with the value that will be used to sort the weight entry array
+   */
   function sortWeightEntries(
     sortOrder: sortOrder,
     objKey: "weightValue" | "weighInDate",
@@ -179,12 +179,12 @@ export default function WeightLogDisplay() {
   }
 
   /**
-     * Updates the current sorting option and resorts the weight entry array to reflect the change.
-     * If the sortingKey is already used to sort the array, the sort order will be toggled,
-     * else the new sortingKey will be used and the sort order will initially be descending
-     *
-     * @param {sortingKey} sortingKey The key associated with the sorting call, will toggle the sorting order if already active
-     */
+   * Updates the current sorting option and resorts the weight entry array to reflect the change.
+   * If the sortingKey is already used to sort the array, the sort order will be toggled,
+   * else the new sortingKey will be used and the sort order will initially be descending
+   *
+   * @param {sortingKey} sortingKey The key associated with the sorting call, will toggle the sorting order if already active
+   */
   function updateSortingOption(sortingKey: sortingKey) {
     // Copies the current sorting options
     let newSortingOptions = { ...currentSortingOption };
@@ -218,13 +218,16 @@ export default function WeightLogDisplay() {
       // Gathers the user's weight entries
       const userWeightEntries = await getWeightEntries();
 
-      // Sorts the weight entries to the default order, by date and in descending order
+      // Sorts the weight entries in the temp array to the default order, by date and in descending order
       sortEntriesArray(userWeightEntries, "weighInDate", "DESC");
       // Updates the current sorting option to reflect the default sorting options
       setCurrentSortingOption({
         sortingKey: "weighInDate",
         sortOrder: "DESC",
       });
+      // Updates state after sorting the temp array
+      setWeightEntries(userWeightEntries);
+
 
       // Checks if the returned array has at least one entry
       if (userWeightEntries.length >= 1) {
