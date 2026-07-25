@@ -1,13 +1,11 @@
-import { useState } from "react";
 import type { sortingKey, sortOptions, sortOrder, WeightEntryType } from "../libs/types";
-import Button from "./button";
 import SortingButton from "./sorting-button";
 import WeightEntry from "./weight-entry";
 
 interface WeightLogTableProps {
   weightEntries: WeightEntryType[];
-  triggerEntryRemoval: (entryId: number, userId: number) => Promise<void>;
-  triggerEntryUpdate: (entryId: number) => void;
+  triggerEntryRemoval: (entryId: string, userId: string) => Promise<void>;
+  triggerEntryUpdate: (entryId: string) => void;
   currentSortingOption: sortOptions
   updateSortingOption: (sortingKey: sortingKey) => void;
 

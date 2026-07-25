@@ -56,7 +56,7 @@ export default function WeightLogDisplay() {
    * Handles the updating of weight entries
    * @param entryId Id for the weight entry to be updated
    */
-  function triggerEntryUpdate(entryId: number): void {
+  function triggerEntryUpdate(entryId: string): void {
     // Sets the loading boolean and clears the error message and info message
     setIsLoading(true);
 
@@ -82,7 +82,7 @@ export default function WeightLogDisplay() {
    * Handles the removal of weight entries
    * @param entryId Id for the weight entry to be delete4d
    */
-  async function triggerEntryRemoval(entryId: number): Promise<void> {
+  async function triggerEntryRemoval(entryId: string): Promise<void> {
     // Sets the loading boolean and clears the error message and info message
     setIsLoading(true);
 
