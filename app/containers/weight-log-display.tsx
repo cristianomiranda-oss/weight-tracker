@@ -27,6 +27,7 @@ import { errorCausesObj } from "../libs/errors";
 import LoadingIndicator from "../components/loading-indicator";
 import MessageDisplay from "../components/message-display";
 import { sortEntriesArray } from "../libs/sorting";
+import { cacheWeightEntryArray, getCachedWeightEntryArray } from "../libs/session-storage";
 
 /**
  * Contains the components for displaying the weight log interface and
@@ -189,6 +190,10 @@ export default function WeightLogDisplay() {
     // Copies the current sorting options
     let newSortingOptions = { ...currentSortingOption };
 
+    const cachedObj = getCachedWeightEntryArray();
+
+    console.log(cachedObj);
+
     // Checks if the currently active sort button is clicked
     if (currentSortingOption.sortingKey === sortingKey) {
       // Checks the current sort order and switches to the opposing one
@@ -214,9 +219,23 @@ export default function WeightLogDisplay() {
     // Sets the loading boolean and clears the error message and info message
     setIsLoading(true);
 
+    // Initializes temp weight entries array
+    let userWeightEntries: WeightEntryType[] = [];
+
     try {
-      // Gathers the user's weight entries
-      const userWeightEntries = await getWeightEntries();
+      const cachedArray = getCachedWeightEntryArray();
+
+      // Check if the cached array is valid
+      if (cachedArray === null) {
+        // Gathers the user's weight entries
+        userWeightEntries = await getWeightEntries();
+        // Stores the entries in cache
+        cacheWeightEntryArray(userWeightEntries);
+      } else {
+        // Uses the cached array values
+        userWeightEntries = cachedArray;
+        console.log(userWeightEntries)
+      }
 
       // Sorts the weight entries in the temp array to the default order, by date and in descending order
       sortEntriesArray(userWeightEntries, "weighInDate", "DESC");

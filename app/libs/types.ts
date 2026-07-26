@@ -42,3 +42,8 @@ export type sortOptions = {
   sortOrder: sortOrder;
   sortingKey: "weightValue" | "weighInDate";
 };
+
+export type CachedObj = {
+    storageTime: number;
+    weightEntryArray: WeightEntryType[];
+}

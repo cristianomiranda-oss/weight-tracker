@@ -42,8 +42,9 @@ function formatDate(date: Date) {
 }
 
 export function getDisplayDate(date: Date) {
-  const finalTime = formatTime(date);
-  const finalDate = formatDate(date);
+  const newDate = new Date(date);
+  const finalTime = formatTime(newDate);
+  const finalDate = formatDate(newDate);
 
   return `${finalTime} ${finalDate}`;
 }
