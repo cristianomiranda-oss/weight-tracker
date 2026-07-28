@@ -19,6 +19,7 @@ import {
 import LoadingIndicator from "@/app/components/loading-indicator";
 import { errorCausesObj } from "@/app/libs/errors";
 import { updateCachedWeightEntryArray } from "@/app/libs/session-storage";
+import { getDataTimeString } from "@/app/libs/date";
 
 /**
  * Contains the components for display the weight entry and goal weight entry interfaces
@@ -262,6 +263,12 @@ export default function WeightEntryForm(): React.JSX.Element {
 
           // Gets the weight entry's values
           const entryData = await getWeightEntry(updateEntryId);
+
+          if (weighInDateInputRef.current) {
+            // Slices the date string to match the pattern for the input value
+            const dateValue = getDataTimeString(entryData.weighInDate);
+            weighInDateInputRef.current.value = dateValue;
+          }
 
           // Sets the place holder to the weight entry value
           setWeightValuePlaceholder(`${entryData.weightValue}`);
