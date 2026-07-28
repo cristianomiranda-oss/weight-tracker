@@ -44,6 +44,6 @@ export type sortOptions = {
 };
 
 export type CachedObj = {
-    storageTime: number;
+    expirationTime: number;
     weightEntryArray: WeightEntryType[];
 }

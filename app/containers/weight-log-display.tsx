@@ -27,7 +27,7 @@ import { errorCausesObj } from "../libs/errors";
 import LoadingIndicator from "../components/loading-indicator";
 import MessageDisplay from "../components/message-display";
 import { sortEntriesArray } from "../libs/sorting";
-import { cacheWeightEntryArray, getCachedWeightEntryArray } from "../libs/session-storage";
+import { cacheWeightEntryArray, getCachedWeightEntryArray, removeFromCachedWeightEntryArray } from "../libs/session-storage";
 
 /**
  * Contains the components for displaying the weight log interface and
@@ -58,7 +58,7 @@ export default function WeightLogDisplay() {
    * @param entryId Id for the weight entry to be updated
    */
   function triggerEntryUpdate(entryId: string): void {
-    // Sets the loading boolean and clears the error message and info message
+    // Sets the loading boolean
     setIsLoading(true);
 
     try {
@@ -81,10 +81,10 @@ export default function WeightLogDisplay() {
 
   /**
    * Handles the removal of weight entries
-   * @param entryId Id for the weight entry to be delete4d
+   * @param entryId Id for the weight entry to be deleted
    */
   async function triggerEntryRemoval(entryId: string): Promise<void> {
-    // Sets the loading boolean and clears the error message and info message
+    // Sets the loading boolean
     setIsLoading(true);
 
     try {
@@ -96,6 +96,8 @@ export default function WeightLogDisplay() {
         // Calls the method to delete weight entries
         await removeWeightEntry(entryId);
         setInfoMessage("Entry removed");
+
+        removeFromCachedWeightEntryArray(entryId);
       }
     } catch (error) {
       // Checks if error is a known error
