@@ -97,6 +97,7 @@ export default function WeightLogDisplay() {
         await removeWeightEntry(entryId);
         setInfoMessage("Entry removed");
 
+        // Calls the method to update the cached weight entry array
         removeFromCachedWeightEntryArray(entryId);
       }
     } catch (error) {
@@ -236,7 +237,6 @@ export default function WeightLogDisplay() {
       } else {
         // Uses the cached array values
         userWeightEntries = cachedArray;
-        console.log(userWeightEntries)
       }
 
       // Sorts the weight entries in the temp array to the default order, by date and in descending order
@@ -256,9 +256,8 @@ export default function WeightLogDisplay() {
           userWeightEntries[0].weightValue,
         );
 
-        // TODO: Replace with Success Popup Element
         if (isGoalWeightAchieved) {
-          // alert("Goal Weight Achieved!");
+          setInfoMessage("Goal Weight Achieved!")
         }
       } else {
         // TODO: Move goal weight entry check to separate function and have it occur after the initial sorting of the array

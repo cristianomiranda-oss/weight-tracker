@@ -110,8 +110,14 @@ export function updateCachedWeightEntryArray(entryId: string, newWeightValue: nu
         const updatedCacheObj: CachedObj = {expirationTime: cachedObj.expirationTime, weightEntryArray: updatedArray}
         // Stores the updated array with the existing expiration time
         storeCachedObject(updatedCacheObj);
+
+        // Exits the function;
+        return;
       }
     }
+
+    // Throws an error indicating the entry id was invalid
+    throw new Error("Invalid Entry Id")
   } catch (error) {
     // Catches and logs any error
     console.error("Session Storage Updating\n", error);

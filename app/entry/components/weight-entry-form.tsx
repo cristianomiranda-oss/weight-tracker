@@ -18,6 +18,7 @@ import {
 } from "@/app/actions/middleware/goal-weight-entry";
 import LoadingIndicator from "@/app/components/loading-indicator";
 import { errorCausesObj } from "@/app/libs/errors";
+import { updateCachedWeightEntryArray } from "@/app/libs/session-storage";
 
 /**
  * Contains the components for display the weight entry and goal weight entry interfaces
@@ -109,6 +110,9 @@ export default function WeightEntryForm(): React.JSX.Element {
 
         // Calls the method to update the weight entry
         await changeWeighEntry(updateEntryId, weightValue, weighInDate);
+
+        // Calls the method to update the entry in the cached array
+        updateCachedWeightEntryArray(updateEntryId, weightValue, weighInDate);
 
         navigateToHome();
       }
