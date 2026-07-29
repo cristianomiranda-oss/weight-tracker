@@ -18,7 +18,10 @@ import {
 } from "@/app/actions/middleware/goal-weight-entry";
 import LoadingIndicator from "@/app/components/loading-indicator";
 import { errorCausesObj } from "@/app/libs/errors";
-import { clearCachedWeightEntryArray, updateCachedWeightEntryArray } from "@/app/libs/session-storage";
+import {
+  clearCachedWeightEntryArray,
+  updateCachedWeightEntryArray,
+} from "@/app/libs/session-storage";
 import { getDataTimeString } from "@/app/libs/date";
 
 /**
@@ -50,6 +53,14 @@ export default function WeightEntryForm(): React.JSX.Element {
     useState<string>("000.00");
 
   /**
+   * Alerts the user of an invalid sign in and navigates to the accounts page
+   */
+  function handleInvalidUserData() {
+    alert("Invalid user data, returning to signing page...");
+    router.push("/accounts");
+  }
+
+  /**
    * Handles the adding of a new weight entry
    */
   async function addNewWeightEntry(): Promise<void> {
@@ -79,8 +90,7 @@ export default function WeightEntryForm(): React.JSX.Element {
       // Checks if the error is an established error
       if (error instanceof Error) {
         if (error.cause === errorCausesObj.invalidUserCookie) {
-          alert("Invalid Signing, returning to signing page...");
-          router.push("/accounts");
+          handleInvalidUserData();
         } else {
           setErrorMessage(error.message);
         }
@@ -123,8 +133,7 @@ export default function WeightEntryForm(): React.JSX.Element {
     } catch (error) {
       if (error instanceof Error) {
         if (error.cause === errorCausesObj.invalidUserCookie) {
-          alert("Invalid Signing, returning to signing page...");
-          router.push("/accounts");
+          handleInvalidUserData();
         } else {
           setErrorMessage(error.message);
         }
@@ -190,8 +199,7 @@ export default function WeightEntryForm(): React.JSX.Element {
       // Checks if the error is an established error
       if (error instanceof Error) {
         if (error.cause === errorCausesObj.invalidUserCookie) {
-          alert("Invalid Signing, returning to signing page...");
-          router.push("/accounts");
+          handleInvalidUserData();
         } else {
           setErrorMessage(error.message);
         }
@@ -281,8 +289,7 @@ export default function WeightEntryForm(): React.JSX.Element {
       // Checks if the error is an established error
       if (error instanceof Error) {
         if (error.cause === errorCausesObj.invalidUserCookie) {
-          alert("Invalid Signing, returning to signing page...");
-          router.push("/accounts");
+          handleInvalidUserData();
         } else {
           setErrorMessage(error.message);
         }

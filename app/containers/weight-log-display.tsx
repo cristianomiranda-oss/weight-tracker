@@ -27,7 +27,11 @@ import { errorCausesObj } from "../libs/errors";
 import LoadingIndicator from "../components/loading-indicator";
 import MessageDisplay from "../components/message-display";
 import { sortEntriesArray } from "../libs/sorting";
-import { cacheWeightEntryArray, getCachedWeightEntryArray, removeFromCachedWeightEntryArray } from "../libs/session-storage";
+import {
+  cacheWeightEntryArray,
+  getCachedWeightEntryArray,
+  removeFromCachedWeightEntryArray,
+} from "../libs/session-storage";
 
 /**
  * Contains the components for displaying the weight log interface and
@@ -52,6 +56,14 @@ export default function WeightLogDisplay() {
       sortOrder: "DESC",
     },
   );
+
+  /**
+   * Alerts the user of an invalid sign in and navigates to the accounts page
+   */
+  function handleInvalidUserData() {
+    alert("Invalid user data, returning to signing page...");
+    router.push("/accounts");
+  }
 
   /**
    * Handles the updating of weight entries
@@ -103,7 +115,11 @@ export default function WeightLogDisplay() {
     } catch (error) {
       // Checks if error is a known error
       if (error instanceof Error && error.cause) {
-        setErrorMessage(error.message);
+        if (error.cause === errorCausesObj.invalidUserCookie) {
+          handleInvalidUserData();
+        } else {
+          setErrorMessage(error.message);
+        }
       } else {
         setErrorMessage("An unknown error has occurred");
       }
@@ -257,11 +273,9 @@ export default function WeightLogDisplay() {
         );
 
         if (isGoalWeightAchieved) {
-          setInfoMessage("Goal Weight Achieved!")
+          setInfoMessage("Goal Weight Achieved!");
         }
       } else {
-        // TODO: Move goal weight entry check to separate function and have it occur after the initial sorting of the array
-        // If no entries, still checks if the user has a goal weight entry
         await checkGoalWeightEntry();
       }
     } catch (error) {
@@ -269,8 +283,7 @@ export default function WeightLogDisplay() {
       if (error instanceof Error && error.cause) {
         // Checks the cause of the error
         if (error.cause === errorCausesObj.invalidUserCookie) {
-          alert("Invalid Signing, returning to signing page...");
-          router.push("/accounts");
+          handleInvalidUserData();
         } else {
           setErrorMessage(error.message);
         }
@@ -288,6 +301,7 @@ export default function WeightLogDisplay() {
     loadWeightEntries();
   }, []);
 
+  // Triggers the clearing of an info or warning message once one is displayed
   useEffect(() => {
     // Instantiates a timeout
     let eraseTimeOut: NodeJS.Timeout | null = null;
