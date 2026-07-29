@@ -2,6 +2,7 @@ import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import type { UrlObject } from "url";
+import { clearCachedWeightEntryArray } from "../libs/session-storage";
 
 interface IconLinkProps {
   className?: string;
