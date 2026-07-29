@@ -159,3 +159,15 @@ export function removeFromCachedWeightEntryArray(entryId: string) {
     console.error("Session Storage Removing\n", error);
   }
 }
+
+/**
+   * Clears the cached weight entry
+   */
+export function clearCachedWeightEntryArray() {
+  try {
+    sessionStorage.removeItem(weightEntryArrKey);
+  } catch (error) {
+    // Catches and logs any error
+    console.error("Session Storage Removing\n", error);
+  }
+}
