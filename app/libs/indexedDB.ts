@@ -263,7 +263,7 @@ export class IndexedDB {
    */
   static async createWeightEntry(
     weightValue: number,
-    weighInDate: Date,
+    weighInDate: string,
     userId: string,
   ) {
     try {
@@ -413,7 +413,7 @@ export class IndexedDB {
   static async updateWeightEntry(
     weightEntryId: string,
     weightValue: number,
-    weighInDate: Date,
+    weighInDate: string,
     userId: string,
   ) {
     try {

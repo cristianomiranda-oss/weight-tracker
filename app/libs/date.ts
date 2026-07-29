@@ -41,10 +41,10 @@ function formatDate(date: Date) {
   return `${finalMonth}/${finalDay}/${year}`;
 }
 
-export function getDisplayDate(date: Date) {
-  const newDate = new Date(date);
-  const finalTime = formatTime(newDate);
-  const finalDate = formatDate(newDate);
+export function getDisplayDate(dateString: string) {
+  const date = new Date(dateString);
+  const finalTime = formatTime(date);
+  const finalDate = formatDate(date);
 
   return `${finalTime} ${finalDate}`;
 }
@@ -54,7 +54,10 @@ export function getDisplayDate(date: Date) {
    *
    * @param date The date that will be formatted
    */
-export function getDataTimeString(date: Date) {
+export function getDataTimeString(dateString: string) {
+  // Parses the date string
+  const date = new Date(dateString);
+
   // Gets the various date values
   const month = date.getMonth();
   const day = date.getDate();

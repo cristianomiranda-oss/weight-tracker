@@ -14,7 +14,7 @@ import { verifyAccountPayload } from "./payload-generation";
  */
 export async function addWeightEntry(
   weightValue: number,
-  weighInDate: Date,
+  weighInDate: string,
 ): Promise<void> {
   try {
     if (weightValue < 0 || Number.isNaN(weightValue)) {
@@ -23,8 +23,8 @@ export async function addWeightEntry(
       });
     }
 
-    // Checks if the passed in date defaults to "Invalid Date"
-    if (weighInDate.toString() === "Invalid Date") {
+    // Checks if the passed in date string is empty
+    if (weighInDate === "") {
       throw new Error("Weigh in date cannot be blank", {
         cause: errorCausesObj.invalidParameterValue,
       });
@@ -153,7 +153,7 @@ export async function getWeightEntry(
 export async function changeWeighEntry(
   weightEntryId: string,
   weightValue: number,
-  weighInDate: Date,
+  weighInDate: string,
 ): Promise<void> {
   try {
     // Checks if the entry id is the standard uuid length
@@ -169,8 +169,8 @@ export async function changeWeighEntry(
       });
     }
 
-    // Checks if the passed in date defaults to "Invalid Date"
-    if (weighInDate.toString() === "Invalid Date") {
+    // Checks if the passed in date string is empty
+    if (weighInDate === "") {
       throw new Error("Weigh in date cannot be blank", {
         cause: errorCausesObj.invalidParameterValue,
       });

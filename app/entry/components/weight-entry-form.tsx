@@ -76,7 +76,7 @@ export default function WeightEntryForm(): React.JSX.Element {
       ) {
         // Converts the input values to their appropriate types
         const weightValue = parseFloat(weightValueInputRef.current.value);
-        const weighInDate = new Date(weighInDateInputRef.current.value);
+        const weighInDate = weighInDateInputRef.current.value;
 
         // Calls the method to add a new weight entry
         await addWeightEntry(weightValue, weighInDate);
@@ -120,7 +120,7 @@ export default function WeightEntryForm(): React.JSX.Element {
       ) {
         // Converts the input values to their appropriate types
         const weightValue = parseFloat(weightValueInputRef.current.value);
-        const weighInDate = new Date(weighInDateInputRef.current.value);
+        const weighInDate = weighInDateInputRef.current.value;
 
         // Calls the method to update the weight entry
         await changeWeighEntry(updateEntryId, weightValue, weighInDate);

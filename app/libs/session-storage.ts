@@ -87,7 +87,7 @@ export function getCachedWeightEntryArray(): WeightEntryType[] | null {
   }
 }
 
-export function updateCachedWeightEntryArray(entryId: string, newWeightValue: number, newWeighInDate: Date) {
+export function updateCachedWeightEntryArray(entryId: string, newWeightValue: number, newWeighInDate: string) {
   try {
     const cachedObj = getCachedObject();
 
