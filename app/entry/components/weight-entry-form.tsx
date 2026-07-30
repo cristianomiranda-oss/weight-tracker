@@ -18,6 +18,11 @@ import {
 } from "@/app/actions/middleware/goal-weight-entry";
 import LoadingIndicator from "@/app/components/loading-indicator";
 import { errorCausesObj } from "@/app/libs/errors";
+import {
+  clearCachedWeightEntryArray,
+  updateCachedWeightEntryArray,
+} from "@/app/libs/session-storage";
+import { getDataTimeString } from "@/app/libs/date";
 
 /**
  * Contains the components for display the weight entry and goal weight entry interfaces
@@ -48,6 +53,14 @@ export default function WeightEntryForm(): React.JSX.Element {
     useState<string>("000.00");
 
   /**
+   * Alerts the user of an invalid sign in and navigates to the accounts page
+   */
+  function handleInvalidUserData() {
+    alert("Invalid user data, returning to signing page...");
+    router.push("/accounts");
+  }
+
+  /**
    * Handles the adding of a new weight entry
    */
   async function addNewWeightEntry(): Promise<void> {
@@ -63,10 +76,13 @@ export default function WeightEntryForm(): React.JSX.Element {
       ) {
         // Converts the input values to their appropriate types
         const weightValue = parseFloat(weightValueInputRef.current.value);
-        const weighInDate = new Date(weighInDateInputRef.current.value);
+        const weighInDate = weighInDateInputRef.current.value;
 
         // Calls the method to add a new weight entry
         await addWeightEntry(weightValue, weighInDate);
+
+        // Calls the method to clear the cached weight entry array
+        clearCachedWeightEntryArray();
 
         navigateToHome();
       }
@@ -74,8 +90,7 @@ export default function WeightEntryForm(): React.JSX.Element {
       // Checks if the error is an established error
       if (error instanceof Error) {
         if (error.cause === errorCausesObj.invalidUserCookie) {
-          alert("Invalid Signing, returning to signing page...");
-          router.push("/accounts");
+          handleInvalidUserData();
         } else {
           setErrorMessage(error.message);
         }
@@ -104,20 +119,21 @@ export default function WeightEntryForm(): React.JSX.Element {
         updateEntryId !== null
       ) {
         // Converts the input values to their appropriate types
-        const weightEntryId = parseInt(updateEntryId);
         const weightValue = parseFloat(weightValueInputRef.current.value);
-        const weighInDate = new Date(weighInDateInputRef.current.value);
+        const weighInDate = weighInDateInputRef.current.value;
 
         // Calls the method to update the weight entry
-        await changeWeighEntry(weightEntryId, weightValue, weighInDate);
+        await changeWeighEntry(updateEntryId, weightValue, weighInDate);
+
+        // Calls the method to update the entry in the cached array
+        updateCachedWeightEntryArray(updateEntryId, weightValue, weighInDate);
 
         navigateToHome();
       }
     } catch (error) {
       if (error instanceof Error) {
         if (error.cause === errorCausesObj.invalidUserCookie) {
-          alert("Invalid Signing, returning to signing page...");
-          router.push("/accounts");
+          handleInvalidUserData();
         } else {
           setErrorMessage(error.message);
         }
@@ -183,8 +199,7 @@ export default function WeightEntryForm(): React.JSX.Element {
       // Checks if the error is an established error
       if (error instanceof Error) {
         if (error.cause === errorCausesObj.invalidUserCookie) {
-          alert("Invalid Signing, returning to signing page...");
-          router.push("/accounts");
+          handleInvalidUserData();
         } else {
           setErrorMessage(error.message);
         }
@@ -256,10 +271,15 @@ export default function WeightEntryForm(): React.JSX.Element {
         // Checks if the updateEntryId search parameter is valid
         if (updateEntryId !== "" && updateEntryId !== null) {
           // Converts the passed in entry id to a number
-          const weightEntryId = parseInt(updateEntryId);
 
           // Gets the weight entry's values
-          const entryData = await getWeightEntry(weightEntryId);
+          const entryData = await getWeightEntry(updateEntryId);
+
+          if (weighInDateInputRef.current) {
+            // Slices the date string to match the pattern for the input value
+            const dateValue = getDataTimeString(entryData.weighInDate);
+            weighInDateInputRef.current.value = dateValue;
+          }
 
           // Sets the place holder to the weight entry value
           setWeightValuePlaceholder(`${entryData.weightValue}`);
@@ -269,8 +289,7 @@ export default function WeightEntryForm(): React.JSX.Element {
       // Checks if the error is an established error
       if (error instanceof Error) {
         if (error.cause === errorCausesObj.invalidUserCookie) {
-          alert("Invalid Signing, returning to signing page...");
-          router.push("/accounts");
+          handleInvalidUserData();
         } else {
           setErrorMessage(error.message);
         }

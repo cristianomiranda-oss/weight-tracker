@@ -1,23 +1,28 @@
 export type WeightEntryType = {
-  weightEntryId: number;
+  weightEntryId: string;
   weightValue: number;
-  weighInDate: Date;
-  userId: number;
+  weighInDate: string;
+  userId: string;
 };
 
 export type GoalOption = "Loss" | "Maintenance" | "Gain";
 
 export type GoalWeightEntryType = {
-  goalWeightEntryId: number;
+  goalWeightEntryId: string;
   weightValue: number;
   goalType: "Loss" | "Maintenance" | "Gain";
-  userId: number;
+  userId: string;
 };
 
 export type UserAccount = {
-  userId: number;
+  userId: string;
   userName: string;
   userPassword: string;
+};
+
+export type UserPayloadObj = {
+  userId: string;
+  userName: string;
 };
 
 export type DataBaseStore =
@@ -28,3 +33,17 @@ export type DataBaseStore =
 export type DataBaseIndex = "USER_NAME" | "WEIGHT_ENTRY_ID" | "USER_ID";
 
 export type DataBaseAccessType = "readwrite" | "readonly";
+
+export type sortOrder = "ASC" | "DESC";
+
+export type sortingKey = "weightValue" | "weighInDate";
+
+export type sortOptions = {
+  sortOrder: sortOrder;
+  sortingKey: "weightValue" | "weighInDate";
+};
+
+export type CachedObj = {
+  expirationTime: number;
+  weightEntryArray: WeightEntryType[];
+};

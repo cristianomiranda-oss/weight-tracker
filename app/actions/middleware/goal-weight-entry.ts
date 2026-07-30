@@ -4,6 +4,7 @@ import { getUserCookie } from "@/app/libs/cookies";
 import { errorCausesObj, handleMiddleWareErrors } from "@/app/libs/errors";
 import { IndexedDB } from "@/app/libs/indexedDB";
 import type { GoalOption, GoalWeightEntryType } from "@/app/libs/types";
+import { verifyAccountPayload } from "./payload-generation";
 
 /**
  * Middleware for accessing the database to create a new goal weight entry
@@ -44,12 +45,13 @@ export async function addGoalWeightEntry(
       });
     }
 
-    const userId = parseInt(userCookie.value);
+    // Calls the method to read and verify the payload string
+    const payloadData = await verifyAccountPayload(userCookie.value);
 
     const newGoalWeightEntryId = await IndexedDB.createGoalWeightEntry(
       weightValue,
       goalType,
-      userId,
+      payloadData.userId,
     );
 
     if (newGoalWeightEntryId) {
@@ -82,9 +84,12 @@ export async function getGoalWeightEntry(): Promise<GoalWeightEntryType | null> 
       });
     }
 
-    const userId = parseInt(userCookie.value);
+    // Calls the method to read and verify the payload string
+    const payloadData = await verifyAccountPayload(userCookie.value);
 
-    const userGoalWeightEntry = await IndexedDB.readGoalWeightEntry(userId);
+    const userGoalWeightEntry = await IndexedDB.readGoalWeightEntry(
+      payloadData.userId,
+    );
 
     return userGoalWeightEntry;
   } catch (error) {
@@ -102,12 +107,13 @@ export async function getGoalWeightEntry(): Promise<GoalWeightEntryType | null> 
  * @throws Signals the process failed
  */
 export async function changeGoalWeighEntry(
-  goalWeightEntryId: number,
+  goalWeightEntryId: string,
   weightValue: number,
   goalType: GoalOption,
 ) {
   try {
-    if (goalWeightEntryId <= 0) {
+    // Checks if the entry id is the standard uuid length
+    if (goalWeightEntryId.length !== 36) {
       throw new Error("Existing goal weight entry invalid", {
         cause: errorCausesObj.invalidParameterValue,
       });
@@ -141,13 +147,14 @@ export async function changeGoalWeighEntry(
       });
     }
 
-    const userId = parseInt(userCookie.value);
+    // Calls the method to read and verify the payload string
+    const payloadData = await verifyAccountPayload(userCookie.value);
 
     const isEntryUpdated = await IndexedDB.updateGoalWeightEntry(
       goalWeightEntryId,
       weightValue,
       goalType,
-      userId,
+      payloadData.userId,
     );
 
     if (isEntryUpdated) {

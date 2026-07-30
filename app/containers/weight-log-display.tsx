@@ -8,7 +8,13 @@ import Header from "../components/header";
 import IconLink from "../components/icon-link";
 import Card from "../components/card";
 import Footer from "../components/footer";
-import type { GoalWeightEntryType, WeightEntryType } from "../libs/types";
+import type {
+  GoalWeightEntryType,
+  sortingKey,
+  sortOptions,
+  sortOrder,
+  WeightEntryType,
+} from "../libs/types";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import WeightLogTableTable from "../components/weight-log-table";
@@ -20,6 +26,12 @@ import { getGoalWeightEntry } from "../actions/middleware/goal-weight-entry";
 import { errorCausesObj } from "../libs/errors";
 import LoadingIndicator from "../components/loading-indicator";
 import MessageDisplay from "../components/message-display";
+import { sortEntriesArray } from "../libs/sorting";
+import {
+  cacheWeightEntryArray,
+  getCachedWeightEntryArray,
+  removeFromCachedWeightEntryArray,
+} from "../libs/session-storage";
 
 /**
  * Contains the components for displaying the weight log interface and
@@ -37,12 +49,28 @@ export default function WeightLogDisplay() {
   // Initializes state for storing all user weight entries
   const [weightEntries, setWeightEntries] = useState<WeightEntryType[]>([]);
 
+  // Initializes the sorting filter state with the default sorting order
+  const [currentSortingOption, setCurrentSortingOption] = useState<sortOptions>(
+    {
+      sortingKey: "weighInDate",
+      sortOrder: "DESC",
+    },
+  );
+
+  /**
+   * Alerts the user of an invalid sign in and navigates to the accounts page
+   */
+  function handleInvalidUserData() {
+    alert("Invalid user data, returning to signing page...");
+    router.push("/accounts");
+  }
+
   /**
    * Handles the updating of weight entries
    * @param entryId Id for the weight entry to be updated
    */
-  function triggerEntryUpdate(entryId: number): void {
-    // Sets the loading boolean and clears the error message and info message
+  function triggerEntryUpdate(entryId: string): void {
+    // Sets the loading boolean
     setIsLoading(true);
 
     try {
@@ -65,10 +93,10 @@ export default function WeightLogDisplay() {
 
   /**
    * Handles the removal of weight entries
-   * @param entryId Id for the weight entry to be delete4d
+   * @param entryId Id for the weight entry to be deleted
    */
-  async function triggerEntryRemoval(entryId: number): Promise<void> {
-    // Sets the loading boolean and clears the error message and info message
+  async function triggerEntryRemoval(entryId: string): Promise<void> {
+    // Sets the loading boolean
     setIsLoading(true);
 
     try {
@@ -80,11 +108,18 @@ export default function WeightLogDisplay() {
         // Calls the method to delete weight entries
         await removeWeightEntry(entryId);
         setInfoMessage("Entry removed");
+
+        // Calls the method to update the cached weight entry array
+        removeFromCachedWeightEntryArray(entryId);
       }
     } catch (error) {
       // Checks if error is a known error
       if (error instanceof Error && error.cause) {
-        setErrorMessage(error.message);
+        if (error.cause === errorCausesObj.invalidUserCookie) {
+          handleInvalidUserData();
+        } else {
+          setErrorMessage(error.message);
+        }
       } else {
         setErrorMessage("An unknown error has occurred");
       }
@@ -142,15 +177,92 @@ export default function WeightLogDisplay() {
   }
 
   /**
+   * Sorts the weight entries based on the passed in parameters
+   *
+   * @param {sortOrder} sortOrder The order in which the array will be sorted, either ascending or descending
+   * @param {sortingKey} objKey The object key associated with the value that will be used to sort the weight entry array
+   */
+  function sortWeightEntries(
+    sortOrder: sortOrder,
+    objKey: "weightValue" | "weighInDate",
+  ) {
+    setWeightEntries((prevEntries) => {
+      // Copies the array
+      const sortedEntries = [...prevEntries];
+
+      // Calls the method to sort the array using the passed in parameters
+      sortEntriesArray(sortedEntries, objKey, sortOrder);
+
+      // Returns the sorted array
+      return sortedEntries;
+    });
+  }
+
+  /**
+   * Updates the current sorting option and resorts the weight entry array to reflect the change.
+   * If the sortingKey is already used to sort the array, the sort order will be toggled,
+   * else the new sortingKey will be used and the sort order will initially be descending
+   *
+   * @param {sortingKey} sortingKey The key associated with the sorting call, will toggle the sorting order if already active
+   */
+  function updateSortingOption(sortingKey: sortingKey) {
+    // Copies the current sorting options
+    let newSortingOptions = { ...currentSortingOption };
+
+    const cachedObj = getCachedWeightEntryArray();
+
+    console.log(cachedObj);
+
+    // Checks if the currently active sort button is clicked
+    if (currentSortingOption.sortingKey === sortingKey) {
+      // Checks the current sort order and switches to the opposing one
+      newSortingOptions.sortOrder =
+        currentSortingOption.sortOrder === "ASC" ? "DESC" : "ASC";
+    } else {
+      // If the opposing sort button is clicked it is activated
+      newSortingOptions.sortingKey = sortingKey;
+      newSortingOptions.sortOrder = "DESC";
+    }
+
+    sortWeightEntries(
+      newSortingOptions.sortOrder,
+      newSortingOptions.sortingKey,
+    );
+    setCurrentSortingOption(newSortingOptions);
+  }
+
+  /**
    * Triggers the fetch to access the user's weight entries to the appropriate middleware method
    */
   async function loadWeightEntries() {
     // Sets the loading boolean and clears the error message and info message
     setIsLoading(true);
 
+    // Initializes temp weight entries array
+    let userWeightEntries: WeightEntryType[] = [];
+
     try {
-      // Gathers the user's weight entries
-      const userWeightEntries = await getWeightEntries();
+      const cachedArray = getCachedWeightEntryArray();
+
+      // Check if the cached array is valid
+      if (cachedArray === null) {
+        // Gathers the user's weight entries
+        userWeightEntries = await getWeightEntries();
+        // Stores the entries in cache
+        cacheWeightEntryArray(userWeightEntries);
+      } else {
+        // Uses the cached array values
+        userWeightEntries = cachedArray;
+      }
+
+      // Sorts the weight entries in the temp array to the default order, by date and in descending order
+      sortEntriesArray(userWeightEntries, "weighInDate", "DESC");
+      // Updates the current sorting option to reflect the default sorting options
+      setCurrentSortingOption({
+        sortingKey: "weighInDate",
+        sortOrder: "DESC",
+      });
+      // Updates state after sorting the temp array
       setWeightEntries(userWeightEntries);
 
       // Checks if the returned array has at least one entry
@@ -160,12 +272,10 @@ export default function WeightLogDisplay() {
           userWeightEntries[0].weightValue,
         );
 
-        // TODO: Replace with Success Popup Element
         if (isGoalWeightAchieved) {
-          // alert("Goal Weight Achieved!");
+          setInfoMessage("Goal Weight Achieved!");
         }
       } else {
-        // If no entries, still checks if the user has a goal weight entry
         await checkGoalWeightEntry();
       }
     } catch (error) {
@@ -173,8 +283,7 @@ export default function WeightLogDisplay() {
       if (error instanceof Error && error.cause) {
         // Checks the cause of the error
         if (error.cause === errorCausesObj.invalidUserCookie) {
-          alert("Invalid Signing, returning to signing page...");
-          router.push("/accounts");
+          handleInvalidUserData();
         } else {
           setErrorMessage(error.message);
         }
@@ -192,6 +301,7 @@ export default function WeightLogDisplay() {
     loadWeightEntries();
   }, []);
 
+  // Triggers the clearing of an info or warning message once one is displayed
   useEffect(() => {
     // Instantiates a timeout
     let eraseTimeOut: NodeJS.Timeout | null = null;
@@ -224,13 +334,15 @@ export default function WeightLogDisplay() {
           disabled={isLoading}
         />
       </Header>
-      <div className="w-full h-[calc(100%-10rem)] min-h-min  p-8">
+      <div className="w-full h-[calc(100%-10rem)] min-h-min p-8">
         <Card className="p-0">
           {isLoading && <LoadingIndicator />}
           <WeightLogTableTable
             weightEntries={weightEntries}
             triggerEntryRemoval={triggerEntryRemoval}
             triggerEntryUpdate={triggerEntryUpdate}
+            currentSortingOption={currentSortingOption}
+            updateSortingOption={updateSortingOption}
           />
           <MessageDisplay
             errorMessage={errorMessage}

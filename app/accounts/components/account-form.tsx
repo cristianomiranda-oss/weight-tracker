@@ -8,8 +8,10 @@ import Button from "@/app/components/button";
 import LabeledInput from "@/app/components/labeled-input";
 import LoadingIndicator from "@/app/components/loading-indicator";
 import SubmitButton from "@/app/components/submit-button";
+import { clearUserCookie } from "@/app/libs/cookies";
+import { clearCachedWeightEntryArray } from "@/app/libs/session-storage";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * Contains the components for displaying the account sign in and account creation interface and
@@ -115,6 +117,31 @@ export default function AccountForm(): React.JSX.Element {
       setIsLoading(false);
     }
   }
+
+  // Clears any user data on page launch
+  useEffect(() => {
+    async function clearUserData() {
+      setIsLoading(true);
+
+      try {
+        // Calls the methods to clear user data upon loading the homepage
+        clearCachedWeightEntryArray();
+        await clearUserCookie();
+      } catch (error) {
+        // Checks if the error is an established error
+        if (error instanceof Error) {
+          setErrorMessage(error.message);
+        } else {
+          // Indicates an unusual error has occurred
+          setErrorMessage("An Unknown Error has Occurred!");
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    clearUserData();
+  }, []);
 
   return (
     <>

@@ -4,6 +4,7 @@ import { getUserCookie } from "@/app/libs/cookies";
 import { errorCausesObj, handleMiddleWareErrors } from "@/app/libs/errors";
 import { IndexedDB } from "@/app/libs/indexedDB";
 import type { WeightEntryType } from "@/app/libs/types";
+import { verifyAccountPayload } from "./payload-generation";
 
 /**
  * Middleware for accessing the database to create new weight entry
@@ -13,7 +14,7 @@ import type { WeightEntryType } from "@/app/libs/types";
  */
 export async function addWeightEntry(
   weightValue: number,
-  weighInDate: Date,
+  weighInDate: string,
 ): Promise<void> {
   try {
     if (weightValue < 0 || Number.isNaN(weightValue)) {
@@ -22,8 +23,8 @@ export async function addWeightEntry(
       });
     }
 
-    // Checks if the passed in date defaults to "Invalid Date"
-    if (weighInDate.toString() === "Invalid Date") {
+    // Checks if the passed in date string is empty
+    if (weighInDate === "") {
       throw new Error("Weigh in date cannot be blank", {
         cause: errorCausesObj.invalidParameterValue,
       });
@@ -37,12 +38,13 @@ export async function addWeightEntry(
       });
     }
 
-    const userId = parseInt(userCookie.value);
+    // Calls the method to read and verify the payload string
+    const payloadData = await verifyAccountPayload(userCookie.value);
 
     const newEntryId = await IndexedDB.createWeightEntry(
       weightValue,
       weighInDate,
-      userId,
+      payloadData.userId,
     );
 
     if (newEntryId) {
@@ -74,9 +76,12 @@ export async function getWeightEntries(): Promise<WeightEntryType[]> {
       });
     }
 
-    const userId = parseInt(userCookie.value);
+    // Calls the method to read and verify the payload string
+    const payloadData = await verifyAccountPayload(userCookie.value);
 
-    const userWeightEntries = await IndexedDB.readWeightEntries(userId);
+    const userWeightEntries = await IndexedDB.readWeightEntries(
+      payloadData.userId,
+    );
 
     if (userWeightEntries === null) {
       throw new Error("Failed to access weight entry", {
@@ -98,9 +103,16 @@ export async function getWeightEntries(): Promise<WeightEntryType[]> {
  * @throws Signals the process failed
  */
 export async function getWeightEntry(
-  weightEntryId: number,
+  weightEntryId: string,
 ): Promise<WeightEntryType> {
   try {
+    // Checks if the entry id is the standard uuid length
+    if (weightEntryId.length !== 36) {
+      throw new Error("Existing weight entry id is invalid", {
+        cause: errorCausesObj.invalidParameterValue,
+      });
+    }
+
     const userCookie = await getUserCookie();
 
     if (userCookie === null) {
@@ -109,11 +121,12 @@ export async function getWeightEntry(
       });
     }
 
-    const userId = parseInt(userCookie.value);
+    // Calls the method to read and verify the payload string
+    const payloadData = await verifyAccountPayload(userCookie.value);
 
     const userWeightEntries = await IndexedDB.readWeightEntry(
       weightEntryId,
-      userId,
+      payloadData.userId,
     );
 
     if (userWeightEntries === null) {
@@ -138,13 +151,14 @@ export async function getWeightEntry(
  * @throws Signals the process failed
  */
 export async function changeWeighEntry(
-  weightEntryId: number,
+  weightEntryId: string,
   weightValue: number,
-  weighInDate: Date,
+  weighInDate: string,
 ): Promise<void> {
   try {
-    if (weightEntryId <= 0) {
-      throw new Error("Weight entry id is invalid", {
+    // Checks if the entry id is the standard uuid length
+    if (weightEntryId.length !== 36) {
+      throw new Error("Existing weight entry id is invalid", {
         cause: errorCausesObj.invalidParameterValue,
       });
     }
@@ -155,8 +169,8 @@ export async function changeWeighEntry(
       });
     }
 
-    // Checks if the passed in date defaults to "Invalid Date"
-    if (weighInDate.toString() === "Invalid Date") {
+    // Checks if the passed in date string is empty
+    if (weighInDate === "") {
       throw new Error("Weigh in date cannot be blank", {
         cause: errorCausesObj.invalidParameterValue,
       });
@@ -170,13 +184,14 @@ export async function changeWeighEntry(
       });
     }
 
-    const userId = parseInt(userCookie.value);
+    // Calls the method to read and verify the payload string
+    const payloadData = await verifyAccountPayload(userCookie.value);
 
     const isEntryUpdated = await IndexedDB.updateWeightEntry(
       weightEntryId,
       weightValue,
       weighInDate,
-      userId,
+      payloadData.userId,
     );
 
     if (isEntryUpdated) {
@@ -199,8 +214,15 @@ export async function changeWeighEntry(
  * @param entryId Id value for the entry to be removed.
  * @throws Signals the process failed
  */
-export async function removeWeightEntry(weightEntryId: number): Promise<void> {
+export async function removeWeightEntry(weightEntryId: string): Promise<void> {
   try {
+    // Checks if the entry id is the standard uuid length
+    if (weightEntryId.length !== 36) {
+      throw new Error("Existing weight entry id is invalid", {
+        cause: errorCausesObj.invalidParameterValue,
+      });
+    }
+
     const userCookie = await getUserCookie();
 
     if (userCookie === null) {
@@ -209,13 +231,14 @@ export async function removeWeightEntry(weightEntryId: number): Promise<void> {
       });
     }
 
-    const userId = parseInt(userCookie.value);
+    // Calls the method to read and verify the payload string
+    const payloadData = await verifyAccountPayload(userCookie.value);
 
     // Gathers the entry data
     const entryData = await getWeightEntry(weightEntryId);
 
     // Confirms if the entry's user id matches the user's cookie value
-    if (entryData.userId !== userId) {
+    if (entryData.userId !== payloadData.userId) {
       throw new Error("Unauthorized access to entry", {
         cause: errorCausesObj.accessDenied,
       });
