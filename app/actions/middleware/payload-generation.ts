@@ -3,7 +3,7 @@ import { errorCausesObj } from "@/app/libs/errors";
 import type { UserPayloadObj } from "@/app/libs/types";
 import jwt from "jsonwebtoken";
 
-const secretKey = "TEMPKEY";
+const secretKey = process.env.SECRET_KEY;
 
 /**
  * Encrypts the user payload object in to a string
@@ -12,11 +12,14 @@ const secretKey = "TEMPKEY";
  * @param {string} userName The userName of the user's account to be stored within the encrypted payload object
  */
 export async function getAccountPayload(userId: string, userName: string) {
+  if (secretKey === undefined) {
+    throw new Error("Server Issue", { cause: errorCausesObj.processFail });
+  }
+
   const userPayload: UserPayloadObj = { userId, userName };
 
   // TODO: Replace key with a key from a key file
   const payload = jwt.sign(userPayload, secretKey, {
-    // algorithm: "PS256",
     expiresIn: "1h",
   });
 
@@ -30,6 +33,10 @@ export async function getAccountPayload(userId: string, userName: string) {
  */
 export async function verifyAccountPayload(payload: string) {
   try {
+    if (secretKey === undefined) {
+      throw new Error("Server Issue", { cause: errorCausesObj.processFail });
+    }
+
     // Credit: Radu Diță For explaining the need to cast a result as a specific type to define the payload object type
     // https://stackoverflow.com/questions/50735675/typescript-jwt-verify-cannot-access-data
     const payloadObj = jwt.verify(payload, secretKey) as UserPayloadObj;
