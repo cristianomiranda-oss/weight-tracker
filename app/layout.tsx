@@ -14,7 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Weight Tracker",
-  description: "A weight tracking application that allows users to track their weight overtime and to set a goal weight that they wish to work towards.",
+  description:
+    "A weight tracking application that allows users to track their weight overtime and to set a goal weight that they wish to work towards.",
 };
 
 export default function RootLayout({

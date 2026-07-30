@@ -3,6 +3,10 @@ import type { CachedObj, WeightEntryType } from "./types";
 
 const weightEntryArrKey = "weight_entry_cache";
 
+/**
+ * Stores the passed in object in session storage. The key is defined in this function's file
+ * @param {CachedObj} cachedObj The object to be stored
+ */
 function storeCachedObject(cachedObj: CachedObj) {
   try {
     // Stores the object
@@ -14,28 +18,31 @@ function storeCachedObject(cachedObj: CachedObj) {
   }
 }
 
+/**
+ * Retrieves the cached object from session storage, but if the object does not exist or its expiration time has passed a null value is returned
+ */
 function getCachedObject() {
   try {
     const cachedObjStr = sessionStorage.getItem(weightEntryArrKey);
-  
+
     if (cachedObjStr === null) {
-      return null
+      return null;
     }
-  
+
     // Parses the string into an object
     const cachedObj: CachedObj = JSON.parse(cachedObjStr);
-  
+
     // Gets the current time and expiration time in milliseconds
     const currentTime = Date.now();
     const expirationTime = cachedObj.expirationTime;
-  
+
     // Checks if the current time is past the expiration time
     if (currentTime >= expirationTime) {
-        // Returns null to denote that the cache is no longer valid
-        return null;
+      // Returns null to denote that the cache is no longer valid
+      return null;
     }
-  
-    return cachedObj
+
+    return cachedObj;
   } catch (error) {
     // Catches and logs any error and returns null
     console.error("Session Storage Getting\n", error);
@@ -44,20 +51,20 @@ function getCachedObject() {
 }
 
 /**
-   * Stores the passed in weight entry and assigns it an expiration time before storing in session storage
-   * @param {WeightEntryType[]} weightEntryArray The weight entry array to be stored.
-   */
+ * Stores the passed in weight entry and assigns it an expiration time before storing in session storage
+ * @param {WeightEntryType[]} weightEntryArray The weight entry array to be stored.
+ */
 export function cacheWeightEntryArray(weightEntryArray: WeightEntryType[]) {
   try {
     // Calculates the expiration time, one minute after the time of storing
     const expirationTime = Date.now() + minutesToMilliseconds(1);
-  
+
     // Initializes the cached object
     const cachedObj: CachedObj = {
       expirationTime,
       weightEntryArray: weightEntryArray,
     };
-  
+
     // Stores the object
     storeCachedObject(cachedObj);
   } catch (error) {
@@ -67,15 +74,15 @@ export function cacheWeightEntryArray(weightEntryArray: WeightEntryType[]) {
 }
 
 /**
-   * Gets the cached weight entry array from storage but checks if the cached array is expired before returning. 
-   * @returns Returns null if the session storage is empty or the cached array has expired.
-   */
+ * Gets the cached weight entry array from storage but checks if the cached array is expired before returning.
+ * @returns Returns null if the session storage is empty or the cached array has expired.
+ */
 export function getCachedWeightEntryArray(): WeightEntryType[] | null {
   try {
     const cachedObj = getCachedObject();
 
     if (cachedObj === null) {
-        return null;
+      return null;
     }
 
     // Returns the cached weight entry array
@@ -87,14 +94,18 @@ export function getCachedWeightEntryArray(): WeightEntryType[] | null {
   }
 }
 
-export function updateCachedWeightEntryArray(entryId: string, newWeightValue: number, newWeighInDate: string) {
+export function updateCachedWeightEntryArray(
+  entryId: string,
+  newWeightValue: number,
+  newWeighInDate: string,
+) {
   try {
     const cachedObj = getCachedObject();
 
     // Checks if the cache is valid and should be updated
     if (cachedObj === null) {
-        // Exits the function is the cache does not exist or is expired
-        return;
+      // Exits the function is the cache does not exist or is expired
+      return;
     }
 
     const updatedArray = cachedObj.weightEntryArray;
@@ -107,7 +118,10 @@ export function updateCachedWeightEntryArray(entryId: string, newWeightValue: nu
         updatedArray[i].weighInDate = newWeighInDate;
 
         // Initializes a new cache object with the updated array and existing expiration time
-        const updatedCacheObj: CachedObj = {expirationTime: cachedObj.expirationTime, weightEntryArray: updatedArray}
+        const updatedCacheObj: CachedObj = {
+          expirationTime: cachedObj.expirationTime,
+          weightEntryArray: updatedArray,
+        };
         // Stores the updated array with the existing expiration time
         storeCachedObject(updatedCacheObj);
 
@@ -117,7 +131,7 @@ export function updateCachedWeightEntryArray(entryId: string, newWeightValue: nu
     }
 
     // Throws an error indicating the entry id was invalid
-    throw new Error("Invalid Entry Id")
+    throw new Error("Invalid Entry Id");
   } catch (error) {
     // Catches and logs any error
     console.error("Session Storage Updating\n", error);
@@ -125,32 +139,40 @@ export function updateCachedWeightEntryArray(entryId: string, newWeightValue: nu
 }
 
 /**
-   * Removes an entry from the cached array. If the cached array is expired, the process is forgone.
-   * The cached array is updated but the expiration time remains the same.
-   *
-   * @param entryId The entry id of the array element to be removed
-   */
+ * Removes an entry from the cached array. If the cached array is expired, the process is forgone.
+ * The cached array is updated but the expiration time remains the same.
+ *
+ * @param {string} entryId The entry id of the array element to be removed
+ */
 export function removeFromCachedWeightEntryArray(entryId: string) {
   try {
     const cachedObj = getCachedObject();
 
     // Checks if the cache is valid and should be updated
     if (cachedObj === null) {
-        // Exits the function is the cache does not exist or is expired
-        return;
+      // Exits the function is the cache does not exist or is expired
+      return;
     }
 
     const updatedArray = cachedObj.weightEntryArray;
 
     // Finds the index of the entry to be removed
-    const entryIndex = updatedArray.findIndex((entry) => entry.weightEntryId === entryId);
+    const entryIndex = updatedArray.findIndex(
+      (entry) => entry.weightEntryId === entryId,
+    );
 
     const removedEntry = updatedArray.splice(entryIndex, 1);
 
     // Checks if at least one entry was removed and if the entry id matches the passed in value
-    if (removedEntry.length === 1 && removedEntry[0].weightEntryId === entryId) {
+    if (
+      removedEntry.length === 1 &&
+      removedEntry[0].weightEntryId === entryId
+    ) {
       // Initializes a new cache object with the updated array and existing expiration time
-      const updatedCacheObj: CachedObj = {expirationTime: cachedObj.expirationTime, weightEntryArray: updatedArray}
+      const updatedCacheObj: CachedObj = {
+        expirationTime: cachedObj.expirationTime,
+        weightEntryArray: updatedArray,
+      };
       // Stores the updated array with the existing expiration time
       storeCachedObject(updatedCacheObj);
     }
@@ -161,8 +183,8 @@ export function removeFromCachedWeightEntryArray(entryId: string) {
 }
 
 /**
-   * Clears the cached weight entry
-   */
+ * Clears the cached weight entry
+ */
 export function clearCachedWeightEntryArray() {
   try {
     sessionStorage.removeItem(weightEntryArrKey);
