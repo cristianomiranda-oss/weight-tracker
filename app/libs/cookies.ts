@@ -46,8 +46,8 @@ export async function getUserCookie(): Promise<RequestCookie | null> {
 }
 
 /**
-   * Clears the stored user cookie
-   */
+ * Clears the stored user cookie
+ */
 export async function clearUserCookie() {
   try {
     const cookieStore = await cookies();
