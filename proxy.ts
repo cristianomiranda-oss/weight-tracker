@@ -1,4 +1,4 @@
-import { verifyAccountPayload } from "@/app/actions/middleware/payload-generation";
+import { verifyAccountPayload } from "@/app/libs/payload-generation";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function proxy(req: NextRequest) {

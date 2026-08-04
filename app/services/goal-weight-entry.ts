@@ -1,20 +1,19 @@
-"use client";
+"use server";
 
-import { getUserCookie } from "@/app/libs/cookies";
 import { errorCausesObj, handleMiddleWareErrors } from "@/app/utils/errors";
-import { IndexedDB } from "@/app/libs/indexedDB";
-import type { GoalOption, GoalWeightEntryType } from "@/app/libs/types";
-import { verifyAccountPayload } from "../../libs/payload-generation";
+import type { GoalOption, GoalWeightEntryType, UserPayloadObj } from "@/app/libs/types";
 
 /**
- * Middleware for accessing the database to create a new goal weight entry
+ * Service for accessing the database to create a new goal weight entry
  * @param weightValue Number value for the new goal weight entry - Must be greater than zero
  * @param goalType Goal type for the new goal weight entry - Must be "Loss", "Gain", or "Maintenance"
+ * @param userAccount User account data for the new goal weight entry
  * @throws Signals the process failed
  */
 export async function addGoalWeightEntry(
   weightValue: number,
   goalType: GoalOption,
+  userAccount: UserPayloadObj
 ): Promise<void> {
   try {
     if (weightValue < 0 || Number.isNaN(weightValue)) {
@@ -37,22 +36,14 @@ export async function addGoalWeightEntry(
       });
     }
 
-    const userCookie = await getUserCookie();
+    // TODO: Add call to mongodb method
+    // const newGoalWeightEntryId = await IndexedDB.createGoalWeightEntry(
+    //   weightValue,
+    //   goalType,
+    //   userAccount.userId,
+    // );
 
-    if (userCookie === null) {
-      throw new Error("Invalid user account", {
-        cause: errorCausesObj.invalidUserCookie,
-      });
-    }
-
-    // Calls the method to read and verify the payload string
-    const payloadData = await verifyAccountPayload(userCookie.value);
-
-    const newGoalWeightEntryId = await IndexedDB.createGoalWeightEntry(
-      weightValue,
-      goalType,
-      payloadData.userId,
-    );
+    const newGoalWeightEntryId = "a";
 
     if (newGoalWeightEntryId) {
       return;
@@ -69,27 +60,24 @@ export async function addGoalWeightEntry(
 }
 
 /**
- * Middleware for accessing a goal weight entries associated with a user.
- * The currently stored user account cookie is used for identifying what entry is associated with the user.
+ * Service for accessing a goal weight entries associated with a user.
+ * The passed in user account data is used for identifying what entry is associated with the user.
  * Returns a null value if no goal weight entry is stored for the user.
+ * @param userAccount User account data for the new goal weight entry
  * @throws Signals the process failed
  */
-export async function getGoalWeightEntry(): Promise<GoalWeightEntryType | null> {
+export async function getGoalWeightEntry(userAccount: UserPayloadObj): Promise<GoalWeightEntryType | null> {
   try {
-    const userCookie = await getUserCookie();
-
-    if (userCookie === null) {
-      throw new Error("Invalid user account", {
-        cause: errorCausesObj.invalidUserCookie,
-      });
+    // TODO: Add call to mongodb method
+    // const userGoalWeightEntry = await IndexedDB.readGoalWeightEntry(
+    //   userAccount.userId,
+    // );
+    const userGoalWeightEntry: GoalWeightEntryType = {
+      goalType: "Gain",
+      goalWeightEntryId: "",
+      userId: "",
+      weightValue: 0
     }
-
-    // Calls the method to read and verify the payload string
-    const payloadData = await verifyAccountPayload(userCookie.value);
-
-    const userGoalWeightEntry = await IndexedDB.readGoalWeightEntry(
-      payloadData.userId,
-    );
 
     return userGoalWeightEntry;
   } catch (error) {
@@ -100,16 +88,18 @@ export async function getGoalWeightEntry(): Promise<GoalWeightEntryType | null> 
 }
 
 /**
- * Middleware for accessing the database to create a new goal weight entry
- * @param goalWeightEntryId New number value for the new goal weight entry - Must be greater than zero
+ * Service for accessing the database to update a goal weight entry
+ * @param goalWeightEntryId New number value for the existing goal weight entry - Must be greater than zero
  * @param weightValue New number value for the existing goal weight entry - Must be greater than zero
  * @param goalType New goal type for the existing goal weight entry - Must be "Loss", "Gain", or "Maintenance"
+ * @param userAccount User account data associated with the existing goal weight entry
  * @throws Signals the process failed
  */
 export async function changeGoalWeighEntry(
   goalWeightEntryId: string,
   weightValue: number,
   goalType: GoalOption,
+  userAccount: UserPayloadObj
 ) {
   try {
     // Checks if the entry id is the standard uuid length
@@ -139,23 +129,14 @@ export async function changeGoalWeighEntry(
       });
     }
 
-    const userCookie = await getUserCookie();
-
-    if (userCookie === null) {
-      throw new Error("Invalid user account", {
-        cause: errorCausesObj.invalidUserCookie,
-      });
-    }
-
-    // Calls the method to read and verify the payload string
-    const payloadData = await verifyAccountPayload(userCookie.value);
-
-    const isEntryUpdated = await IndexedDB.updateGoalWeightEntry(
-      goalWeightEntryId,
-      weightValue,
-      goalType,
-      payloadData.userId,
-    );
+    // TODO: Add call to mongodb method
+    // const isEntryUpdated = await IndexedDB.updateGoalWeightEntry(
+    //   goalWeightEntryId,
+    //   weightValue,
+    //   goalType,
+    //   userAccount.userId,
+    // );
+    const isEntryUpdated = true;
 
     if (isEntryUpdated) {
       return;

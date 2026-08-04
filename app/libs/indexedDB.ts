@@ -11,8 +11,8 @@ import type {
 import {
   checkPassword,
   hashPassword,
-} from "../actions/middleware/verification";
-import { getAccountPayload } from "../actions/middleware/payload-generation";
+} from "./verification";
+import { getAccountPayload } from "./payload-generation";
 
 /**
  * Class containing the methods needs to access the Indexed DB database and the CRUD methods for managing the different stores
@@ -185,6 +185,7 @@ export class IndexedDB {
    * CRUD method for validating an existing account. Returns with the entry's id if the passed in credentials are valid
    * or null if they are not
    * @throws Signals that the process failed
+   * @returns Returns the payload string generated after validating the user's credentials or null if the passed in credentials are invalid
    */
   static async validateUserAccount(userName: string, userPassword: string) {
     try {

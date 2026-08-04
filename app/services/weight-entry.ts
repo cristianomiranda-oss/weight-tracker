@@ -1,20 +1,18 @@
-"use client";
-
-import { getUserCookie } from "@/app/libs/cookies";
+"use server"
 import { errorCausesObj, handleMiddleWareErrors } from "@/app/utils/errors";
-import { IndexedDB } from "@/app/libs/indexedDB";
-import type { WeightEntryType } from "@/app/libs/types";
-import { verifyAccountPayload } from "../../libs/payload-generation";
+import type { UserPayloadObj, WeightEntryType } from "@/app/libs/types";
 
 /**
- * Middleware for accessing the database to create new weight entry
+ * Service for accessing the database to create new weight entry
  * @param weightValue Number value for the new weight entry - Must be greater than zero
  * @param weighInDate Date value for the new weight entry
+ * @param userAccount User account data for the new weight entry
  * @throws Signals the process failed
  */
 export async function addWeightEntry(
   weightValue: number,
   weighInDate: string,
+  userAccount: UserPayloadObj,
 ): Promise<void> {
   try {
     if (weightValue < 0 || Number.isNaN(weightValue)) {
@@ -30,22 +28,13 @@ export async function addWeightEntry(
       });
     }
 
-    const userCookie = await getUserCookie();
-
-    if (userCookie === null) {
-      throw new Error("Invalid user account", {
-        cause: errorCausesObj.invalidUserCookie,
-      });
-    }
-
-    // Calls the method to read and verify the payload string
-    const payloadData = await verifyAccountPayload(userCookie.value);
-
-    const newEntryId = await IndexedDB.createWeightEntry(
-      weightValue,
-      weighInDate,
-      payloadData.userId,
-    );
+    // TODO: Add method call to mongodb database
+    // const newEntryId = await IndexedDB.createWeightEntry(
+    //   weightValue,
+    //   weighInDate,
+    //   userAccount.userId,
+    // );
+    const newEntryId = 0;
 
     if (newEntryId) {
       return;
@@ -62,26 +51,20 @@ export async function addWeightEntry(
 }
 
 /**
- * Middleware for accessing weight entries associated with a user cookie.
- * The currently stored user account cookie is used for identifying what entry is associated with the user.
+ * Service for accessing weight entries associated with a user account.
+ * The passed in user account data is used for identifying what entry is associated with the user.
+ * @param userAccount User account data for accessing associated weight entries
  * @throws Signals the process failed
  */
-export async function getWeightEntries(): Promise<WeightEntryType[]> {
+export async function getWeightEntries(
+  userAccount: UserPayloadObj,
+): Promise<WeightEntryType[]> {
   try {
-    const userCookie = await getUserCookie();
-
-    if (userCookie === null) {
-      throw new Error("Invalid user account", {
-        cause: errorCausesObj.invalidUserCookie,
-      });
-    }
-
-    // Calls the method to read and verify the payload string
-    const payloadData = await verifyAccountPayload(userCookie.value);
-
-    const userWeightEntries = await IndexedDB.readWeightEntries(
-      payloadData.userId,
-    );
+    // TODO: Add method call to mongodb database
+    // const userWeightEntries = await IndexedDB.readWeightEntries(
+    //   userAccount.userId,
+    // );
+    const userWeightEntries: WeightEntryType[] = [];
 
     if (userWeightEntries === null) {
       throw new Error("Failed to access weight entry", {
@@ -98,12 +81,15 @@ export async function getWeightEntries(): Promise<WeightEntryType[]> {
 }
 
 /**
- * Middleware for accessing a weight entry associated with a user cookie.
- * The currently stored user account cookie is used for identifying what entry is associated with the user.
+ * Service for accessing a weight entry associated with a user account.
+ * The passed in user account data is used for identifying what entry is associated with the user.
+ * @param weightEntryId Weight Entry Id for the associated weight entry
+ * @param userAccount User account data associated with the weight entry
  * @throws Signals the process failed
  */
 export async function getWeightEntry(
   weightEntryId: string,
+  userAccount: UserPayloadObj,
 ): Promise<WeightEntryType> {
   try {
     // Checks if the entry id is the standard uuid length
@@ -113,21 +99,17 @@ export async function getWeightEntry(
       });
     }
 
-    const userCookie = await getUserCookie();
-
-    if (userCookie === null) {
-      throw new Error("Invalid user account", {
-        cause: errorCausesObj.invalidUserCookie,
-      });
+    // TODO: Add method call to mongodb database
+    // const userWeightEntries = await IndexedDB.readWeightEntry(
+    //   weightEntryId,
+    //   userAccount.userId,
+    // );
+    const userWeightEntries: WeightEntryType = {
+        userId: '',
+        weighInDate: "",
+        weightEntryId: "",
+        weightValue: 0
     }
-
-    // Calls the method to read and verify the payload string
-    const payloadData = await verifyAccountPayload(userCookie.value);
-
-    const userWeightEntries = await IndexedDB.readWeightEntry(
-      weightEntryId,
-      payloadData.userId,
-    );
 
     if (userWeightEntries === null) {
       throw new Error("Failed to access weight entry", {
@@ -144,16 +126,18 @@ export async function getWeightEntry(
 }
 
 /**
- * Middleware for accessing the database to update an existing weight entry
+ * Service for accessing the database to update an existing weight entry
  * @param weightEntryId Id for the associated weight entry to be changed - Must be greater than zero
  * @param weightValue New number value for the weight entry - Must be greater than zero
  * @param weighInDate New date value for the weight entry
+ * @param userAccount User account data associated with the to be updated weight entry
  * @throws Signals the process failed
  */
 export async function changeWeighEntry(
   weightEntryId: string,
   weightValue: number,
   weighInDate: string,
+  userAccount: UserPayloadObj,
 ): Promise<void> {
   try {
     // Checks if the entry id is the standard uuid length
@@ -176,23 +160,14 @@ export async function changeWeighEntry(
       });
     }
 
-    const userCookie = await getUserCookie();
-
-    if (userCookie === null) {
-      throw new Error("Invalid user account", {
-        cause: errorCausesObj.invalidUserCookie,
-      });
-    }
-
-    // Calls the method to read and verify the payload string
-    const payloadData = await verifyAccountPayload(userCookie.value);
-
-    const isEntryUpdated = await IndexedDB.updateWeightEntry(
-      weightEntryId,
-      weightValue,
-      weighInDate,
-      payloadData.userId,
-    );
+    // TODO: Add method call to mongodb database
+    // const isEntryUpdated = await IndexedDB.updateWeightEntry(
+    //   weightEntryId,
+    //   weightValue,
+    //   weighInDate,
+    //   userAccount.userId,
+    // );
+    const isEntryUpdated = true;
 
     if (isEntryUpdated) {
       return;
@@ -209,12 +184,13 @@ export async function changeWeighEntry(
 }
 
 /**
- * Middleware for removing specific weight entries from the database.
+ * Services for removing specific weight entries from the database.
  * Entries are identified based on the stored user account cookie and the passed in entryId value.
  * @param entryId Id value for the entry to be removed.
+ * @param userAccount User account data associated with the to be removed weight entry
  * @throws Signals the process failed
  */
-export async function removeWeightEntry(weightEntryId: string): Promise<void> {
+export async function removeWeightEntry(weightEntryId: string, userAccount: UserPayloadObj): Promise<void> {
   try {
     // Checks if the entry id is the standard uuid length
     if (weightEntryId.length !== 36) {
@@ -223,29 +199,20 @@ export async function removeWeightEntry(weightEntryId: string): Promise<void> {
       });
     }
 
-    const userCookie = await getUserCookie();
-
-    if (userCookie === null) {
-      throw new Error("Invalid user account", {
-        cause: errorCausesObj.invalidUserCookie,
-      });
-    }
-
-    // Calls the method to read and verify the payload string
-    const payloadData = await verifyAccountPayload(userCookie.value);
-
     // Gathers the entry data
-    const entryData = await getWeightEntry(weightEntryId);
+    const entryData = await getWeightEntry(weightEntryId, userAccount);
 
     // Confirms if the entry's user id matches the user's cookie value
-    if (entryData.userId !== payloadData.userId) {
+    if (entryData.userId !== userAccount.userId) {
       throw new Error("Unauthorized access to entry", {
         cause: errorCausesObj.accessDenied,
       });
     }
 
-    const isEntryDeleted: boolean =
-      await IndexedDB.deleteWeightEntry(weightEntryId);
+    // TODO: Add method to call MongoDB database
+    // const isEntryDeleted: boolean =
+    //   await IndexedDB.deleteWeightEntry(weightEntryId);
+    const isEntryDeleted = true;
 
     if (isEntryDeleted) {
       return;
