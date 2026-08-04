@@ -10,7 +10,7 @@ import type { GoalOption, GoalWeightEntryType, UserPayloadObj } from "@/app/libs
  * @param userAccount User account data for the new goal weight entry
  * @throws Signals the process failed
  */
-export async function addGoalWeightEntry(
+export async function addGoalWeightEntryService(
   weightValue: number,
   goalType: GoalOption,
   userAccount: UserPayloadObj
@@ -66,7 +66,7 @@ export async function addGoalWeightEntry(
  * @param userAccount User account data for the new goal weight entry
  * @throws Signals the process failed
  */
-export async function getGoalWeightEntry(userAccount: UserPayloadObj): Promise<GoalWeightEntryType | null> {
+export async function getGoalWeightEntryService(userAccount: UserPayloadObj): Promise<GoalWeightEntryType | null> {
   try {
     // TODO: Add call to mongodb method
     // const userGoalWeightEntry = await IndexedDB.readGoalWeightEntry(
@@ -95,7 +95,7 @@ export async function getGoalWeightEntry(userAccount: UserPayloadObj): Promise<G
  * @param userAccount User account data associated with the existing goal weight entry
  * @throws Signals the process failed
  */
-export async function changeGoalWeighEntry(
+export async function changeGoalWeighEntryService(
   goalWeightEntryId: string,
   weightValue: number,
   goalType: GoalOption,

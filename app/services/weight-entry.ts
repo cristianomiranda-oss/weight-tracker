@@ -9,7 +9,7 @@ import type { UserPayloadObj, WeightEntryType } from "@/app/libs/types";
  * @param userAccount User account data for the new weight entry
  * @throws Signals the process failed
  */
-export async function addWeightEntry(
+export async function addWeightEntryService(
   weightValue: number,
   weighInDate: string,
   userAccount: UserPayloadObj,
@@ -56,7 +56,7 @@ export async function addWeightEntry(
  * @param userAccount User account data for accessing associated weight entries
  * @throws Signals the process failed
  */
-export async function getWeightEntries(
+export async function getWeightEntriesService(
   userAccount: UserPayloadObj,
 ): Promise<WeightEntryType[]> {
   try {
@@ -87,7 +87,7 @@ export async function getWeightEntries(
  * @param userAccount User account data associated with the weight entry
  * @throws Signals the process failed
  */
-export async function getWeightEntry(
+export async function getWeightEntryService(
   weightEntryId: string,
   userAccount: UserPayloadObj,
 ): Promise<WeightEntryType> {
@@ -133,7 +133,7 @@ export async function getWeightEntry(
  * @param userAccount User account data associated with the to be updated weight entry
  * @throws Signals the process failed
  */
-export async function changeWeighEntry(
+export async function changeWeighEntryService(
   weightEntryId: string,
   weightValue: number,
   weighInDate: string,
@@ -190,7 +190,7 @@ export async function changeWeighEntry(
  * @param userAccount User account data associated with the to be removed weight entry
  * @throws Signals the process failed
  */
-export async function removeWeightEntry(weightEntryId: string, userAccount: UserPayloadObj): Promise<void> {
+export async function removeWeightEntryService(weightEntryId: string, userAccount: UserPayloadObj): Promise<void> {
   try {
     // Checks if the entry id is the standard uuid length
     if (weightEntryId.length !== 36) {
@@ -200,7 +200,7 @@ export async function removeWeightEntry(weightEntryId: string, userAccount: User
     }
 
     // Gathers the entry data
-    const entryData = await getWeightEntry(weightEntryId, userAccount);
+    const entryData = await getWeightEntryService(weightEntryId, userAccount);
 
     // Confirms if the entry's user id matches the user's cookie value
     if (entryData.userId !== userAccount.userId) {

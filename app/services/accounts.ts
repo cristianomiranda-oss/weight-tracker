@@ -8,7 +8,7 @@ import { errorCausesObj, handleMiddleWareErrors } from "@/app/utils/errors";
  * @param confirmPassWord Retying of the password for the account to be created - Must match the userPassword
  * @throws Signals the process failed
  */
-export async function createUserAccount(
+export async function createUserAccountService(
   userName: string,
   userPassword: string,
   confirmPassWord: string,
@@ -74,7 +74,7 @@ export async function createUserAccount(
  * @throws Signals the process failed
  * @returns The payload string to be stored
  */
-export async function validateLogin(
+export async function validateLoginService(
   userName: string,
   userPassword: string,
 ): Promise<string> {
