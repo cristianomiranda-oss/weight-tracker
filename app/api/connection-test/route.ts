@@ -1,3 +1,5 @@
+// Credit: all api calls were created using a pattern by Lee Robinson
+// https://nextjs.org/blog/building-apis-with-nextjs
 import { MongoClient, ServerApiVersion } from "mongodb";
 
 const dbUserName = process.env.DB_USERNAME

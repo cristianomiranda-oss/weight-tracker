@@ -1,5 +1,5 @@
 "use server";
-import { errorCausesObj } from "@/app/libs/errors";
+import { errorCausesObj } from "@/app/utils/errors";
 import type { UserPayloadObj } from "@/app/libs/types";
 import jwt from "jsonwebtoken";
 

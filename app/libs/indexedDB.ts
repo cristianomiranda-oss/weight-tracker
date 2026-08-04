@@ -1,4 +1,4 @@
-import { errorCausesObj } from "./errors";
+import { errorCausesObj } from "../utils/errors";
 import type {
   DataBaseAccessType,
   DataBaseIndex,

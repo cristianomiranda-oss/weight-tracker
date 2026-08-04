@@ -17,12 +17,12 @@ import {
   getGoalWeightEntry,
 } from "@/app/actions/middleware/goal-weight-entry";
 import LoadingIndicator from "@/app/components/loading-indicator";
-import { errorCausesObj } from "@/app/libs/errors";
+import { errorCausesObj } from "@/app/utils/errors";
 import {
   clearCachedWeightEntryArray,
   updateCachedWeightEntryArray,
 } from "@/app/libs/session-storage";
-import { getDataTimeString } from "@/app/libs/date";
+import { getDataTimeString } from "@/app/utils/date";
 
 /**
  * Contains the components for display the weight entry and goal weight entry interfaces

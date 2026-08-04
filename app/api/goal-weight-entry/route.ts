@@ -1,3 +1,5 @@
+// Credit: all api calls were created using a pattern by Lee Robinson
+// https://nextjs.org/blog/building-apis-with-nextjs
 export async function GET(request: Request) {
   try {
     return new Response("GET endpoint accessed", {
@@ -12,6 +14,7 @@ export async function GET(request: Request) {
     });
   }
 }
+
 
 export async function POST(request: Request) {
   try {

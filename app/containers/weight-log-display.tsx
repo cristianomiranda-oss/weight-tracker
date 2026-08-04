@@ -23,10 +23,10 @@ import {
   getWeightEntries,
 } from "../actions/middleware/weight-entry";
 import { getGoalWeightEntry } from "../actions/middleware/goal-weight-entry";
-import { errorCausesObj } from "../libs/errors";
+import { errorCausesObj } from "../utils/errors";
 import LoadingIndicator from "../components/loading-indicator";
 import MessageDisplay from "../components/message-display";
-import { sortEntriesArray } from "../libs/sorting";
+import { sortEntriesArray } from "../utils/sorting";
 import {
   cacheWeightEntryArray,
   getCachedWeightEntryArray,

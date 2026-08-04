@@ -1,6 +1,6 @@
 "use client";
 import { createUserCookie } from "@/app/libs/cookies";
-import { errorCausesObj, handleMiddleWareErrors } from "@/app/libs/errors";
+import { errorCausesObj, handleMiddleWareErrors } from "@/app/utils/errors";
 import { IndexedDB } from "@/app/libs/indexedDB";
 
 /**

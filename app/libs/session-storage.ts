@@ -1,4 +1,4 @@
-import { minutesToMilliseconds } from "./time";
+import { minutesToMilliseconds } from "../utils/time";
 import type { CachedObj, WeightEntryType } from "./types";
 
 const weightEntryArrKey = "weight_entry_cache";

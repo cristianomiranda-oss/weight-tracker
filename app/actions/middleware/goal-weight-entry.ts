@@ -1,7 +1,7 @@
 "use client";
 
 import { getUserCookie } from "@/app/libs/cookies";
-import { errorCausesObj, handleMiddleWareErrors } from "@/app/libs/errors";
+import { errorCausesObj, handleMiddleWareErrors } from "@/app/utils/errors";
 import { IndexedDB } from "@/app/libs/indexedDB";
 import type { GoalOption, GoalWeightEntryType } from "@/app/libs/types";
 import { verifyAccountPayload } from "./payload-generation";

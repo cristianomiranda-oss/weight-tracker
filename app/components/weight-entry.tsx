@@ -1,4 +1,4 @@
-import { getDisplayDate } from "../libs/date";
+import { getDisplayDate } from "../utils/date";
 import type { WeightEntryType } from "../libs/types";
 import Button from "./button";
 
