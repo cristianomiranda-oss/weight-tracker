@@ -1,10 +1,10 @@
-"use client";
+"use server";
 
 import { getUserCookie } from "@/app/libs/cookies";
 import { errorCausesObj, handleMiddleWareErrors } from "@/app/utils/errors";
-import { IndexedDB } from "@/app/libs/indexedDB";
 import type { GoalOption, GoalWeightEntryType } from "@/app/libs/types";
 import { verifyAccountPayload } from "../../libs/payload-generation";
+import { addGoalWeightEntryService, changeGoalWeighEntryService, getGoalWeightEntryService } from "@/app/services/goal-weight-entry";
 
 /**
  * Middleware for accessing the database to create a new goal weight entry
@@ -17,26 +17,6 @@ export async function addGoalWeightEntry(
   goalType: GoalOption,
 ): Promise<void> {
   try {
-    if (weightValue < 0 || Number.isNaN(weightValue)) {
-      throw new Error("Weight value cannot be less than zero", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
-
-    let isValid = false;
-
-    for (const approvedType of ["Loss", "Gain", "Maintenance"]) {
-      if (approvedType === goalType) {
-        isValid = true;
-      }
-    }
-
-    if (!isValid) {
-      throw new Error("Invalid goal type", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
-
     const userCookie = await getUserCookie();
 
     if (userCookie === null) {
@@ -48,19 +28,8 @@ export async function addGoalWeightEntry(
     // Calls the method to read and verify the payload string
     const payloadData = await verifyAccountPayload(userCookie.value);
 
-    const newGoalWeightEntryId = await IndexedDB.createGoalWeightEntry(
-      weightValue,
-      goalType,
-      payloadData.userId,
-    );
-
-    if (newGoalWeightEntryId) {
-      return;
-    } else {
-      throw new Error("Failed to add new goal weight entry", {
-        cause: errorCausesObj.databaseCrudError,
-      });
-    }
+    // Calls the service to add a new goal weight entry
+    await addGoalWeightEntryService(weightValue, goalType, payloadData);
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToThrow = handleMiddleWareErrors(error);
@@ -87,10 +56,8 @@ export async function getGoalWeightEntry(): Promise<GoalWeightEntryType | null> 
     // Calls the method to read and verify the payload string
     const payloadData = await verifyAccountPayload(userCookie.value);
 
-    const userGoalWeightEntry = await IndexedDB.readGoalWeightEntry(
-      payloadData.userId,
-    );
-
+    // Calls the service to retrieve the user's goal weight entry and returns it
+    const userGoalWeightEntry = await getGoalWeightEntryService(payloadData);
     return userGoalWeightEntry;
   } catch (error) {
     // Calls the method to handle errors in middleware functions
@@ -112,33 +79,6 @@ export async function changeGoalWeighEntry(
   goalType: GoalOption,
 ) {
   try {
-    // Checks if the entry id is the standard uuid length
-    if (goalWeightEntryId.length !== 36) {
-      throw new Error("Existing goal weight entry invalid", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
-
-    if (weightValue < 0 || Number.isNaN(weightValue)) {
-      throw new Error("Weight value cannot be less than 0", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
-
-    let isValid = false;
-
-    for (const approvedType of ["Loss", "Gain", "Maintenance"]) {
-      if (approvedType === goalType) {
-        isValid = true;
-      }
-    }
-
-    if (!isValid) {
-      throw new Error("Invalid goal type", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
-
     const userCookie = await getUserCookie();
 
     if (userCookie === null) {
@@ -150,20 +90,8 @@ export async function changeGoalWeighEntry(
     // Calls the method to read and verify the payload string
     const payloadData = await verifyAccountPayload(userCookie.value);
 
-    const isEntryUpdated = await IndexedDB.updateGoalWeightEntry(
-      goalWeightEntryId,
-      weightValue,
-      goalType,
-      payloadData.userId,
-    );
-
-    if (isEntryUpdated) {
-      return;
-    } else {
-      throw new Error("Failed to update new weight entry", {
-        cause: errorCausesObj.databaseCrudError,
-      });
-    }
+    // Calls the service to update the goal weight entry
+    await changeGoalWeighEntryService(goalWeightEntryId, weightValue, goalType, payloadData);
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToThrow = handleMiddleWareErrors(error);
