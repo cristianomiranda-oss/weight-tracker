@@ -4,7 +4,10 @@ import { NextRequest, NextResponse } from "next/server";
 export async function proxy(req: NextRequest) {
   try {
     // Checks if the api request is for the accounts api call
-    if (req.nextUrl.pathname === "/api/accounts") {
+    if (
+      req.nextUrl.pathname === "/api/accounts" ||
+      req.nextUrl.pathname === "/api/connection-test"
+    ) {
       // Approves the connection as no token is needed
       return NextResponse.next();
     }
