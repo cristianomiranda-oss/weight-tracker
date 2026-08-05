@@ -1,8 +1,28 @@
 // Credit: all api calls were created using a pattern by Lee Robinson
+
+import { verifyAccountPayload } from "@/app/libs/payload-generation";
+import { getGoalWeightEntryService } from "@/app/services/goal-weight-entry";
+
 // https://nextjs.org/blog/building-apis-with-nextjs
 export async function GET(request: Request) {
   try {
-    return new Response("GET endpoint accessed", {
+    // Pulls the token from the headers
+    const token = request.headers.get("Authorization");
+
+    // Splits the string and stores the payload string
+    const bearer = token?.split(" ").at(1);
+    
+    // Checks if the payload string is invalid
+    if (!bearer) {
+      throw new Error("Unauthorized");
+    }
+
+    // Decrypts the payload value
+    const userAccount = await verifyAccountPayload(bearer);
+
+    const test = await getGoalWeightEntryService(userAccount)
+
+    return new Response(JSON.stringify(test), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });

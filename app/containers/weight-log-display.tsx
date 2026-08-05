@@ -60,7 +60,7 @@ export default function WeightLogDisplay() {
   /**
    * Alerts the user of an invalid sign in and navigates to the accounts page
    */
-  function handleInvalidUserData() {
+  function handleInvalidUser() {
     alert("Invalid user data, returning to signing page...");
     router.push("/accounts");
   }
@@ -115,8 +115,8 @@ export default function WeightLogDisplay() {
     } catch (error) {
       // Checks if error is a known error
       if (error instanceof Error && error.cause) {
-        if (error.cause === errorCausesObj.invalidUserCookie) {
-          handleInvalidUserData();
+        if (error.cause === errorCausesObj.invalidUserCookie || error.cause === errorCausesObj.accessDenied) {
+          handleInvalidUser();
         } else {
           setErrorMessage(error.message);
         }
@@ -209,10 +209,6 @@ export default function WeightLogDisplay() {
     // Copies the current sorting options
     let newSortingOptions = { ...currentSortingOption };
 
-    const cachedObj = getCachedWeightEntryArray();
-
-    console.log(cachedObj);
-
     // Checks if the currently active sort button is clicked
     if (currentSortingOption.sortingKey === sortingKey) {
       // Checks the current sort order and switches to the opposing one
@@ -282,8 +278,8 @@ export default function WeightLogDisplay() {
       // Checks if error is a known error
       if (error instanceof Error && error.cause) {
         // Checks the cause of the error
-        if (error.cause === errorCausesObj.invalidUserCookie) {
-          handleInvalidUserData();
+        if (error.cause === errorCausesObj.invalidUserCookie || error.cause === errorCausesObj.accessDenied) {
+          handleInvalidUser();
         } else {
           setErrorMessage(error.message);
         }
