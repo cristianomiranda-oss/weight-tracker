@@ -2,7 +2,6 @@
 
 import { getUserCookie } from "@/app/libs/cookies";
 import { errorCausesObj, handleMiddleWareErrors } from "@/app/utils/errors";
-import { IndexedDB } from "@/app/libs/indexedDB";
 import type { WeightEntryType } from "@/app/libs/types";
 import { verifyAccountPayload } from "../../libs/payload-generation";
 import {
@@ -65,13 +64,7 @@ export async function getWeightEntries(): Promise<WeightEntryType[]> {
     // Calls the service to retrieve the user's weight entries
     const userWeightEntries = await getWeightEntriesService(payloadData);
 
-    if (userWeightEntries === null) {
-      throw new Error("Failed to access weight entry", {
-        cause: errorCausesObj.databaseCrudError,
-      });
-    } else {
-      return userWeightEntries;
-    }
+    return userWeightEntries;
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToThrow = handleMiddleWareErrors(error);
@@ -100,17 +93,17 @@ export async function getWeightEntry(
     const payloadData = await verifyAccountPayload(userCookie.value);
 
     // Calls the service to retrieve the weight entry
-    const userWeightEntries = await getWeightEntryService(
+    const userWeightEntry = await getWeightEntryService(
       weightEntryId,
       payloadData,
     );
 
-    if (userWeightEntries === null) {
-      throw new Error("Failed to access weight entry", {
-        cause: errorCausesObj.databaseCrudError,
+    if (userWeightEntry === null) {
+      throw new Error("Entry not found", {
+        cause: errorCausesObj.noUserEntry,
       });
     } else {
-      return userWeightEntries;
+      return userWeightEntry;
     }
   } catch (error) {
     // Calls the method to handle errors in middleware functions
@@ -175,16 +168,6 @@ export async function removeWeightEntry(weightEntryId: string): Promise<void> {
 
     // Calls the method to read and verify the payload string
     const payloadData = await verifyAccountPayload(userCookie.value);
-
-    // Gathers the entry data using the service method
-    const entryData = await getWeightEntryService(weightEntryId, payloadData);
-
-    // Confirms if the entry's user id matches the user's cookie value
-    if (entryData.userId !== payloadData.userId) {
-      throw new Error("Unauthorized access to entry", {
-        cause: errorCausesObj.accessDenied,
-      });
-    }
 
     // Calls the service to remove the weight entry service
     await removeWeightEntryService(weightEntryId, payloadData);

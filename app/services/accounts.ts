@@ -41,7 +41,10 @@ export async function createUserAccountService(
     }
 
     // Calls the CRUD method to create a new account
-    const isAccountCreated = await WeightTrackerDataBase.createNewUserAccount(userName, userPassword);
+    const isAccountCreated = await WeightTrackerDataBase.createNewUserAccount(
+      userName,
+      userPassword,
+    );
 
     // Checks if a valid value was returned by the database method
     if (isAccountCreated) {
@@ -53,9 +56,8 @@ export async function createUserAccountService(
       });
     }
   } catch (error) {
-    // Calls the method to handle errors in middleware functions
-    const errorToThrow = handleMiddleWareErrors(error);
-    throw errorToThrow;
+    // Throws error to the parent function
+    throw error;
   }
 }
 
@@ -89,18 +91,20 @@ export async function validateLoginService(
       });
     }
 
-    const userAccount = await WeightTrackerDataBase.validateUserAccount(userName, userPassword);
+    const userAccount = await WeightTrackerDataBase.validateUserAccount(
+      userName,
+      userPassword,
+    );
 
     if (userAccount === null) {
       throw new Error("Username or Password is invalid", {
         cause: errorCausesObj.accessDenied,
       });
+    } else {
+      return userAccount;
     }
-
-    return userAccount;
   } catch (error) {
-    // Calls the method to handle errors in middleware functions
-    const errorToThrow = handleMiddleWareErrors(error);
-    throw errorToThrow;
+    // Throws error to the parent function
+    throw error;
   }
 }

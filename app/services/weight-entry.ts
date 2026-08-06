@@ -1,6 +1,7 @@
-"use server"
-import { errorCausesObj, handleMiddleWareErrors } from "@/app/utils/errors";
+"use server";
+import { errorCausesObj } from "@/app/utils/errors";
 import type { UserPayloadObj, WeightEntryType } from "@/app/libs/types";
+import { WeightTrackerDataBase } from "../libs/mongodb";
 
 /**
  * Service for accessing the database to create new weight entry
@@ -28,13 +29,11 @@ export async function addWeightEntryService(
       });
     }
 
-    // TODO: Add method call to mongodb database
-    // const newEntryId = await IndexedDB.createWeightEntry(
-    //   weightValue,
-    //   weighInDate,
-    //   userAccount.userId,
-    // );
-    const newEntryId = 0;
+    const newEntryId = await WeightTrackerDataBase.createWeightEntry(
+      weightValue,
+      weighInDate,
+      userAccount.userId,
+    );
 
     if (newEntryId) {
       return;
@@ -44,9 +43,8 @@ export async function addWeightEntryService(
       });
     }
   } catch (error) {
-    // Calls the method to handle errors in middleware functions
-    const errorToThrow = handleMiddleWareErrors(error);
-    throw errorToThrow;
+    // Throws error to the parent function
+    throw error;
   }
 }
 
@@ -60,23 +58,14 @@ export async function getWeightEntriesService(
   userAccount: UserPayloadObj,
 ): Promise<WeightEntryType[]> {
   try {
-    // TODO: Add method call to mongodb database
-    // const userWeightEntries = await IndexedDB.readWeightEntries(
-    //   userAccount.userId,
-    // );
-    const userWeightEntries: WeightEntryType[] = [];
+    const userWeightEntries = await WeightTrackerDataBase.readWeightEntries(
+      userAccount.userId,
+    );
 
-    if (userWeightEntries === null) {
-      throw new Error("Failed to access weight entry", {
-        cause: errorCausesObj.databaseCrudError,
-      });
-    } else {
-      return userWeightEntries;
-    }
+    return userWeightEntries;
   } catch (error) {
-    // Calls the method to handle errors in middleware functions
-    const errorToThrow = handleMiddleWareErrors(error);
-    throw errorToThrow;
+    // Throws error to the parent function
+    throw error;
   }
 }
 
@@ -85,12 +74,13 @@ export async function getWeightEntriesService(
  * The passed in user account data is used for identifying what entry is associated with the user.
  * @param weightEntryId Weight Entry Id for the associated weight entry
  * @param userAccount User account data associated with the weight entry
- * @throws Signals the process failed
+ * @throws Signals the process failed or
+ * @returns The entry associated with the id or if no entry is found, null is returned
  */
 export async function getWeightEntryService(
   weightEntryId: string,
   userAccount: UserPayloadObj,
-): Promise<WeightEntryType> {
+): Promise<WeightEntryType | null> {
   try {
     // Checks if the entry id is the standard uuid length
     if (weightEntryId.length !== 36) {
@@ -99,29 +89,15 @@ export async function getWeightEntryService(
       });
     }
 
-    // TODO: Add method call to mongodb database
-    // const userWeightEntries = await IndexedDB.readWeightEntry(
-    //   weightEntryId,
-    //   userAccount.userId,
-    // );
-    const userWeightEntries: WeightEntryType = {
-        userId: '',
-        weighInDate: "",
-        weightEntryId: "",
-        weightValue: 0
-    }
+    const userWeightEntry = await WeightTrackerDataBase.readWeightEntry(
+      weightEntryId,
+      userAccount.userId,
+    );
 
-    if (userWeightEntries === null) {
-      throw new Error("Failed to access weight entry", {
-        cause: errorCausesObj.databaseCrudError,
-      });
-    } else {
-      return userWeightEntries;
-    }
+    return userWeightEntry;
   } catch (error) {
-    // Calls the method to handle errors in middleware functions
-    const errorToThrow = handleMiddleWareErrors(error);
-    throw errorToThrow;
+    // Throws error to the parent function
+    throw error;
   }
 }
 
@@ -160,14 +136,12 @@ export async function changeWeighEntryService(
       });
     }
 
-    // TODO: Add method call to mongodb database
-    // const isEntryUpdated = await IndexedDB.updateWeightEntry(
-    //   weightEntryId,
-    //   weightValue,
-    //   weighInDate,
-    //   userAccount.userId,
-    // );
-    const isEntryUpdated = true;
+    const isEntryUpdated = await WeightTrackerDataBase.updateWeightEntry(
+      weightEntryId,
+      weightValue,
+      weighInDate,
+      userAccount.userId,
+    );
 
     if (isEntryUpdated) {
       return;
@@ -177,9 +151,8 @@ export async function changeWeighEntryService(
       });
     }
   } catch (error) {
-    // Calls the method to handle errors in middleware functions
-    const errorToThrow = handleMiddleWareErrors(error);
-    throw errorToThrow;
+    // Throws error to the parent function
+    throw error;
   }
 }
 
@@ -190,7 +163,10 @@ export async function changeWeighEntryService(
  * @param userAccount User account data associated with the to be removed weight entry
  * @throws Signals the process failed
  */
-export async function removeWeightEntryService(weightEntryId: string, userAccount: UserPayloadObj): Promise<void> {
+export async function removeWeightEntryService(
+  weightEntryId: string,
+  userAccount: UserPayloadObj,
+): Promise<void> {
   try {
     // Checks if the entry id is the standard uuid length
     if (weightEntryId.length !== 36) {
@@ -199,20 +175,11 @@ export async function removeWeightEntryService(weightEntryId: string, userAccoun
       });
     }
 
-    // Gathers the entry data
-    const entryData = await getWeightEntryService(weightEntryId, userAccount);
-
-    // Confirms if the entry's user id matches the user's cookie value
-    if (entryData.userId !== userAccount.userId) {
-      throw new Error("Unauthorized access to entry", {
-        cause: errorCausesObj.accessDenied,
-      });
-    }
-
-    // TODO: Add method to call MongoDB database
-    // const isEntryDeleted: boolean =
-    //   await IndexedDB.deleteWeightEntry(weightEntryId);
-    const isEntryDeleted = true;
+    const isEntryDeleted: boolean =
+      await WeightTrackerDataBase.deleteWeightEntry(
+        weightEntryId,
+        userAccount.userId,
+      );
 
     if (isEntryDeleted) {
       return;
@@ -222,8 +189,7 @@ export async function removeWeightEntryService(weightEntryId: string, userAccoun
       });
     }
   } catch (error) {
-    // Calls the method to handle errors in middleware functions
-    const errorToThrow = handleMiddleWareErrors(error);
-    throw errorToThrow;
+    // Throws error to the parent function
+    throw error;
   }
 }

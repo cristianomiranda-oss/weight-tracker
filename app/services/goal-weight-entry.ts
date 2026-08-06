@@ -1,7 +1,12 @@
 "use server";
 
-import { errorCausesObj, handleMiddleWareErrors } from "@/app/utils/errors";
-import type { GoalOption, GoalWeightEntryType, UserPayloadObj } from "@/app/libs/types";
+import { errorCausesObj } from "@/app/utils/errors";
+import type {
+  GoalOption,
+  GoalWeightEntryType,
+  UserPayloadObj,
+} from "@/app/libs/types";
+import { WeightTrackerDataBase } from "../libs/mongodb";
 
 /**
  * Service for accessing the database to create a new goal weight entry
@@ -13,7 +18,7 @@ import type { GoalOption, GoalWeightEntryType, UserPayloadObj } from "@/app/libs
 export async function addGoalWeightEntryService(
   weightValue: number,
   goalType: GoalOption,
-  userAccount: UserPayloadObj
+  userAccount: UserPayloadObj,
 ): Promise<void> {
   try {
     if (weightValue < 0 || Number.isNaN(weightValue)) {
@@ -53,37 +58,30 @@ export async function addGoalWeightEntryService(
       });
     }
   } catch (error) {
-    // Calls the method to handle errors in middleware functions
-    const errorToThrow = handleMiddleWareErrors(error);
-    throw errorToThrow;
+    // Throws error to the parent function
+    throw error;
   }
 }
 
 /**
  * Service for accessing a goal weight entries associated with a user.
  * The passed in user account data is used for identifying what entry is associated with the user.
- * Returns a null value if no goal weight entry is stored for the user.
  * @param userAccount User account data for the new goal weight entry
  * @throws Signals the process failed
+ * @returns Returns a null value if no goal weight entry is stored for the user.
  */
-export async function getGoalWeightEntryService(userAccount: UserPayloadObj): Promise<GoalWeightEntryType | null> {
+export async function getGoalWeightEntryService(
+  userAccount: UserPayloadObj,
+): Promise<GoalWeightEntryType | null> {
   try {
-    // TODO: Add call to mongodb method
-    // const userGoalWeightEntry = await IndexedDB.readGoalWeightEntry(
-    //   userAccount.userId,
-    // );
-    const userGoalWeightEntry: GoalWeightEntryType = {
-      goalType: "Gain",
-      goalWeightEntryId: "",
-      userId: "",
-      weightValue: 0
-    }
+    const userGoalWeightEntry = await WeightTrackerDataBase.readGoalWeightEntry(
+      userAccount.userId,
+    );
 
     return userGoalWeightEntry;
   } catch (error) {
-    // Calls the method to handle errors in middleware functions
-    const errorToThrow = handleMiddleWareErrors(error);
-    throw errorToThrow;
+    // Throws error to the parent function
+    throw error;
   }
 }
 
@@ -99,7 +97,7 @@ export async function changeGoalWeighEntryService(
   goalWeightEntryId: string,
   weightValue: number,
   goalType: GoalOption,
-  userAccount: UserPayloadObj
+  userAccount: UserPayloadObj,
 ) {
   try {
     // Checks if the entry id is the standard uuid length
@@ -129,14 +127,12 @@ export async function changeGoalWeighEntryService(
       });
     }
 
-    // TODO: Add call to mongodb method
-    // const isEntryUpdated = await IndexedDB.updateGoalWeightEntry(
-    //   goalWeightEntryId,
-    //   weightValue,
-    //   goalType,
-    //   userAccount.userId,
-    // );
-    const isEntryUpdated = true;
+    const isEntryUpdated = await WeightTrackerDataBase.updateGoalWeightEntry(
+      goalWeightEntryId,
+      weightValue,
+      goalType,
+      userAccount.userId,
+    );
 
     if (isEntryUpdated) {
       return;
@@ -146,8 +142,7 @@ export async function changeGoalWeighEntryService(
       });
     }
   } catch (error) {
-    // Calls the method to handle errors in middleware functions
-    const errorToThrow = handleMiddleWareErrors(error);
-    throw errorToThrow;
+    // Throws error to the parent function
+    throw error;
   }
 }
