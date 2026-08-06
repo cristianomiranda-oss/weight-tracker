@@ -18,9 +18,9 @@ class WeightTrackerDB {
   GOAL_WEIGHT_ENTRY_COLLECTION: DBCollection;
 
   /**
-     * Initializes the variables for the class with the main being the mongoDbUri.
-     *  The mongoDbUri variable is set to the database connection string if the username and password are gathered, or null if they fail to be acquired.
-     */
+   * Initializes the variables for the class with the main being the mongoDbUri.
+   *  The mongoDbUri variable is set to the database connection string if the username and password are gathered, or null if they fail to be acquired.
+   */
   constructor() {
     // Database name
     this.DATABASE_NAME = "WEIGHT_TRACKER";
@@ -44,8 +44,8 @@ class WeightTrackerDB {
   }
 
   /**
-     * Initializes a new client database client
-     */
+   * Initializes a new client database client
+   */
   _getDBConnection() {
     try {
       if (this.mongoDbUri === null) {
@@ -69,9 +69,9 @@ class WeightTrackerDB {
   }
 
   /**
-     * Tests the database connection by pinging the remote database
-     * @throws Signals that the process failed
-     */
+   * Tests the database connection by pinging the remote database
+   * @throws Signals that the process failed
+   */
   async testDbConnection() {
     const client = this._getDBConnection();
 
@@ -365,6 +365,13 @@ class WeightTrackerDB {
       // Updates the entry matching the query and returns its result
       const updateResult = await dbCollection.updateOne(query, updateValues);
 
+      // Checks if the entry was updated
+      if (updateResult.modifiedCount === 0) {
+        throw new Error("Entry not found!", {
+          cause: errorCausesObj.noUserEntry,
+        });
+      }
+
       // Returns boolean denoting if the update was successful
       return updateResult.acknowledged;
     } catch (error) {
@@ -402,6 +409,13 @@ class WeightTrackerDB {
 
       // Deletes the entry matching the query and returns its result
       const deleteResult = await dbCollection.deleteOne(query);
+
+      // Checks if the entry was deleted
+      if (deleteResult.deletedCount === 0) {
+        throw new Error("Entry not found!", {
+          cause: errorCausesObj.noUserEntry,
+        });
+      }
 
       // Returns boolean denoting if the deletion was successful
       return deleteResult.acknowledged;

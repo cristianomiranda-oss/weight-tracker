@@ -1,6 +1,8 @@
 // Credit: all api calls were created using a pattern by Lee Robinson
 // https://nextjs.org/blog/building-apis-with-nextjs
+
 import { WeightTrackerDataBase } from "@/app/libs/mongodb";
+import { handleMiddleWareErrors } from "@/app/utils/errors";
 
 export async function GET(request: Request) {
   try {
@@ -11,8 +13,9 @@ export async function GET(request: Request) {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Connection Test GET: ", error);
-    return new Response(JSON.stringify({ message: "POST Failed" }), {
+    // Calls the method to handle errors in middleware functions
+    const errorToSend = handleMiddleWareErrors(error);
+    return new Response(JSON.stringify({ error: errorToSend }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });

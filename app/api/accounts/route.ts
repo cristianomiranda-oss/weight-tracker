@@ -5,6 +5,7 @@ import {
   createUserAccountService,
   validateLoginService,
 } from "@/app/services/accounts";
+import { handleMiddleWareErrors } from "@/app/utils/errors";
 
 export async function GET(request: Request) {
   try {
@@ -22,8 +23,9 @@ export async function GET(request: Request) {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Account GET: ", error);
-    return new Response(JSON.stringify({ message: "GET Failed" }), {
+    // Calls the method to handle errors in middleware functions
+    const errorToSend = handleMiddleWareErrors(error);
+    return new Response(JSON.stringify({ error: errorToSend }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
@@ -44,8 +46,9 @@ export async function POST(request: Request) {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Account POST: ", error);
-    return new Response(JSON.stringify({ message: "POST Failed" }), {
+    // Calls the method to handle errors in middleware functions
+    const errorToSend = handleMiddleWareErrors(error);
+    return new Response(JSON.stringify({ error: errorToSend }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
