@@ -1,27 +1,12 @@
 // Credit: all api calls were created using a pattern by Lee Robinson
 // https://nextjs.org/blog/building-apis-with-nextjs
-import { MongoClient, ServerApiVersion } from "mongodb";
-
-const dbUserName = process.env.DB_USERNAME
-const dbPass = process.env.DB_PASSWORD;
-const mongoDbUri = `mongodb://${dbUserName}:${dbPass}@ac-udfeevm-shard-00-00.a0yqeq4.mongodb.net:27017,ac-udfeevm-shard-00-01.a0yqeq4.mongodb.net:27017,ac-udfeevm-shard-00-02.a0yqeq4.mongodb.net:27017/?ssl=true&replicaSet=atlas-t9numu-shard-0&authSource=admin&appName=Weight-Tracking-Data`;
+import { WeightTrackerDataBase } from "@/app/libs/mongodb";
 
 export async function GET(request: Request) {
-  const client = new MongoClient(mongoDbUri, {
-    serverApi: {
-      version: ServerApiVersion.v1,
-      strict: true,
-      deprecationErrors: true,
-    },
-  });
-
   try {
-    // Connects to the database and pings it before closing
-    await client.connect();
-    await client.db("admin").command({ ping: 1 });
-    client.close();
+    const connectionTest = await WeightTrackerDataBase.testDbConnection();
 
-    return new Response("Ping", {
+    return new Response(connectionTest, {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
@@ -31,7 +16,5 @@ export async function GET(request: Request) {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
-  } finally {
-    client.close();
   }
 }

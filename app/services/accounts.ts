@@ -1,5 +1,6 @@
 "use server";
 import { errorCausesObj, handleMiddleWareErrors } from "@/app/utils/errors";
+import { WeightTrackerDataBase } from "../libs/mongodb";
 
 /**
  * Service for accessing the database to create a new user account
@@ -11,7 +12,6 @@ import { errorCausesObj, handleMiddleWareErrors } from "@/app/utils/errors";
 export async function createUserAccountService(
   userName: string,
   userPassword: string,
-  confirmPassWord: string,
 ): Promise<void> {
   try {
     if (userName === "" || userPassword === "") {
@@ -40,19 +40,11 @@ export async function createUserAccountService(
       });
     }
 
-    if (userPassword !== confirmPassWord) {
-      throw new Error("Passwords do no match", {
-        cause: errorCausesObj.invalidComparison,
-      });
-    }
-
-    // TODO: Add mongodb method call
-    // const value = await IndexedDB.createNewUserAccount(userName, userPassword);
-
-    const value = 'a';
+    // Calls the CRUD method to create a new account
+    const isAccountCreated = await WeightTrackerDataBase.createNewUserAccount(userName, userPassword);
 
     // Checks if a valid value was returned by the database method
-    if (value) {
+    if (isAccountCreated) {
       // Exits the function as the account was created
       return;
     } else {
@@ -97,10 +89,7 @@ export async function validateLoginService(
       });
     }
 
-    // TODO: Add mongodb method call
-    // const userAccount = await IndexedDB.validateUserAccount(userName, userPassword);
-
-    const userAccount = 'a';
+    const userAccount = await WeightTrackerDataBase.validateUserAccount(userName, userPassword);
 
     if (userAccount === null) {
       throw new Error("Username or Password is invalid", {
@@ -109,15 +98,6 @@ export async function validateLoginService(
     }
 
     return userAccount;
-
-    // This logic will be housed in the middleware action call
-    // const isCookieStored = await createUserCookie(userId);
-
-    // if (isCookieStored) {
-    //   return;
-    // } else {
-    //   throw new Error("Failed to Login", { cause: errorCausesObj.processFail });
-    // }
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToThrow = handleMiddleWareErrors(error);

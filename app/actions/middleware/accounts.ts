@@ -19,7 +19,14 @@ export async function createUserAccount(
   confirmPassWord: string,
 ): Promise<void> {
   try {
-    await createUserAccountService(userName, userPassword, confirmPassWord);
+    // Checks that both password entries match
+    if (userPassword !== confirmPassWord) {
+      throw new Error("Passwords do no match", {
+        cause: errorCausesObj.invalidComparison,
+      });
+    }
+
+    await createUserAccountService(userName, userPassword);
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToThrow = handleMiddleWareErrors(error);

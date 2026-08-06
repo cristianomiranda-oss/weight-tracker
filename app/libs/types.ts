@@ -15,7 +15,7 @@ export type GoalWeightEntryType = {
 };
 
 export type UserAccount = {
-  userId: string;
+  _id: string;
   userName: string;
   userPassword: string;
 };
@@ -47,3 +47,8 @@ export type CachedObj = {
   expirationTime: number;
   weightEntryArray: WeightEntryType[];
 };
+
+export type DBCollection =
+  | "USER_ACCOUNT"
+  | "WEIGHT_ENTRY"
+  | "GOAL_WEIGHT_ENTRY";
