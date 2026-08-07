@@ -1,3 +1,4 @@
+"use client"
 /**
  * Appends a 0 to the front of the passed in string if its length is less than or equal to 1
  * @param {string} str The string that will be checked
