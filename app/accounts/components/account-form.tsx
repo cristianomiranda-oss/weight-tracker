@@ -41,6 +41,27 @@ export default function AccountForm(): React.JSX.Element {
   function toggleAccountCreation(): void {
     // Only swaps screens if no calls are loading
     if (!isLoading) {
+      // Checks if the account creation refs or the account sign-in refs are loaded
+      if (
+        isAccountCreationEnabled &&
+        userNameRef.current !== null &&
+        userPasswordRef.current !== null &&
+        confirmPassWordRef.current !== null
+      ) {
+        // Clears all ref values
+        userNameRef.current.value = "";
+        userPasswordRef.current.value = "";
+        confirmPassWordRef.current.value = "";
+      } else if (
+        !isAccountCreationEnabled &&
+        userNameRef.current !== null &&
+        userPasswordRef.current !== null
+      ) {
+        // Clears all ref values
+        userNameRef.current.value = "";
+        userPasswordRef.current.value = "";
+      }
+
       setIsAccountCreationEnabled((curr) => !curr);
     }
   }
