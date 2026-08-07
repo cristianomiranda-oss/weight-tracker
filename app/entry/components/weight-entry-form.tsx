@@ -56,7 +56,7 @@ export default function WeightEntryForm(): React.JSX.Element {
    * Alerts the user of an invalid sign in and navigates to the accounts page
    */
   function handleInvalidUserData() {
-    alert("Invalid user data, returning to signing page...");
+    alert("Invalid user data, returning to sign-in page...");
     router.push("/accounts");
   }
 
@@ -184,7 +184,7 @@ export default function WeightEntryForm(): React.JSX.Element {
           } else {
             // Else updated the existing goalWeightEntry
             await changeGoalWeighEntry(
-              goalWeightEntry.goalWeightEntryId,
+              goalWeightEntry._id,
               weightValue,
               goalType,
             );

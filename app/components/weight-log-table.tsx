@@ -44,12 +44,12 @@ export default function WeightLogTable({
 
       {weightEntries.map((entry) => (
         <WeightEntry
-          key={entry.weightEntryId}
+          key={entry._id}
           weightEntryObj={entry}
           removeEntry={() =>
-            triggerEntryRemoval(entry.weightEntryId, entry.userId)
+            triggerEntryRemoval(entry._id, entry.userId)
           }
-          changeEntry={() => triggerEntryUpdate(entry.weightEntryId)}
+          changeEntry={() => triggerEntryUpdate(entry._id)}
         />
       ))}
     </div>
