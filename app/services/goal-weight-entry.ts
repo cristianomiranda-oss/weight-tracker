@@ -41,14 +41,11 @@ export async function addGoalWeightEntryService(
       });
     }
 
-    // TODO: Add call to mongodb method
-    // const newGoalWeightEntryId = await IndexedDB.createGoalWeightEntry(
-    //   weightValue,
-    //   goalType,
-    //   userAccount.userId,
-    // );
-
-    const newGoalWeightEntryId = "a";
+    const newGoalWeightEntryId = await WeightTrackerDataBase.createGoalWeightEntry(
+      weightValue,
+      goalType,
+      userAccount.userId,
+    );
 
     if (newGoalWeightEntryId) {
       return;

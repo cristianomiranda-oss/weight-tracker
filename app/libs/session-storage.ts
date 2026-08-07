@@ -112,7 +112,8 @@ export function updateCachedWeightEntryArray(
 
     // Iterates through the array until the entry is found
     for (let i = 0; i < updatedArray.length; i++) {
-      if (updatedArray[i].weightEntryId === entryId) {
+      // Checks if the entry's id matches the passed in entry id
+      if (updatedArray[i]._id === entryId) {
         // Updates the entry in the array
         updatedArray[i].weightValue = newWeightValue;
         updatedArray[i].weighInDate = newWeighInDate;
@@ -158,7 +159,7 @@ export function removeFromCachedWeightEntryArray(entryId: string) {
 
     // Finds the index of the entry to be removed
     const entryIndex = updatedArray.findIndex(
-      (entry) => entry.weightEntryId === entryId,
+      (entry) => entry._id === entryId,
     );
 
     const removedEntry = updatedArray.splice(entryIndex, 1);
@@ -166,7 +167,7 @@ export function removeFromCachedWeightEntryArray(entryId: string) {
     // Checks if at least one entry was removed and if the entry id matches the passed in value
     if (
       removedEntry.length === 1 &&
-      removedEntry[0].weightEntryId === entryId
+      removedEntry[0]._id === entryId
     ) {
       // Initializes a new cache object with the updated array and existing expiration time
       const updatedCacheObj: CachedObj = {

@@ -232,7 +232,7 @@ class WeightTrackerDB {
       // Initializes a connection to the weight entry collection
       const dbCollection = client
         .db(this.DATABASE_NAME)
-        .collection<WeightEntryType>(this.USER_ACCOUNT_COLLECTION);
+        .collection<WeightEntryType>(this.WEIGHT_ENTRY_COLLECTION);
 
       const insertResult = await dbCollection.insertOne(newWeightEntry);
 
@@ -263,7 +263,7 @@ class WeightTrackerDB {
       // Initializes a connection to the weight entry collection
       const dbCollection = client
         .db(this.DATABASE_NAME)
-        .collection<WeightEntryType>(this.USER_ACCOUNT_COLLECTION);
+        .collection<WeightEntryType>(this.WEIGHT_ENTRY_COLLECTION);
 
       // Constructs query for filtering the collection
       const query = {
@@ -303,7 +303,7 @@ class WeightTrackerDB {
       // Initializes a connection to the weight entry collection
       const dbCollection = client
         .db(this.DATABASE_NAME)
-        .collection<WeightEntryType>(this.USER_ACCOUNT_COLLECTION);
+        .collection<WeightEntryType>(this.WEIGHT_ENTRY_COLLECTION);
 
       // Constructs query for filtering the collection
       const query = {
@@ -360,7 +360,7 @@ class WeightTrackerDB {
       // Initializes a connection to the weight entry collection
       const dbCollection = client
         .db(this.DATABASE_NAME)
-        .collection<WeightEntryType>(this.USER_ACCOUNT_COLLECTION);
+        .collection<WeightEntryType>(this.WEIGHT_ENTRY_COLLECTION);
 
       // Updates the entry matching the query and returns its result
       const updateResult = await dbCollection.updateOne(query, updateValues);
@@ -405,7 +405,7 @@ class WeightTrackerDB {
       // Initializes a connection to the weight entry collection
       const dbCollection = client
         .db(this.DATABASE_NAME)
-        .collection<WeightEntryType>(this.USER_ACCOUNT_COLLECTION);
+        .collection<WeightEntryType>(this.WEIGHT_ENTRY_COLLECTION);
 
       // Deletes the entry matching the query and returns its result
       const deleteResult = await dbCollection.deleteOne(query);
@@ -458,7 +458,7 @@ class WeightTrackerDB {
       // Initializes a connection to the weight entry collection
       const dbCollection = client
         .db(this.DATABASE_NAME)
-        .collection<GoalWeightEntryType>(this.USER_ACCOUNT_COLLECTION);
+        .collection<GoalWeightEntryType>(this.GOAL_WEIGHT_ENTRY_COLLECTION);
 
       //Inserts the new goal weight entry into the database and stores the result
       const insertResult = await dbCollection.insertOne(newGoalWeightEntry);
@@ -490,7 +490,7 @@ class WeightTrackerDB {
       // Initializes a connection to the weight entry collection
       const dbCollection = client
         .db(this.DATABASE_NAME)
-        .collection<GoalWeightEntryType>(this.USER_ACCOUNT_COLLECTION);
+        .collection<GoalWeightEntryType>(this.GOAL_WEIGHT_ENTRY_COLLECTION);
 
       // Constructs query for filtering the collection
       const query = {
@@ -546,7 +546,7 @@ class WeightTrackerDB {
       // Initializes a connection to the weight entry collection
       const dbCollection = client
         .db(this.DATABASE_NAME)
-        .collection<GoalWeightEntryType>(this.USER_ACCOUNT_COLLECTION);
+        .collection<GoalWeightEntryType>(this.GOAL_WEIGHT_ENTRY_COLLECTION);
 
       // Updates the entry matching the query and returns its result
       const updateResult = await dbCollection.updateOne(query, updateValues);

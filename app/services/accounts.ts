@@ -1,5 +1,5 @@
 "use server";
-import { errorCausesObj, handleMiddleWareErrors } from "@/app/utils/errors";
+import { errorCausesObj } from "@/app/utils/errors";
 import { WeightTrackerDataBase } from "../libs/mongodb";
 
 /**
