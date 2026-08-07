@@ -8,6 +8,7 @@ import {
   getGoalWeightEntryService,
 } from "@/app/services/goal-weight-entry";
 import { errorCausesObj, handleMiddleWareErrors } from "@/app/utils/errors";
+import { Console } from "console";
 
 export async function GET(request: Request) {
   try {
@@ -29,7 +30,7 @@ export async function GET(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
-    return new Response(JSON.stringify({ error: errorToSend }), {
+    return new Response(JSON.stringify({ error: errorToSend.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
@@ -54,7 +55,7 @@ export async function POST(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
-    return new Response(JSON.stringify({ error: errorToSend }), {
+    return new Response(JSON.stringify({ error: errorToSend.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
@@ -77,7 +78,7 @@ export async function PUT(request: Request) {
       userAccount,
     );
 
-    return new Response("Goal Weight Entry Added", {
+    return new Response("Goal Weight Entry Updated", {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });

@@ -131,9 +131,21 @@ class WeightTrackerDB {
       // Returns the boolean for denoting if the insert was successful
       return insertResult.acknowledged;
     } catch (error) {
-      throw new Error(`Failed to insert`, {
-        cause: errorCausesObj.databaseCrudError,
-      });
+      // Credit: gen_Eric for explaining how to check if a specific property exists an object
+      // https://stackoverflow.com/questions/11040472/how-to-check-if-object-property-exists-with-a-variable-holding-the-property-name
+
+      // Checks if the error is an error object and contains the key "code"
+      if (error instanceof Error && 'code' in error) {
+        
+        // Checks if the error code is a "uniqueness" code
+        // which signifies that the username is already taken
+        if (error.code === 11000) {
+          throw new Error("Username already taken!", {cause: errorCausesObj.invalidParameterValue});
+        }
+      } else {
+        // Throws any error back to the middleware function
+        throw error;
+      }
     } finally {
       await client.close();
     }
@@ -466,8 +478,21 @@ class WeightTrackerDB {
       // Returns the boolean for denoting if the insert was successful
       return insertResult.acknowledged;
     } catch (error) {
-      // Throws any error back to the middleware function
-      throw error;
+      // Credit: gen_Eric for explaining how to check if a specific property exists an object
+      // https://stackoverflow.com/questions/11040472/how-to-check-if-object-property-exists-with-a-variable-holding-the-property-name
+
+      // Checks if the error is an error object and contains the key "code"
+      if (error instanceof Error && 'code' in error) {
+        
+        // Checks if the error code is a "uniqueness" code
+        // which signifies that the username is already taken
+        if (error.code === 11000) {
+          throw new Error("Goal Weight Entry already created!", {cause: errorCausesObj.invalidParameterValue});
+        }
+      } else {
+        // Throws any error back to the middleware function
+        throw error;
+      }
     } finally {
       await client.close();
     }
