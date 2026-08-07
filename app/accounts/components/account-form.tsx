@@ -9,7 +9,7 @@ import LabeledInput from "@/app/components/labeled-input";
 import LoadingIndicator from "@/app/components/loading-indicator";
 import SubmitButton from "@/app/components/submit-button";
 import { clearUserCookie } from "@/app/libs/cookies";
-import { clearCachedWeightEntryArray } from "@/app/libs/session-storage";
+import { EntriesSessionStorage } from "@/app/libs/session-storage";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -146,7 +146,7 @@ export default function AccountForm(): React.JSX.Element {
 
       try {
         // Calls the methods to clear user data upon loading the homepage
-        clearCachedWeightEntryArray();
+        EntriesSessionStorage.clearCachedWeightEntryArray();
         await clearUserCookie();
       } catch (error) {
         // Checks if the error is an established error

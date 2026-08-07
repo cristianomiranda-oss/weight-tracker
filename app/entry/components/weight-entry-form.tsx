@@ -19,8 +19,7 @@ import {
 import LoadingIndicator from "@/app/components/loading-indicator";
 import { errorCausesObj } from "@/app/utils/errors";
 import {
-  clearCachedWeightEntryArray,
-  updateCachedWeightEntryArray,
+  EntriesSessionStorage
 } from "@/app/libs/session-storage";
 import { getDataTimeString } from "@/app/utils/date";
 
@@ -82,7 +81,7 @@ export default function WeightEntryForm(): React.JSX.Element {
         await addWeightEntry(weightValue, weighInDate);
 
         // Calls the method to clear the cached weight entry array
-        clearCachedWeightEntryArray();
+        EntriesSessionStorage.clearCachedWeightEntryArray();
 
         navigateToHome();
       }
@@ -126,7 +125,7 @@ export default function WeightEntryForm(): React.JSX.Element {
         await changeWeighEntry(updateEntryId, weightValue, weighInDate);
 
         // Calls the method to update the entry in the cached array
-        updateCachedWeightEntryArray(updateEntryId, weightValue, weighInDate);
+        EntriesSessionStorage.updateCachedWeightEntryArray(updateEntryId, weightValue, weighInDate);
 
         navigateToHome();
       }

@@ -28,9 +28,7 @@ import LoadingIndicator from "../components/loading-indicator";
 import MessageDisplay from "../components/message-display";
 import { sortEntriesArray } from "../utils/sorting";
 import {
-  cacheWeightEntryArray,
-  getCachedWeightEntryArray,
-  removeFromCachedWeightEntryArray,
+  EntriesSessionStorage,
 } from "../libs/session-storage";
 
 /**
@@ -110,7 +108,7 @@ export default function WeightLogDisplay() {
         setInfoMessage("Entry removed");
 
         // Calls the method to update the cached weight entry array
-        removeFromCachedWeightEntryArray(entryId);
+        EntriesSessionStorage.removeFromCachedWeightEntryArray(entryId);
       }
     } catch (error) {
       // Checks if error is a known error
@@ -238,14 +236,14 @@ export default function WeightLogDisplay() {
     let userWeightEntries: WeightEntryType[] = [];
 
     try {
-      const cachedArray = getCachedWeightEntryArray();
+      const cachedArray = EntriesSessionStorage.getCachedWeightEntryArray();
 
       // Check if the cached array is valid
       if (cachedArray === null) {
         // Gathers the user's weight entries
         userWeightEntries = await getWeightEntries();
         // Stores the entries in cache
-        cacheWeightEntryArray(userWeightEntries);
+        EntriesSessionStorage.cacheWeightEntryArray(userWeightEntries);
       } else {
         // Uses the cached array values
         userWeightEntries = cachedArray;
