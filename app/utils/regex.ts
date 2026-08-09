@@ -7,7 +7,7 @@ export class FilterTests {
   // Validates the standard uuid format
   static uuidFilter = /(^[\w\d]{8}(-[\w\d]{4}){3}-[\w\d]{12}$)/;
 
-  // Filters match from start of the line to end and require all characters  to be within their defined filter
+  // Filters match from start of the line to end and require all characters to be within their defined filter
   static userNameFilter = /(^[-\w]+$)/;
   static passWordFilter = /(^[-\w+?!@#$%^&*]+$)/;
 
@@ -55,7 +55,7 @@ export class FilterTests {
 
   /**
    * Checks if the passed in password is valid
-   * Valid characters include all letters, digits, and any '_-?!@#$%^&*' character,
+   * Valid characters include all letters, digits, and any '_-?!@#$%^&*' character
    * @param {string} passWord The password to be tested
    * @throws Throws if password is invalid
    */

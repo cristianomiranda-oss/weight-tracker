@@ -4,6 +4,9 @@
 import { WeightTrackerDataBase } from "@/app/libs/mongodb";
 import { handleMiddleWareErrors } from "@/app/utils/errors";
 
+/**
+   * GET Method: Attempts to ping the MongoDB server and returns successful if it responds.
+   */
 export async function GET(request: Request) {
   try {
     const connectionTest = await WeightTrackerDataBase.testDbConnection();

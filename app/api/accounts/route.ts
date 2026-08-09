@@ -7,6 +7,15 @@ import {
 } from "@/app/services/accounts";
 import { handleMiddleWareErrors } from "@/app/utils/errors";
 
+/**
+ * GET Method: Returns encrypted payload if the passed in credentials are verified.
+ *
+ * Headers:
+ *
+ * "userName" - Must be between 6 and 25 characters and only include letters, digits, "-", or "_".
+ *
+ *  "userPassword" - - Must be between 8 and 30 characters and only include letters, digits, and any '_-?!@#$%^&*' character.
+ */
 export async function GET(request: Request) {
   try {
     const userName = request.headers.get("userName");
@@ -38,6 +47,15 @@ export async function GET(request: Request) {
   }
 }
 
+/**
+ * POST Method: Creates a new user account.
+ * 
+ * Body:
+ *
+ * "userName" - Must be between 6 and 25 characters and only include letters, digits, "-", or "_".
+ *
+ * "userPassword" - - Must be between 8 and 30 characters and only include letters, digits, and any '_-?!@#$%^&*' character.
+ */
 export async function POST(request: Request) {
   try {
     const body = await request.json();

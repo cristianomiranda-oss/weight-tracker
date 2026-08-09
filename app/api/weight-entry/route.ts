@@ -11,6 +11,17 @@ import {
 } from "@/app/services/weight-entry";
 import { handleMiddleWareErrors } from "@/app/utils/errors";
 
+/**
+ * GET Method: Returns either all weight entries, or a singular one if a valid "weightEntryId" is passed in the body, if the passed in bearer token is authorized.
+ *
+ *  Headers:
+ *
+ * "Authorization" - Must be in the form of "Bearer <token>"
+ *
+ * Body:
+ *
+ * "weightEntryId" (Optional) - Must be a uuid that contains only letters, digits, and '-' and in the pattern of "########-####-####-####-############" (# representing any letter or digit).
+ */
 export async function GET(request: Request) {
   try {
     // Calls the method to get user data from the bearer token in the headers
@@ -55,6 +66,19 @@ export async function GET(request: Request) {
   }
 }
 
+/**
+ * PUT Method: Updates an existing weight entry type if the passed in bearer token is authorized.
+ *
+ *  Headers:
+ *
+ * "Authorization" - Must be in the form of "Bearer <token>"
+ *
+ * Body:
+ *
+ * "weightValue" - Must be greater than zero, and can include up to the hundredths decimal place
+ *
+ * "weighInDate" - Must in the format of "YYYY-MM-DDT##:##"
+ */
 export async function POST(request: Request) {
   try {
     // Calls the method to get user data from the bearer token in the headers
@@ -86,6 +110,21 @@ export async function POST(request: Request) {
   }
 }
 
+/**
+ * PUT Method: Updates an existing weight entry type if the passed in bearer token is authorized.
+ *
+ *  Headers:
+ *
+ * "Authorization" - Must be in the form of "Bearer <token>"
+ *
+ * Body:
+ *
+ * "weightEntryId" - Must be a uuid that contains only letters, digits, and '-' and in the pattern of "########-####-####-####-############" (# representing any letter or digit).
+ *
+ * "weightValue" - Must be greater than zero, and can include up to the hundredths decimal place
+ *
+ * "weighInDate" - Must in the format of "YYYY-MM-DDT##:##"
+ */
 export async function PUT(request: Request) {
   try {
     // Calls the method to get user data from the bearer token in the headers
@@ -122,6 +161,17 @@ export async function PUT(request: Request) {
   }
 }
 
+/**
+ * DELETE Method: Removes an existing weight entry type if the passed in bearer token is authorized.
+ *
+ *  Headers:
+ *
+ * "Authorization" - Must be in the form of "Bearer <token>"
+ *
+ * Body:
+ *
+ * "weightEntryId" - Must be a uuid that contains only letters, digits, and '-' and in the pattern of "########-####-####-####-############" (# representing any letter or digit).
+ */
 export async function DELETE(request: Request) {
   try {
     // Calls the method to get user data from the bearer token in the headers
