@@ -27,9 +27,7 @@ import { errorCausesObj } from "../utils/errors";
 import LoadingIndicator from "../components/loading-indicator";
 import MessageDisplay from "../components/message-display";
 import { sortEntriesArray } from "../utils/sorting";
-import {
-  EntriesSessionStorage,
-} from "../libs/session-storage";
+import { EntriesSessionStorage } from "../libs/session-storage";
 
 /**
  * Contains the components for displaying the weight log interface and
@@ -59,7 +57,7 @@ export default function WeightLogDisplay() {
    * Alerts the user of an invalid sign in and navigates to the accounts page
    */
   function handleInvalidUser() {
-    alert("Invalid user data, returning to signing page...");
+    alert("Invalid user data, returning to sign-in page...");
     router.push("/accounts");
   }
 
@@ -113,7 +111,10 @@ export default function WeightLogDisplay() {
     } catch (error) {
       // Checks if error is a known error
       if (error instanceof Error && error.cause) {
-        if (error.cause === errorCausesObj.invalidUserCookie || error.cause === errorCausesObj.accessDenied) {
+        if (
+          error.cause === errorCausesObj.invalidUserCookie ||
+          error.cause === errorCausesObj.accessDenied
+        ) {
           handleInvalidUser();
         } else {
           setErrorMessage(error.message);
@@ -276,7 +277,10 @@ export default function WeightLogDisplay() {
       // Checks if error is a known error
       if (error instanceof Error && error.cause) {
         // Checks the cause of the error
-        if (error.cause === errorCausesObj.invalidUserCookie || error.cause === errorCausesObj.accessDenied) {
+        if (
+          error.cause === errorCausesObj.invalidUserCookie ||
+          error.cause === errorCausesObj.accessDenied
+        ) {
           handleInvalidUser();
         } else {
           setErrorMessage(error.message);

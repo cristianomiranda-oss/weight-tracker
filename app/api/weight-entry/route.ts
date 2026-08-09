@@ -1,4 +1,5 @@
 // Credit: all api calls were created using a pattern by Lee Robinson
+// https://nextjs.org/blog/building-apis-with-nextjs
 
 import { getPayloadData } from "@/app/libs/payload-generation";
 import {
@@ -10,7 +11,6 @@ import {
 } from "@/app/services/weight-entry";
 import { handleMiddleWareErrors } from "@/app/utils/errors";
 
-// https://nextjs.org/blog/building-apis-with-nextjs
 export async function GET(request: Request) {
   try {
     // Calls the method to get user data from the bearer token in the headers
@@ -42,10 +42,16 @@ export async function GET(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
-    return new Response(JSON.stringify({message: errorToSend.message, cause: errorToSend.cause}), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({
+        message: errorToSend.message,
+        cause: errorToSend.cause,
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 }
 
@@ -67,10 +73,16 @@ export async function POST(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
-    return new Response(JSON.stringify({message: errorToSend.message, cause: errorToSend.cause}), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({
+        message: errorToSend.message,
+        cause: errorToSend.cause,
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 }
 
@@ -97,10 +109,16 @@ export async function PUT(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
-    return new Response(JSON.stringify({message: errorToSend.message, cause: errorToSend.cause}), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({
+        message: errorToSend.message,
+        cause: errorToSend.cause,
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 }
 
@@ -122,9 +140,15 @@ export async function DELETE(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
-    return new Response(JSON.stringify({message: errorToSend.message, cause: errorToSend.cause}), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({
+        message: errorToSend.message,
+        cause: errorToSend.cause,
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 }

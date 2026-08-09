@@ -4,7 +4,11 @@ import { getUserCookie } from "@/app/libs/cookies";
 import { errorCausesObj, handleMiddleWareErrors } from "@/app/utils/errors";
 import type { GoalOption, GoalWeightEntryType } from "@/app/libs/types";
 import { verifyAccountPayload } from "../../libs/payload-generation";
-import { addGoalWeightEntryService, changeGoalWeighEntryService, getGoalWeightEntryService } from "@/app/services/goal-weight-entry";
+import {
+  addGoalWeightEntryService,
+  changeGoalWeighEntryService,
+  getGoalWeightEntryService,
+} from "@/app/services/goal-weight-entry";
 
 /**
  * Middleware for accessing the database to create a new goal weight entry
@@ -91,7 +95,12 @@ export async function changeGoalWeighEntry(
     const payloadData = await verifyAccountPayload(userCookie.value);
 
     // Calls the service to update the goal weight entry
-    await changeGoalWeighEntryService(goalWeightEntryId, weightValue, goalType, payloadData);
+    await changeGoalWeighEntryService(
+      goalWeightEntryId,
+      weightValue,
+      goalType,
+      payloadData,
+    );
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToThrow = handleMiddleWareErrors(error);

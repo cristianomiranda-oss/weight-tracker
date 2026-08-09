@@ -28,8 +28,8 @@ export async function getAccountPayload(userId: string, userName: string) {
 
 /**
  * Verifies the payload string
-*
-* @param {string} payload Payload string that will be verified
+ *
+ * @param {string} payload Payload string that will be verified
  * @returns Returns the payload string if the string is valid or throws an access denied error if it fails to validate
  */
 export async function verifyAccountPayload(payload: string) {
@@ -50,11 +50,11 @@ export async function verifyAccountPayload(payload: string) {
 }
 
 /**
-   * Obtains the payload sting from a request's bearer token and decrypts the data
-   * @param {Request} request The request containing the bearer token
-   */
+ * Obtains the payload sting from a request's bearer token and decrypts the data
+ * @param {Request} request The request containing the bearer token
+ */
 export async function getPayloadData(request: Request) {
-try {
+  try {
     // Pulls the token from the headers
     const token = request.headers.get("Authorization");
 

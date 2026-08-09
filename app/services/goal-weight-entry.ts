@@ -11,7 +11,7 @@ import { FilterTests } from "../utils/regex";
 
 /**
  * Service for accessing the database to create a new goal weight entry
- * @param weightValue Number value for the new goal weight entry - Must be greater than zero
+ * @param weightValue Number value for the new goal weight entry
  * @param goalType Goal type for the new goal weight entry - Must be "Loss", "Gain", or "Maintenance"
  * @param userAccount User account data for the new goal weight entry
  * @throws Signals the process failed
@@ -31,11 +31,12 @@ export async function addGoalWeightEntryService(
     // Tests the goal type and throws an error if it is invalid
     FilterTests.validateGoalType(goalType);
 
-    const newGoalWeightEntryId = await WeightTrackerDataBase.createGoalWeightEntry(
-      weightValue,
-      goalType,
-      userAccount.userId,
-    );
+    const newGoalWeightEntryId =
+      await WeightTrackerDataBase.createGoalWeightEntry(
+        weightValue,
+        goalType,
+        userAccount.userId,
+      );
 
     if (newGoalWeightEntryId) {
       return;

@@ -29,10 +29,16 @@ export async function GET(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
-    return new Response(JSON.stringify({message: errorToSend.message, cause: errorToSend.cause}), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({
+        message: errorToSend.message,
+        cause: errorToSend.cause,
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 }
 
@@ -54,10 +60,16 @@ export async function POST(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
-    return new Response(JSON.stringify({message: errorToSend.message, cause: errorToSend.cause}), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({
+        message: errorToSend.message,
+        cause: errorToSend.cause,
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 }
 
@@ -84,9 +96,15 @@ export async function PUT(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
-    return new Response(JSON.stringify({message: errorToSend.message, cause: errorToSend.cause}), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({
+        message: errorToSend.message,
+        cause: errorToSend.cause,
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 }

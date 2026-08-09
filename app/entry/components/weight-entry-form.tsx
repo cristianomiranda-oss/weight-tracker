@@ -18,9 +18,7 @@ import {
 } from "@/app/actions/middleware/goal-weight-entry";
 import LoadingIndicator from "@/app/components/loading-indicator";
 import { errorCausesObj } from "@/app/utils/errors";
-import {
-  EntriesSessionStorage
-} from "@/app/libs/session-storage";
+import { EntriesSessionStorage } from "@/app/libs/session-storage";
 import { getDataTimeString } from "@/app/utils/date";
 
 /**
@@ -125,7 +123,11 @@ export default function WeightEntryForm(): React.JSX.Element {
         await changeWeighEntry(updateEntryId, weightValue, weighInDate);
 
         // Calls the method to update the entry in the cached array
-        EntriesSessionStorage.updateCachedWeightEntryArray(updateEntryId, weightValue, weighInDate);
+        EntriesSessionStorage.updateCachedWeightEntryArray(
+          updateEntryId,
+          weightValue,
+          weighInDate,
+        );
 
         navigateToHome();
       }

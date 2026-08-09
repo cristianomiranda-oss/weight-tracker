@@ -1,10 +1,10 @@
-"use client"
+"use client";
 import { minutesToMilliseconds } from "../utils/time";
 import type { CachedObj, WeightEntryType } from "./types";
 
 /**
-   * Static Methods needed for managing session storage of the weight entries array
-   */
+ * Static Methods needed for managing session storage of the weight entries array
+ */
 export class EntriesSessionStorage {
   static weightEntriesKey = "weight_entries_cache";
 

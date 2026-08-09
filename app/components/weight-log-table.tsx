@@ -46,9 +46,7 @@ export default function WeightLogTable({
         <WeightEntry
           key={entry._id}
           weightEntryObj={entry}
-          removeEntry={() =>
-            triggerEntryRemoval(entry._id, entry.userId)
-          }
+          removeEntry={() => triggerEntryRemoval(entry._id, entry.userId)}
           changeEntry={() => triggerEntryUpdate(entry._id)}
         />
       ))}

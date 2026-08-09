@@ -100,7 +100,7 @@ export async function getWeightEntryService(
 
 /**
  * Service for accessing the database to update an existing weight entry
- * @param weightEntryId Id for the associated weight entry to be changed - Must be greater than zero
+ * @param weightEntryId Id for the associated weight entry to be changed
  * @param weightValue New number value for the weight entry - Must be greater than zero
  * @param weighInDate New date value for the weight entry
  * @param userAccount User account data associated with the to be updated weight entry
@@ -145,7 +145,7 @@ export async function changeWeighEntryService(
 
 /**
  * Services for removing specific weight entries from the database.
- * Entries are identified based on the stored user account cookie and the passed in entryId value.
+ * Entries are identified based on the user account and the passed in entryId value.
  * @param entryId Id value for the entry to be removed.
  * @param userAccount User account data associated with the to be removed weight entry
  * @throws Signals the process failed
@@ -159,11 +159,10 @@ export async function removeWeightEntryService(
     FilterTests.validateUUID(userAccount.userId);
     FilterTests.validateUUID(weightEntryId);
 
-    const isEntryDeleted =
-      await WeightTrackerDataBase.deleteWeightEntry(
-        weightEntryId,
-        userAccount.userId,
-      );
+    const isEntryDeleted = await WeightTrackerDataBase.deleteWeightEntry(
+      weightEntryId,
+      userAccount.userId,
+    );
 
     if (isEntryDeleted) {
       return;

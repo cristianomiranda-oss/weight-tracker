@@ -7,7 +7,6 @@ import { FilterTests } from "../utils/regex";
  * Service for accessing the database to create a new user account
  * @param userName Username for the account to be created - Must be within 6 - 25 characters
  * @param userPassword Password for the account to be created - Must be within 8 - 30 characters
- * @param confirmPassWord Retying of the password for the account to be created - Must match the userPassword
  * @throws Signals the process failed
  */
 export async function createUserAccountService(
