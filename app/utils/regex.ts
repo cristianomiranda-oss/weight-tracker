@@ -1,5 +1,8 @@
 import { errorCausesObj } from "./errors";
 
+/**
+   * Contains the logic for filtering all variable values before passing them to the MongoDB CRUD methods
+   */
 export class FilterTests {
   // Validates the standard uuid format
   static uuidFilter = /(^[\w\d]{8}(-[\w\d]{4}){3}-[\w\d]{12}$)/;
@@ -11,8 +14,8 @@ export class FilterTests {
   // Filters weight value, allows for whole numbers only or up to the hundredths decimal position
   static weightValueFilter = /(^[\d]+(\.[\d]{1,2})?$)/;
 
-  // Filters the date value, requires the date to be entered with the UTC timezone
-  static dateFilter = /(^[\d]{4}(-[\d]{2}){2}T[\d]{2}(:[\d]{2}){2}Z$)/;
+  // Filters the date value, requires only the hour and minutes for the time portion
+  static dateFilter = /(^[\d]{4}(-[\d]{2}){2}T[\d]{2}:[\d]{2}$)/;
 
   /**
    * Checks if the passed in username is valid
@@ -151,7 +154,7 @@ export class FilterTests {
 
   /**
    * Checks if the passed in date string is valid
-   * Valid string pattern is "YYYY-MM-DDT##:##:##Z" and timezone must be UTC
+   * Valid string pattern is "YYYY-MM-DDT##:##"
    * @param {string} weighInDate The date string to be tested
    * @throws Throws if date is invalid
    */
