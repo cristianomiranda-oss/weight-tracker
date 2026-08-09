@@ -8,7 +8,6 @@ import {
   getGoalWeightEntryService,
 } from "@/app/services/goal-weight-entry";
 import { errorCausesObj, handleMiddleWareErrors } from "@/app/utils/errors";
-import { Console } from "console";
 
 export async function GET(request: Request) {
   try {

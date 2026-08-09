@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     // Passes in the passed in parameters
     await createUserAccountService(userName, userPassword);
 
-    return new Response("POST endpoint accessed", {
+    return new Response("Account Created", {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });

@@ -7,6 +7,7 @@ import type {
   UserPayloadObj,
 } from "@/app/libs/types";
 import { WeightTrackerDataBase } from "../libs/mongodb";
+import { FilterTests } from "../utils/regex";
 
 /**
  * Service for accessing the database to create a new goal weight entry
@@ -21,25 +22,14 @@ export async function addGoalWeightEntryService(
   userAccount: UserPayloadObj,
 ): Promise<void> {
   try {
-    if (weightValue < 0 || Number.isNaN(weightValue)) {
-      throw new Error("Weight value cannot be less than zero", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
+    // Validates the UUID value for the user account and goal weight entry and throws an error if it is invalid
+    FilterTests.validateUUID(userAccount.userId);
 
-    let isValid = false;
+    // Tests the weight value and throws an error if it is invalid
+    FilterTests.validateWeightValue(weightValue);
 
-    for (const approvedType of ["Loss", "Gain", "Maintenance"]) {
-      if (approvedType === goalType) {
-        isValid = true;
-      }
-    }
-
-    if (!isValid) {
-      throw new Error("Invalid goal type", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
+    // Tests the goal type and throws an error if it is invalid
+    FilterTests.validateGoalType(goalType);
 
     const newGoalWeightEntryId = await WeightTrackerDataBase.createGoalWeightEntry(
       weightValue,
@@ -71,6 +61,9 @@ export async function getGoalWeightEntryService(
   userAccount: UserPayloadObj,
 ): Promise<GoalWeightEntryType | null> {
   try {
+    // Validates the UUID value for the user account and throws an error if it is invalid
+    FilterTests.validateUUID(userAccount.userId);
+
     const userGoalWeightEntry = await WeightTrackerDataBase.readGoalWeightEntry(
       userAccount.userId,
     );
@@ -84,7 +77,7 @@ export async function getGoalWeightEntryService(
 
 /**
  * Service for accessing the database to update a goal weight entry
- * @param goalWeightEntryId New number value for the existing goal weight entry - Must be greater than zero
+ * @param goalWeightEntryId New number value for the existing goal weight entry
  * @param weightValue New number value for the existing goal weight entry - Must be greater than zero
  * @param goalType New goal type for the existing goal weight entry - Must be "Loss", "Gain", or "Maintenance"
  * @param userAccount User account data associated with the existing goal weight entry
@@ -97,32 +90,15 @@ export async function changeGoalWeighEntryService(
   userAccount: UserPayloadObj,
 ) {
   try {
-    // Checks if the entry id is the standard uuid length
-    if (goalWeightEntryId.length !== 36) {
-      throw new Error("Existing goal weight entry invalid", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
+    // Validates the UUID value for the user account and goal weight entry and throws an error if it is invalid
+    FilterTests.validateUUID(userAccount.userId);
+    FilterTests.validateUUID(goalWeightEntryId);
 
-    if (weightValue < 0 || Number.isNaN(weightValue)) {
-      throw new Error("Weight value cannot be less than 0", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
+    // Tests the weight value and throws an error if it is invalid
+    FilterTests.validateWeightValue(weightValue);
 
-    let isValid = false;
-
-    for (const approvedType of ["Loss", "Gain", "Maintenance"]) {
-      if (approvedType === goalType) {
-        isValid = true;
-      }
-    }
-
-    if (!isValid) {
-      throw new Error("Invalid goal type", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
+    // Tests the goal type and throws an error if it is invalid
+    FilterTests.validateGoalType(goalType);
 
     const isEntryUpdated = await WeightTrackerDataBase.updateGoalWeightEntry(
       goalWeightEntryId,

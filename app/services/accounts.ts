@@ -1,6 +1,7 @@
 "use server";
 import { errorCausesObj } from "@/app/utils/errors";
 import { WeightTrackerDataBase } from "../libs/mongodb";
+import { FilterTests } from "../utils/regex";
 
 /**
  * Service for accessing the database to create a new user account
@@ -14,31 +15,11 @@ export async function createUserAccountService(
   userPassword: string,
 ): Promise<void> {
   try {
-    if (userName === "" || userPassword === "") {
-      throw new Error("Username and Password cannot be blank", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
+    // Tests the username and throws an error if it is invalid
+    FilterTests.validateUserName(userName);
 
-    if (userName.length < 6) {
-      throw new Error("Username cannot be less than 6 characters", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    } else if (userName.length > 25) {
-      throw new Error("Username cannot exceed 25 characters", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
-
-    if (userPassword.length < 8) {
-      throw new Error("Password cannot be less than 8 characters", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    } else if (userPassword.length > 30) {
-      throw new Error("Password cannot exceed 30 characters", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
+    // Test the password and throws an error if it is invalid
+    FilterTests.validatePassword(userPassword);
 
     // Calls the CRUD method to create a new account
     const isAccountCreated = await WeightTrackerDataBase.createNewUserAccount(
@@ -73,23 +54,11 @@ export async function validateLoginService(
   userPassword: string,
 ): Promise<string> {
   try {
-    if (userName === "" || userPassword === "") {
-      throw new Error("Username and Password cannot be blank", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
+    // Tests the username and throws an error if it is invalid
+    FilterTests.validateUserName(userName);
 
-    if (userName.length < 6 || userName.length > 25) {
-      throw new Error("Username is invalid", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
-
-    if (userPassword.length < 8 || userPassword.length > 30) {
-      throw new Error("Password is invalid", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
+    // Test the password and throws an error if it is invalid
+    FilterTests.validatePassword(userPassword);
 
     const userAccount = await WeightTrackerDataBase.validateUserAccount(
       userName,

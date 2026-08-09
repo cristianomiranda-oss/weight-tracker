@@ -2,6 +2,7 @@
 import { errorCausesObj } from "@/app/utils/errors";
 import type { UserPayloadObj, WeightEntryType } from "@/app/libs/types";
 import { WeightTrackerDataBase } from "../libs/mongodb";
+import { FilterTests } from "../utils/regex";
 
 /**
  * Service for accessing the database to create new weight entry
@@ -16,18 +17,14 @@ export async function addWeightEntryService(
   userAccount: UserPayloadObj,
 ): Promise<void> {
   try {
-    if (weightValue < 0 || Number.isNaN(weightValue)) {
-      throw new Error("Weight value cannot be less than zero", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
+    // Validates the UUID value for the user account and throws an error if it is invalid
+    FilterTests.validateUUID(userAccount.userId);
 
-    // Checks if the passed in date string is empty
-    if (weighInDate === "") {
-      throw new Error("Weigh in date cannot be blank", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
+    // Tests the weight value and throws an error if it is invalid
+    FilterTests.validateWeightValue(weightValue);
+
+    // Tests the weigh in date and throws an error if it is invalid
+    FilterTests.validateDateValue(weighInDate);
 
     const newEntryId = await WeightTrackerDataBase.createWeightEntry(
       weightValue,
@@ -58,6 +55,9 @@ export async function getWeightEntriesService(
   userAccount: UserPayloadObj,
 ): Promise<WeightEntryType[]> {
   try {
+    // Validates the UUID value for the user account throws an error if it is invalid
+    FilterTests.validateUUID(userAccount.userId);
+
     const userWeightEntries = await WeightTrackerDataBase.readWeightEntries(
       userAccount.userId,
     );
@@ -82,12 +82,9 @@ export async function getWeightEntryService(
   userAccount: UserPayloadObj,
 ): Promise<WeightEntryType | null> {
   try {
-    // Checks if the entry id is the standard uuid length
-    if (weightEntryId.length !== 36) {
-      throw new Error("Existing weight entry id is invalid", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
+    // Validates the UUID value for the user account and weight entry id and throws an error if it is invalid
+    FilterTests.validateUUID(userAccount.userId);
+    FilterTests.validateUUID(weightEntryId);
 
     const userWeightEntry = await WeightTrackerDataBase.readWeightEntry(
       weightEntryId,
@@ -116,25 +113,15 @@ export async function changeWeighEntryService(
   userAccount: UserPayloadObj,
 ): Promise<void> {
   try {
-    // Checks if the entry id is the standard uuid length
-    if (weightEntryId.length !== 36) {
-      throw new Error("Existing weight entry id is invalid", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
+    // Validates the UUID value for the user account and weight entry id and throws an error if it is invalid
+    FilterTests.validateUUID(userAccount.userId);
+    FilterTests.validateUUID(weightEntryId);
 
-    if (weightValue < 0 || Number.isNaN(weightValue)) {
-      throw new Error("Weight value cannot be less than zero", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
+    // Tests the weight value and throws an error if it is invalid
+    FilterTests.validateWeightValue(weightValue);
 
-    // Checks if the passed in date string is empty
-    if (weighInDate === "") {
-      throw new Error("Weigh in date cannot be blank", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
+    // Tests the weigh in date and throws an error if it is invalid
+    FilterTests.validateDateValue(weighInDate);
 
     const isEntryUpdated = await WeightTrackerDataBase.updateWeightEntry(
       weightEntryId,
@@ -168,14 +155,11 @@ export async function removeWeightEntryService(
   userAccount: UserPayloadObj,
 ): Promise<void> {
   try {
-    // Checks if the entry id is the standard uuid length
-    if (weightEntryId.length !== 36) {
-      throw new Error("Existing weight entry id is invalid", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
+    // Validates the UUID value for the user account and weight entry id and throws an error if it is invalid
+    FilterTests.validateUUID(userAccount.userId);
+    FilterTests.validateUUID(weightEntryId);
 
-    const isEntryDeleted: boolean =
+    const isEntryDeleted =
       await WeightTrackerDataBase.deleteWeightEntry(
         weightEntryId,
         userAccount.userId,
