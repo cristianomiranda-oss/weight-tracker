@@ -5,11 +5,13 @@ import {
   validateLogin,
 } from "@/app/actions/middleware/accounts";
 import Button from "@/app/components/button";
+import ErrorDisplay from "@/app/components/error-display";
 import LabeledInput from "@/app/components/labeled-input";
 import LoadingIndicator from "@/app/components/loading-indicator";
 import SubmitButton from "@/app/components/submit-button";
 import { clearUserCookie } from "@/app/libs/cookies";
 import { EntriesSessionStorage } from "@/app/libs/session-storage";
+import { errorCausesObj, getUnknownError } from "@/app/utils/errors";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -25,8 +27,8 @@ export default function AccountForm(): React.JSX.Element {
   const [isAccountCreationEnabled, setIsAccountCreationEnabled] =
     useState<boolean>(false);
 
-  // Initializes state for storing the loading flag and error messages
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  // Initializes state for storing the loading flag and error
+  const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Initializes various references to the html input elements in the form
@@ -62,6 +64,9 @@ export default function AccountForm(): React.JSX.Element {
         userPasswordRef.current.value = "";
       }
 
+      // Resets all necessary state values
+      setIsLoading(false);
+      setError(null);
       setIsAccountCreationEnabled((curr) => !curr);
     }
   }
@@ -80,7 +85,7 @@ export default function AccountForm(): React.JSX.Element {
 
       // Sets the loading boolean and clears the current error message
       setIsLoading(true);
-      setErrorMessage("");
+      setError(null);
 
       // Checks the currently active screen
       if (isAccountCreationEnabled) {
@@ -128,10 +133,10 @@ export default function AccountForm(): React.JSX.Element {
     } catch (error) {
       // Checks if the error is an established error
       if (error instanceof Error) {
-        setErrorMessage(error.message);
+        setError(error);
       } else {
         // Indicates an unusual error has occurred
-        setErrorMessage("An Unknown Error has Occurred!");
+        setError(getUnknownError());
       }
     } finally {
       // Changes the loading boolean to indicate the function is no longer running.
@@ -151,10 +156,10 @@ export default function AccountForm(): React.JSX.Element {
       } catch (error) {
         // Checks if the error is an established error
         if (error instanceof Error) {
-          setErrorMessage(error.message);
+          setError(error);
         } else {
           // Indicates an unusual error has occurred
-          setErrorMessage("An Unknown Error has Occurred!");
+          setError(getUnknownError());
         }
       } finally {
         setIsLoading(false);
@@ -163,6 +168,15 @@ export default function AccountForm(): React.JSX.Element {
 
     clearUserData();
   }, []);
+
+  if (
+    error?.cause !== "invalid-parameter-value" &&
+    error?.cause !== "invalid-comparison" &&
+    error?.cause !== "access-denied" &&
+    error !== null
+  ) {
+    return <ErrorDisplay error={error} router={router} />;
+  }
 
   return (
     <>
@@ -175,7 +189,9 @@ export default function AccountForm(): React.JSX.Element {
           {isAccountCreationEnabled ? "Create Account" : "Sign In"}
         </h2>
 
-        <h3 className="text-3xl text-red-700 text-center">{errorMessage}</h3>
+        {error !== null && (
+          <h3 className="text-3xl text-red-700 text-center">{error.message}</h3>
+        )}
 
         <LabeledInput
           id="userName"

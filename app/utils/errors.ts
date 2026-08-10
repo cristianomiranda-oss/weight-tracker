@@ -53,3 +53,7 @@ export function handleMiddleWareErrors(error: unknown): Error {
     return newError;
   }
 }
+
+export function getUnknownError() {
+  return new Error("An Unknown Error has Occurred!", {cause: errorCausesObj.unknownError});
+}
