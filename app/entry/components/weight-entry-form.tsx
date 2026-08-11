@@ -17,9 +17,10 @@ import {
   getGoalWeightEntry,
 } from "@/app/actions/middleware/goal-weight-entry";
 import LoadingIndicator from "@/app/components/loading-indicator";
-import { errorCausesObj } from "@/app/utils/errors";
+import { errorCausesObj, getUnknownError } from "@/app/utils/errors";
 import { EntriesSessionStorage } from "@/app/libs/session-storage";
 import { getDataTimeString } from "@/app/utils/date";
+import ErrorDisplay from "@/app/components/error-display";
 
 /**
  * Contains the components for display the weight entry and goal weight entry interfaces
@@ -37,9 +38,9 @@ export default function WeightEntryForm(): React.JSX.Element {
   // Pulls the 'entryId' search parameter to determine if an already existing weight entry is to be updated
   const updateEntryId = searchParameters.get("entryId");
 
-  // Initializes state for storing the loading flag and error messages
+  // Initializes state for storing the loading flag and error
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [error, setError] = useState<Error | null>(null);
 
   // Initializes various references to the html input elements in the form
   const weightValueInputRef = useRef<HTMLInputElement | null>(null);
@@ -50,20 +51,19 @@ export default function WeightEntryForm(): React.JSX.Element {
     useState<string>("000.00");
 
   /**
-   * Alerts the user of an invalid sign in and navigates to the accounts page
+   * Navigates the user to the home screen
    */
-  function handleInvalidUserData() {
-    alert("Invalid user data, returning to sign-in page...");
-    router.push("/accounts");
+  function navigateToHome() {
+    router.push("/");
   }
 
   /**
    * Handles the adding of a new weight entry
    */
   async function addNewWeightEntry(): Promise<void> {
-    // Sets the loading flag and clears the current error message
+    // Sets the loading flag and clears the current error
     setIsLoading(true);
-    setErrorMessage("");
+    setError(null);
 
     try {
       // Checks if the weight value and weigh in date input refs are established
@@ -86,13 +86,9 @@ export default function WeightEntryForm(): React.JSX.Element {
     } catch (error) {
       // Checks if the error is an established error
       if (error instanceof Error) {
-        if (error.cause === errorCausesObj.invalidUserCookie) {
-          handleInvalidUserData();
-        } else {
-          setErrorMessage(error.message);
-        }
+        setError(error);
       } else {
-        setErrorMessage("An Unknown Error has Occurred!");
+        setError(getUnknownError());
       }
     } finally {
       // Change the loading boolean to indicate the function is no longer running
@@ -104,9 +100,9 @@ export default function WeightEntryForm(): React.JSX.Element {
    * Handles the updating of a weight entry
    */
   async function triggerWeightEntryChange(): Promise<void> {
-    // Sets the loading flag and clears the current error message
+    // Sets the loading flag and clears the current error
     setIsLoading(true);
-    setErrorMessage("");
+    setError(error);
 
     try {
       // Checks if the weight value and weigh in date input refs are established and if the updateEntryId search parameter is valid
@@ -133,13 +129,9 @@ export default function WeightEntryForm(): React.JSX.Element {
       }
     } catch (error) {
       if (error instanceof Error) {
-        if (error.cause === errorCausesObj.invalidUserCookie) {
-          handleInvalidUserData();
-        } else {
-          setErrorMessage(error.message);
-        }
+        setError(error);
       } else {
-        setErrorMessage("An Unknown Error has Occurred!");
+        setError(getUnknownError());
       }
     } finally {
       // Change the loading boolean to indicate the function is no longer running
@@ -152,9 +144,9 @@ export default function WeightEntryForm(): React.JSX.Element {
    * The back-end method called is dependant on if the user already has an existing goal weight entry in the database
    */
   async function handleGoalWeightEntry(): Promise<void> {
-    // Sets the loading flag and clears the current error message
+    // Sets the loading flag and clears the current error
     setIsLoading(true);
-    setErrorMessage("");
+    setError(null);
 
     try {
       // Calls the function to retrieve a goal weight entry from the database
@@ -193,19 +185,17 @@ export default function WeightEntryForm(): React.JSX.Element {
             navigateToHome();
           }
         } else {
-          throw new Error("Select a valid goal type");
+          throw new Error("Select a valid goal type", {
+            cause: errorCausesObj.invalidParameterValue,
+          });
         }
       }
     } catch (error) {
       // Checks if the error is an established error
       if (error instanceof Error) {
-        if (error.cause === errorCausesObj.invalidUserCookie) {
-          handleInvalidUserData();
-        } else {
-          setErrorMessage(error.message);
-        }
+        setError(error);
       } else {
-        setErrorMessage("An Unknown Error has Occurred!");
+        setError(getUnknownError());
       }
     } finally {
       // Change the loading boolean to indicate the function is no longer running
@@ -240,19 +230,12 @@ export default function WeightEntryForm(): React.JSX.Element {
   }
 
   /**
-   * Navigates the user to the home screen
-   */
-  function navigateToHome() {
-    router.push("/");
-  }
-
-  /**
    * Retrieves the previous weight value for the weight entry or goal entry being updated
    */
   async function getPlaceHolderData() {
-    // Sets the loading flag and clears the current error message
+    // Sets the loading flag and clears the current error
     setIsLoading(true);
-    setErrorMessage("");
+    setError(null);
 
     try {
       // Checks the currently active page
@@ -289,13 +272,9 @@ export default function WeightEntryForm(): React.JSX.Element {
     } catch (error) {
       // Checks if the error is an established error
       if (error instanceof Error) {
-        if (error.cause === errorCausesObj.invalidUserCookie) {
-          handleInvalidUserData();
-        } else {
-          setErrorMessage(error.message);
-        }
+        setError(error);
       } else {
-        setErrorMessage("An Unknown Error has Occurred!");
+        setError(getUnknownError());
       }
     } finally {
       // Change the loading boolean to indicate the function is no longer running
@@ -308,6 +287,14 @@ export default function WeightEntryForm(): React.JSX.Element {
     getPlaceHolderData();
   }, []);
 
+  if (
+    error?.cause !== errorCausesObj.invalidParameterValue &&
+    error?.cause !== errorCausesObj.invalidComparison &&
+    error !== null
+  ) {
+    return <ErrorDisplay error={error} router={router} />;
+  }
+
   return (
     <>
       {isLoading && <LoadingIndicator />}
@@ -319,7 +306,7 @@ export default function WeightEntryForm(): React.JSX.Element {
           {isWeightGoalEntry ? "Goal Weight Entry" : "Weight Entry"}
         </h2>
 
-        <h3 className="text-3xl text-red-700 text-center">{errorMessage}</h3>
+        <h3 className="text-3xl text-red-700 text-center">{error?.message}</h3>
 
         <LabeledInput
           id="weightValue"

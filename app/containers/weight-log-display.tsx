@@ -38,7 +38,7 @@ export default function WeightLogDisplay() {
   // Initializes a router to allow for navigation
   const router = useRouter();
 
-  // Initializes state for storing the loading flag and error messages
+  // Initializes state for storing the loading flag and error
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
   const [infoMessage, setInfoMessage] = useState<string>("");

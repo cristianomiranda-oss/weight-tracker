@@ -12,7 +12,7 @@ interface ErrorDisplayProps {
  * Displays the error and handles the timing before redirecting user to the appropriate page
  */
 export default function ErrorDisplay({ error, router }: ErrorDisplayProps) {
-  const [timeCount, setTimeCount] = useState<number>(15);
+  const [timeCount, setTimeCount] = useState<number>(3);
 
   function navigateToPage() {
     if (
@@ -20,12 +20,13 @@ export default function ErrorDisplay({ error, router }: ErrorDisplayProps) {
       error.cause === errorCausesObj.accessDenied
     ) {
       // Redirects the user back to the accounts page
-      router.push("/");
+      router.push("/accounts");
     } else if (error.cause === errorCausesObj.noGoalWeightEntry) {
       const navigationURL = "/entry?type=goal-weight-entry";
       router.push(navigationURL);
     } else {
-      router.refresh();
+      // Reloads the main page
+      window.location.reload();
     }
   }
 
@@ -33,19 +34,20 @@ export default function ErrorDisplay({ error, router }: ErrorDisplayProps) {
    * Starts a count down on page load
    */
   useEffect(() => {
+    if (timeCount <= 0) {
+      console.log('refresh')
+      navigateToPage();
+      return;
+    }
+
     const timeOutCounter = setInterval(() => {
-      if (timeCount > 0) {
-        // Decrements the timeout counter
-        setTimeCount((prevValue) => prevValue - 1);
-      } else {
-        navigateToPage();
-      }
+      setTimeCount((prev) => prev - 1);
     }, 1000);
 
     return () => {
       clearInterval(timeOutCounter);
     };
-  }, []);
+  }, [timeCount]);
 
   if (error.cause === errorCausesObj.noGoalWeightEntry) {
     return (
@@ -61,8 +63,6 @@ export default function ErrorDisplay({ error, router }: ErrorDisplayProps) {
     return (
       <Card>
         <h2>An Error Has Occurred</h2>
-
-        {typeof error.cause === "string" && <h3>{error.cause}</h3>}
 
         <p>{error.message}</p>
 
