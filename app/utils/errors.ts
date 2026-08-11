@@ -12,6 +12,7 @@ export const errorCausesObj = {
   databaseCrudError: "database-crud-error",
   databaseConstraintIssue: "database-constraint-issue",
   noUserEntry: "no-user-entry",
+  noGoalWeightEntry: "no-goal-weight-entry",
 };
 
 /**

@@ -23,11 +23,12 @@ import {
   getWeightEntries,
 } from "../actions/middleware/weight-entry";
 import { getGoalWeightEntry } from "../actions/middleware/goal-weight-entry";
-import { errorCausesObj } from "../utils/errors";
+import { errorCausesObj, getUnknownError } from "../utils/errors";
 import LoadingIndicator from "../components/loading-indicator";
 import MessageDisplay from "../components/message-display";
 import { sortEntriesArray } from "../utils/sorting";
 import { EntriesSessionStorage } from "../libs/session-storage";
+import ErrorDisplay from "../components/error-display";
 
 /**
  * Contains the components for displaying the weight log interface and
@@ -39,7 +40,7 @@ export default function WeightLogDisplay() {
 
   // Initializes state for storing the loading flag and error messages
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [error, setError] = useState<Error | null>(null);
   const [infoMessage, setInfoMessage] = useState<string>("");
 
   // Initializes state for storing all user weight entries
@@ -52,14 +53,6 @@ export default function WeightLogDisplay() {
       sortOrder: "DESC",
     },
   );
-
-  /**
-   * Alerts the user of an invalid sign in and navigates to the accounts page
-   */
-  function handleInvalidUser() {
-    alert("Invalid user data, returning to sign-in page...");
-    router.push("/accounts");
-  }
 
   /**
    * Handles the updating of weight entries
@@ -78,9 +71,9 @@ export default function WeightLogDisplay() {
     } catch (error) {
       // Checks if error is a known error
       if (error instanceof Error && error.cause) {
-        setErrorMessage(error.message);
+        setError(error);
       } else {
-        setErrorMessage("An unknown error has occurred");
+        setError(getUnknownError());
       }
     } finally {
       setIsLoading(false);
@@ -111,16 +104,9 @@ export default function WeightLogDisplay() {
     } catch (error) {
       // Checks if error is a known error
       if (error instanceof Error && error.cause) {
-        if (
-          error.cause === errorCausesObj.invalidUserCookie ||
-          error.cause === errorCausesObj.accessDenied
-        ) {
-          handleInvalidUser();
-        } else {
-          setErrorMessage(error.message);
-        }
+        setError(error);
       } else {
-        setErrorMessage("An unknown error has occurred");
+        setError(getUnknownError());
       }
     } finally {
       setIsLoading(false);
@@ -138,12 +124,9 @@ export default function WeightLogDisplay() {
     const goalWeightEntry = await getGoalWeightEntry();
 
     if (goalWeightEntry === null) {
-      // If no goal weight entry exists for the user, navigates them to the entry page
-      alert("No goal entry recorded, navigating to goal entry page...");
-      const navigationURL = "/entry?type=goal-weight-entry";
-      router.push(navigationURL);
-      throw new Error("Failed to access goal weight entry", {
-        cause: errorCausesObj.noUserEntry,
+      // If no goal weight entry exists for the user, throws an error
+      throw new Error("No goal weight entry associated with user", {
+        cause: errorCausesObj.noGoalWeightEntry,
       });
     } else {
       return goalWeightEntry;
@@ -276,17 +259,9 @@ export default function WeightLogDisplay() {
     } catch (error) {
       // Checks if error is a known error
       if (error instanceof Error && error.cause) {
-        // Checks the cause of the error
-        if (
-          error.cause === errorCausesObj.invalidUserCookie ||
-          error.cause === errorCausesObj.accessDenied
-        ) {
-          handleInvalidUser();
-        } else {
-          setErrorMessage(error.message);
-        }
+        setError(error);
       } else {
-        setErrorMessage("An unknown error has occurred");
+        setError(getUnknownError());
       }
     } finally {
       // Change the loading boolean to indicate the function is no longer running
@@ -304,11 +279,11 @@ export default function WeightLogDisplay() {
     // Instantiates a timeout
     let eraseTimeOut: NodeJS.Timeout | null = null;
     // Checks if any message variable is populated
-    if (infoMessage !== "" || errorMessage !== "") {
+    if (infoMessage !== "" || error !== null) {
       // Creates a clear timeout that clears both messages after 5 seconds
       eraseTimeOut = setTimeout(() => {
         setInfoMessage("");
-        setErrorMessage("");
+        setError(null);
       }, 5000);
     }
 
@@ -318,7 +293,16 @@ export default function WeightLogDisplay() {
         clearTimeout(eraseTimeOut);
       }
     };
-  }, [infoMessage, errorMessage]);
+  }, [infoMessage, error]);
+
+  if (
+    error?.cause !== "invalid-parameter-value" &&
+    error?.cause !== "invalid-comparison" &&
+    error?.cause !== "access-denied" &&
+    error !== null
+  ) {
+    return <ErrorDisplay error={error} router={router} />;
+  }
 
   return (
     <>
@@ -342,10 +326,7 @@ export default function WeightLogDisplay() {
             currentSortingOption={currentSortingOption}
             updateSortingOption={updateSortingOption}
           />
-          <MessageDisplay
-            errorMessage={errorMessage}
-            infoMessage={infoMessage}
-          />
+          <MessageDisplay error={error} infoMessage={infoMessage} />
         </Card>
       </div>
       <Footer className="flex justify-around lg:justify-center gap-0 lg:gap-36 items-center">
