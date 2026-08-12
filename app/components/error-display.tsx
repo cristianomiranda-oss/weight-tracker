@@ -1,4 +1,3 @@
-import Card from "@/app/components/card";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { useEffect, useState } from "react";
 import { errorCausesObj } from "../utils/errors";
@@ -24,6 +23,9 @@ export default function ErrorDisplay({ error, router }: ErrorDisplayProps) {
     } else if (error.cause === errorCausesObj.noGoalWeightEntry) {
       const navigationURL = "/entry?type=goal-weight-entry";
       router.push(navigationURL);
+    } else if (error.cause === errorCausesObj.noUserEntry) {
+      // Redirects the user back to the home page
+      router.push("/");
     } else {
       // Reloads the main page
       window.location.reload();
@@ -35,7 +37,7 @@ export default function ErrorDisplay({ error, router }: ErrorDisplayProps) {
    */
   useEffect(() => {
     if (timeCount <= 0) {
-      console.log('refresh')
+      console.log("refresh");
       navigateToPage();
       return;
     }
@@ -51,23 +53,31 @@ export default function ErrorDisplay({ error, router }: ErrorDisplayProps) {
 
   if (error.cause === errorCausesObj.noGoalWeightEntry) {
     return (
-      <Card>
-        <h2>Welcome! First step is to enter a goal weight.</h2>
+      <div className="w-full h-full flex flex-col justify-around items-center">
+        <h2 className="text-4xl md:text-6xl text-center">
+          Welcome! First step is to enter a goal weight.
+        </h2>
 
-        <p>navigating to goal weight entry page in ... </p>
-
-        <h2>{timeCount}</h2>
-      </Card>
+        <p className="text-2xl md:text-3xl text-center">
+          <span className="text-yellow-600">{error.message}</span>
+          <br />
+          Navigating to goal weight entry page in {timeCount}...
+        </p>
+      </div>
     );
   } else {
     return (
-      <Card>
-        <h2>An Error Has Occurred</h2>
+      <div className="w-full h-full flex flex-col justify-around items-center">
+        <h2 className="text-4xl md:text-6xl text-center">
+          An Error Has Occurred
+        </h2>
 
-        <p>{error.message}</p>
-
-        <h2>{timeCount}</h2>
-      </Card>
+        <p className="text-2xl md:text-3xl text-center">
+          <span className="text-red-600">{error.message}</span>
+          <br />
+          Navigating in {timeCount}...
+        </p>
+      </div>
     );
   }
 }

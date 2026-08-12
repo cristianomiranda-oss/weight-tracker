@@ -170,9 +170,9 @@ export default function AccountForm(): React.JSX.Element {
   }, []);
 
   if (
-    error?.cause !== "invalid-parameter-value" &&
-    error?.cause !== "invalid-comparison" &&
-    error?.cause !== "access-denied" &&
+    error?.cause !== errorCausesObj.invalidParameterValue &&
+    error?.cause !== errorCausesObj.invalidComparison &&
+    error?.cause !== errorCausesObj.accessDenied &&
     error !== null
   ) {
     return <ErrorDisplay error={error} router={router} />;

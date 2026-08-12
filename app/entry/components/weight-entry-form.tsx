@@ -244,6 +244,7 @@ export default function WeightEntryForm(): React.JSX.Element {
         const goalWeightEntry = await getGoalWeightEntry();
 
         // Checks if a goal weight entry already exists in the database
+        // If no entry exists the default values are kept
         if (goalWeightEntry !== null) {
           // Gets the entry's weight value
           const goalWeightValue = goalWeightEntry.weightValue;
@@ -254,8 +255,6 @@ export default function WeightEntryForm(): React.JSX.Element {
       } else {
         // Checks if the updateEntryId search parameter is valid
         if (updateEntryId !== "" && updateEntryId !== null) {
-          // Converts the passed in entry id to a number
-
           // Gets the weight entry's values
           const entryData = await getWeightEntry(updateEntryId);
 
@@ -287,11 +286,7 @@ export default function WeightEntryForm(): React.JSX.Element {
     getPlaceHolderData();
   }, []);
 
-  if (
-    error?.cause !== errorCausesObj.invalidParameterValue &&
-    error?.cause !== errorCausesObj.invalidComparison &&
-    error !== null
-  ) {
+  if (error?.cause !== errorCausesObj.invalidParameterValue && error !== null) {
     return <ErrorDisplay error={error} router={router} />;
   }
 

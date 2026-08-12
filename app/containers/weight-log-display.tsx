@@ -295,12 +295,7 @@ export default function WeightLogDisplay() {
     };
   }, [infoMessage, error]);
 
-  if (
-    error?.cause !== "invalid-parameter-value" &&
-    error?.cause !== "invalid-comparison" &&
-    error?.cause !== "access-denied" &&
-    error !== null
-  ) {
+  if (error?.cause !== errorCausesObj.invalidParameterValue && error !== null) {
     return <ErrorDisplay error={error} router={router} />;
   }
 
