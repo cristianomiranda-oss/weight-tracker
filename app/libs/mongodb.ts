@@ -213,6 +213,72 @@ class WeightTrackerDB {
       await client.close();
     }
   }
+  
+  /**
+   * CRUD method for removing an account made for the purposes of testing.
+   * Debug only method, is not used outside of testing purposes
+   * @throws Signals that the process failed
+   * @returns Returns with a boolean denoting the action result
+   */
+  async deleteUserAccount(userName: string, userPassword: string) {
+    const client = this._getDBConnection();
+
+    if (client === null) {
+      throw new Error("Failed to access the database", {
+        cause: errorCausesObj.databaseInitializationError,
+      });
+    }
+
+    try {
+      // Initializes a connection to the accounts collection
+      const dbCollection = client
+        .db(this.DATABASE_NAME)
+        .collection<UserAccount>(this.USER_ACCOUNT_COLLECTION);
+
+      // Constructs the query for searching the collection
+      const query = {
+        userName: userName,
+      };
+
+      // Queries the database for the one account that contains the matching username
+      const userAccountData = await dbCollection.findOne(query);
+
+      // Checks if an account associated with the username was found
+      if (userAccountData === null) {
+        // Returns null to denote the user's account was not found
+        return null;
+      }
+
+      // Calls the method to compare the stored hashed password with the one entered by the user
+      const isPasswordValid = await checkPassword(
+        userPassword,
+        userAccountData.userPassword,
+      );
+
+      // Checks the user's credentials after obtaining the account data
+      if (isPasswordValid) {
+        // Calls the delete method and passes in the id of the verified user account
+        const deleteResult = await dbCollection.deleteOne({_id: userAccountData._id});
+
+        // Checks if the entry was updated
+        if (deleteResult.deletedCount === 0) {
+          throw new Error("Account not found!", {
+            cause: errorCausesObj.processFail,
+          });
+        }
+
+        // Returns the boolean denoting the deletion result
+        return deleteResult.acknowledged;
+      } else {
+        // Returns null the user's credentials were invalid
+        return null;
+      }
+    } catch (error) {
+      throw error;
+    } finally {
+      await client.close();
+    }
+  }
 
   /**
    * CRUD method for creating a new weight entry. Returns with the entry's id if creation is successful
@@ -582,6 +648,53 @@ class WeightTrackerDB {
       return updateResult.acknowledged;
     } catch (error) {
       // Throws any error back to the middleware function
+      throw error;
+    } finally {
+      await client.close();
+    }
+  }
+
+  /**
+   * CRUD method for deleting a goal weight entry.
+   * Debug only method, it is not used outside of testing purposes
+   * @throws Signals that the process failed
+   * @returns Returns true if deletion was successful and false if the deletion failed or was not found
+   */
+  async deleteGoalWeightEntry(goalWeightEntryId: string, userId: string) {
+    const client = this._getDBConnection();
+
+    if (client === null) {
+      throw new Error("Failed to access the database", {
+        cause: errorCausesObj.databaseInitializationError,
+      });
+    }
+
+    try {
+      // Constructs the query for filtering the database
+      const query = {
+        _id: goalWeightEntryId,
+        userId,
+      };
+
+      // Initializes a connection to the weight entry collection
+      const dbCollection = client
+        .db(this.DATABASE_NAME)
+        .collection<GoalWeightEntryType>(this.GOAL_WEIGHT_ENTRY_COLLECTION);
+
+      // Deletes the entry matching the query and returns its result
+      const deleteResult = await dbCollection.deleteOne(query);
+
+      // Checks if the entry was deleted
+      if (deleteResult.deletedCount === 0) {
+        throw new Error("Entry not found!", {
+          cause: errorCausesObj.noUserEntry,
+        });
+      }
+
+      // Returns boolean denoting if the deletion was successful
+      return deleteResult.acknowledged;
+    } catch (error) {
+      // Throws any error back to the service function
       throw error;
     } finally {
       await client.close();

@@ -120,3 +120,38 @@ export async function changeGoalWeighEntryService(
     throw error;
   }
 }
+
+/**
+ * DEBUG: Services for removing a goal weight entry from the database.
+ * Entries are identified based on the user account and the passed in entryId value.
+ * Debug only method, is not used outside of testing purposes
+ * @param entryId Id value for the entry to be removed.
+ * @param userAccount User account data associated with the to be removed weight entry
+ * @throws Signals the process failed
+ */
+export async function removeGoalWeightEntryService(
+  goalWeightEntryId: string,
+  userAccount: UserPayloadObj,
+): Promise<void> {
+  try {
+    // Validates the UUID value for the user account and weight entry id and throws an error if it is invalid
+    FilterTests.validateUUID(userAccount.userId);
+    FilterTests.validateUUID(goalWeightEntryId);
+
+    const isEntryDeleted = await WeightTrackerDataBase.deleteGoalWeightEntry(
+      goalWeightEntryId,
+      userAccount.userId,
+    );
+
+    if (isEntryDeleted) {
+      return;
+    } else {
+      throw new Error("Failed to access goal weight entries", {
+        cause: errorCausesObj.processFail,
+      });
+    }
+  } catch (error) {
+    // Throws error to the parent function
+    throw error;
+  }
+}

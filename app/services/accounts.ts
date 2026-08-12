@@ -76,3 +76,38 @@ export async function validateLoginService(
     throw error;
   }
 }
+
+/**
+ * DEBUG: Service for removing a user entry if the provided credentials match with the values stored in the database.
+ * @param userName - Username for the account that will be accessed
+ * @param userPassword - Password for comparing against the one associated with the account that will be accessed
+ * @throws Signals the process failed
+ */
+export async function removeUserAccount(
+  userName: string,
+  userPassword: string,
+) {
+  try {
+    // Tests the username and throws an error if it is invalid
+    FilterTests.validateUserName(userName);
+
+    // Test the password and throws an error if it is invalid
+    FilterTests.validatePassword(userPassword);
+
+    const userAccount = await WeightTrackerDataBase.deleteUserAccount(
+      userName,
+      userPassword,
+    );
+
+    if (userAccount === null) {
+      throw new Error("Username or Password is invalid", {
+        cause: errorCausesObj.accessDenied,
+      });
+    }
+
+    return;
+  } catch (error) {
+    // Throws error to the parent function
+    throw error;
+  }
+}
