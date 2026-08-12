@@ -5,12 +5,13 @@ import { errorCausesObj } from "../utils/errors";
 interface ErrorDisplayProps {
   error: Error;
   router: AppRouterInstance;
+  debug?: boolean
 }
 
 /**
  * Displays the error and handles the timing before redirecting user to the appropriate page
  */
-export default function ErrorDisplay({ error, router }: ErrorDisplayProps) {
+export default function ErrorDisplay({ error, router, debug }: ErrorDisplayProps) {
   const [timeCount, setTimeCount] = useState<number>(3);
 
   function navigateToPage() {
@@ -37,9 +38,16 @@ export default function ErrorDisplay({ error, router }: ErrorDisplayProps) {
    */
   useEffect(() => {
     if (timeCount <= 0) {
-      console.log("refresh");
-      navigateToPage();
-      return;
+      // Checks if debug mode is enabled 
+      if (debug) {
+        // Only logs a message if debug mode is enabled
+        console.log("Navigation Triggered")
+        return;
+      } else {
+        // Calls the function to handle navigation
+        navigateToPage();
+        return;
+      }
     }
 
     const timeOutCounter = setInterval(() => {

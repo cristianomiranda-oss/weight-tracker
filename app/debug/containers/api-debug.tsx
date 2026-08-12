@@ -1,0 +1,14 @@
+interface ApiDebugProps {
+
+}
+
+/**
+ * Launches various fetch calls to the api endpoints and reports their results
+ */
+export default function ApiDebug({}: ApiDebugProps) {
+
+    return (
+        <>
+        </>
+    )
+}
