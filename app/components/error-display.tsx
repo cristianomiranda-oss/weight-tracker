@@ -22,10 +22,11 @@ export default function ErrorDisplay({ error, router, debug }: ErrorDisplayProps
       // Redirects the user back to the accounts page
       router.push("/accounts");
     } else if (error.cause === errorCausesObj.noGoalWeightEntry) {
+      // If no goal weight entry is found, navigate to entry page 
       const navigationURL = "/entry?type=goal-weight-entry";
       router.push(navigationURL);
     } else if (error.cause === errorCausesObj.noUserEntry) {
-      // Redirects the user back to the home page
+      // Redirects the user back to the home page if no entry is found
       router.push("/");
     } else {
       // Reloads the main page
