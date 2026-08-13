@@ -11,9 +11,9 @@ import { errorCausesObj, handleMiddleWareErrors } from "@/app/utils/errors";
 
 /**
  * GET Method: Returns goalWeightEntry if the provided Bearer token is valid.
- * 
+ *
  * Headers:
- * 
+ *
  * "Authorization" - Must be in the form of "Bearer <token>"
  */
 export async function GET(request: Request) {
@@ -28,7 +28,13 @@ export async function GET(request: Request) {
         cause: errorCausesObj.noUserEntry,
       });
     } else {
-      return new Response(JSON.stringify(goalWeightEntry), {
+      // Initializes the body of the return message
+      const responseBody = JSON.stringify({
+        message: "Goal Weight Entry Added",
+        goalWeightEntry,
+      });
+
+      return new Response(responseBody, {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
@@ -53,9 +59,9 @@ export async function GET(request: Request) {
  * POST Method: Creates a new goal weight entry if the passed in bearer token is authorized.
  *
  *  Headers:
- * 
+ *
  * "Authorization" - Must be in the form of "Bearer <token>"
- * 
+ *
  * Body:
  *
  * "weightValue" - Must be greater than zero, and can include up to the hundredths decimal place
@@ -73,7 +79,12 @@ export async function POST(request: Request) {
 
     await addGoalWeightEntryService(weightValue, goalType, userAccount);
 
-    return new Response("Goal Weight Entry Added", {
+    // Initializes the body of the return message
+    const responseBody = JSON.stringify({
+      message: "Goal Weight Entry Added",
+    });
+
+    return new Response(responseBody, {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
@@ -97,11 +108,11 @@ export async function POST(request: Request) {
  * PUT Method: Updates an existing goal weight entry type if the passed in bearer token is authorized.
  *
  * Headers:
- * 
+ *
  * "Authorization" - Must be in the form of "Bearer <token>"
- * 
+ *
  * Body:
- * 
+ *
  * "goalWeightEntryId" - Must be a uuid that contains only letters, digits, and '-' and in the pattern of "########-####-####-####-############" (# representing any letter or digit).
  *
  * "weightValue" - Must be greater than zero, and can include up to the hundredths decimal place
@@ -124,7 +135,12 @@ export async function PUT(request: Request) {
       userAccount,
     );
 
-    return new Response("Goal Weight Entry Updated", {
+    // Initializes the body of the return message
+    const responseBody = JSON.stringify({
+      message: "Goal Weight Entry Updated",
+    });
+
+    return new Response(responseBody, {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });

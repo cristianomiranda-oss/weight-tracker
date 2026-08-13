@@ -27,7 +27,13 @@ export async function GET(request: Request) {
 
     const userAccountData = await validateLoginService(userName, userPassword);
 
-    return new Response(userAccountData, {
+    // Initializes the body of the return message
+    const responseBody = JSON.stringify({
+      message: "Sign In Approved",
+      userAccountData,
+    });
+
+    return new Response(responseBody, {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
@@ -49,7 +55,7 @@ export async function GET(request: Request) {
 
 /**
  * POST Method: Creates a new user account.
- * 
+ *
  * Body:
  *
  * "userName" - Must be between 6 and 25 characters and only include letters, digits, "-", or "_".
@@ -65,7 +71,12 @@ export async function POST(request: Request) {
     // Passes in the passed in parameters
     await createUserAccountService(userName, userPassword);
 
-    return new Response("Account Created", {
+    // Initializes the body of the return message
+    const responseBody = JSON.stringify({
+      message: "Account Created",
+    });
+
+    return new Response(responseBody, {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });

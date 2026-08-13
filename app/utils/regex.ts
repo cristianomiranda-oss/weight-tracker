@@ -60,14 +60,14 @@ export class FilterTests {
    * @throws Throws if password is invalid
    */
   static validatePassword(passWord: string) {
-    // checks if username is blank
+    // checks if password is blank
     if (passWord === "") {
       throw new Error("Password cannot be blank", {
         cause: errorCausesObj.invalidParameterValue,
       });
     }
 
-    // Checks if username is greater than 8 and less than 30 characters
+    // Checks if password is greater than 8 and less than 30 characters
     if (passWord.length < 8) {
       throw new Error("Password cannot be less than 8 characters", {
         cause: errorCausesObj.invalidParameterValue,

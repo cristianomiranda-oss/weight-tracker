@@ -52,3 +52,9 @@ export type DBCollection =
   | "USER_ACCOUNT"
   | "WEIGHT_ENTRY"
   | "GOAL_WEIGHT_ENTRY";
+
+export type ApiEndpointResponse = {
+  message: string;
+  userAccountData?: string;
+  goalWeightEntry?: GoalWeightEntryType;
+}
