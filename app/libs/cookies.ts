@@ -46,6 +46,24 @@ export async function getUserCookie(): Promise<RequestCookie | null> {
 }
 
 /**
+ * Checks if the user has a stored user cookie to denote if they have completed the login process.
+ * @returns Returns true if the user's account cookie is present and false if no cookie is present or an error occurs while retrieving the cookie
+   */
+export async function checkForUserSignIn(): Promise<boolean> {
+  try {
+    const userCookie = await getUserCookie();
+
+    if (userCookie === null) {
+      return false;
+    } else {
+      return true;
+    }
+  } catch (error) {
+    return false;
+  }
+}
+
+/**
  * Clears the stored user cookie
  */
 export async function clearUserCookie() {

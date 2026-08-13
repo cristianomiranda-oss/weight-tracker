@@ -29,6 +29,7 @@ import MessageDisplay from "../components/message-display";
 import { sortEntriesArray } from "../utils/sorting";
 import { EntriesSessionStorage } from "../libs/session-storage";
 import ErrorDisplay from "../components/error-display";
+import { checkForUserSignIn } from "../libs/cookies";
 
 /**
  * Contains the components for displaying the weight log interface and
@@ -125,7 +126,7 @@ export default function WeightLogDisplay() {
     const cachedGoalWeightEntry =
       EntriesSessionStorage.getCachedGoalWeightEntry();
 
-      // Checks if any goal weight entry was cached
+    // Checks if any goal weight entry was cached
     if (cachedGoalWeightEntry !== null) {
       // Returns the cached goal weight entry
       return cachedGoalWeightEntry;
@@ -285,9 +286,41 @@ export default function WeightLogDisplay() {
     }
   }
 
-  // Triggers the loading of the user's weight entries upon page launch
+  /**
+     * Checks if the user has successfully completed the login process before loading data to the page
+     */
+  async function checkUserLogin() {
+    setIsLoading(true);
+
+    try {
+      //Calls the method to check if the user completed the sign in process
+      const isUserLoggedIn = await checkForUserSignIn();
+
+      // Checks the user is not logged in
+      if (!isUserLoggedIn) {
+        // Redirects the user to the accounts page
+        router.push("/accounts");
+      } else {
+        // Calls the method to load data to the page if the user is logged in
+        loadWeightEntries();
+      }
+    } catch (error) {
+      // Checks if the error is an established error
+      if (error instanceof Error) {
+        setError(error);
+      } else {
+        // Indicates an unusual error has occurred
+        setError(getUnknownError());
+      }
+    } finally {
+      // Clears the loading indicator before calling the function to load weight entries
+      setIsLoading(false);
+    }
+  }
+
+  // Calls the method to check if the user is logged in
   useEffect(() => {
-    loadWeightEntries();
+    checkUserLogin();
   }, []);
 
   // Triggers the clearing of an info or warning message once one is displayed
