@@ -5,7 +5,7 @@ import type {
 import { FilterTests } from "@/app/utils/regex";
 
 /**
- * Tests the '/api/account' endpoint GET method
+ * Tests the '/api/login' endpoint POST method
  * @returns Returns the received token string if successful or null if login failed or an error occurred.
  */
 async function testAccountLogin(tempUserName: string, tempPassword: string) {
@@ -46,7 +46,7 @@ async function testAccountLogin(tempUserName: string, tempPassword: string) {
 }
 
 /**
- * Tests the '/api/account' endpoint POST method
+ * Tests the '/api/register' endpoint POST method
  * @returns Returns a boolean denoting if the test was successful.
  * True if successful, false if creation failed or an error occurred
  */

@@ -9,7 +9,7 @@ import {
 } from "@/app/utils/errors";
 
 /**
- * GET Method: Returns encrypted payload if the passed in credentials are verified.
+ * POST Method: Returns encrypted payload if the passed in credentials are verified.
  *
  * Headers:
  *
