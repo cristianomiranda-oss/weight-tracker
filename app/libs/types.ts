@@ -43,9 +43,9 @@ export type sortOptions = {
   sortingKey: "weightValue" | "weighInDate";
 };
 
-export type CachedObj = {
+export type CachedObj<CacheType> = {
   expirationTime: number;
-  weightEntryArray: WeightEntryType[];
+  cacheData: CacheType;
 };
 
 export type DBCollection =
