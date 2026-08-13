@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import LabeledInput from "@/app/components/labeled-input";
 import Button from "@/app/components/button";
 import { ApiEndPointDebugTests } from "@/app/libs/types";
@@ -7,16 +7,22 @@ import { apiEndpointTestHandler } from "../actions/test-handler";
 import TestIndicatorDisplay from "../components/test-indicator-display";
 import { getUnknownError } from "@/app/utils/errors";
 import LoadingIndicator from "@/app/components/loading-indicator";
+import { useRouter } from "next/navigation";
+import { checkForUserSignIn } from "@/app/libs/cookies";
 
 interface ApiDebugProps {}
 /**
  * Launches various fetch calls to the api endpoints and reports their results
  */
 export default function ApiDebug({}: ApiDebugProps) {
+  const router = useRouter();
+
+  // Loads state vars for api endpoint tests
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
   const [testData, setTestData] = useState<ApiEndPointDebugTests | null>(null);
 
+  // Initializes the input refs
   const userNameInputRef = useRef<HTMLInputElement | null>(null);
   const passWordInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -51,6 +57,40 @@ export default function ApiDebug({}: ApiDebugProps) {
       setIsLoading(false);
     }
   }
+
+  /**
+   * Checks if the user has successfully completed the login process before loading the page
+   */
+  async function checkUserLogin() {
+    setIsLoading(true);
+
+    try {
+      //Calls the method to check if the user completed the sign in process
+      const isUserLoggedIn = await checkForUserSignIn();
+
+      // Checks the user is not logged in
+      if (!isUserLoggedIn) {
+        // Redirects the user to the accounts page
+        router.push("/accounts");
+      }
+    } catch (error) {
+      // Checks if the error is an established error
+      if (error instanceof Error) {
+        setError(error);
+      } else {
+        // Indicates an unusual error has occurred
+        setError(getUnknownError());
+      }
+    } finally {
+      // Clears the loading indicator before calling the function to load weight entries
+      setIsLoading(false);
+    }
+  }
+
+  // Calls the method to check if the user is logged in
+  useEffect(() => {
+    checkUserLogin();
+  }, []);
 
   return (
     <div className="w-full h-full min-h-fit flex flex-col justify-around overflow-y-auto">
