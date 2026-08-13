@@ -7,8 +7,9 @@ import bcrypt from "bcrypt";
  * @param {string} userPassword The password string to be encrypted
  */
 export async function hashPassword(userPassword: string) {
-  const saltRounds = 10;
-  const hashPassword = bcrypt.hash(userPassword, saltRounds);
+  const salt = await bcrypt.genSalt(12);
+  const hashPassword = bcrypt.hash(userPassword, salt);
+
   return hashPassword;
 }
 
