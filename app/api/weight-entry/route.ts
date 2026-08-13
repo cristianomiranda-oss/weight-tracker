@@ -34,7 +34,13 @@ export async function GET(request: Request) {
     if (weightEntryId === null) {
       const weightEntries = await getWeightEntriesService(userAccount);
 
-      return new Response(JSON.stringify(weightEntries), {
+      // Initializes the body of the return message
+      const responseBody = JSON.stringify({
+        message: "Entries Retrieved",
+        weightEntries,
+      });
+
+      return new Response(responseBody, {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
@@ -45,7 +51,13 @@ export async function GET(request: Request) {
         userAccount,
       );
 
-      return new Response(JSON.stringify(weightEntry), {
+      // Initializes the body of the return message
+      const responseBody = JSON.stringify({
+        message: "Entry Retrieved",
+        weightEntry,
+      });
+
+      return new Response(responseBody, {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
@@ -90,7 +102,12 @@ export async function POST(request: Request) {
 
     await addWeightEntryService(weightValue, weighInDate, userAccount);
 
-    return new Response("Weight Entry Added", {
+    // Initializes the body of the return message
+    const responseBody = JSON.stringify({
+      message: "Weight Entry Added",
+    });
+
+    return new Response(responseBody, {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
@@ -141,7 +158,12 @@ export async function PUT(request: Request) {
       userAccount,
     );
 
-    return new Response("Weight Entry Updated", {
+    // Initializes the body of the return message
+    const responseBody = JSON.stringify({
+      message: "Weight Entry Updated",
+    });
+
+    return new Response(responseBody, {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
@@ -183,7 +205,12 @@ export async function DELETE(request: Request) {
 
     await removeWeightEntryService(weightEntryId, userAccount);
 
-    return new Response("Weight Entry Deleted", {
+    // Initializes the body of the return message
+    const responseBody = JSON.stringify({
+      message: "Weight Entry Deleted",
+    });
+
+    return new Response(responseBody, {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });

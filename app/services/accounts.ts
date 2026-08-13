@@ -83,7 +83,7 @@ export async function validateLoginService(
  * @param userPassword - Password for comparing against the one associated with the account that will be accessed
  * @throws Signals the process failed
  */
-export async function removeUserAccount(
+export async function removeUserAccountService(
   userName: string,
   userPassword: string,
 ) {

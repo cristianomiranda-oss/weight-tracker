@@ -57,4 +57,22 @@ export type ApiEndpointResponse = {
   message: string;
   userAccountData?: string;
   goalWeightEntry?: GoalWeightEntryType;
-}
+  weightEntries?: WeightEntryType[];
+  weightEntry?: WeightEntryType;
+};
+
+export type ApiEndPointDebugTests = {
+  connectionTest: string;
+  accountCreation: string;
+  accountLogin: string;
+  goalWeightCreation: string;
+  goalWeightRetrieval: string;
+  goalWeightUpdate: string;
+  weightEntryCreation: string;
+  weightEntriesRetrieval: string;
+  weightEntryRetrieval: string;
+  weightEntryUpdate: string;
+  weightEntryRemoval: string;
+  accountCleanUp: string;
+  goalWeightEntryCleanUp: string;
+};

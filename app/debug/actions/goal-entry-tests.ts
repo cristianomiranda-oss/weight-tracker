@@ -1,12 +1,14 @@
-import { addGoalWeightEntry } from "@/app/actions/middleware/goal-weight-entry";
-import type { ApiEndpointResponse } from "@/app/libs/types";
+import type {
+  ApiEndPointDebugTests,
+  ApiEndpointResponse,
+} from "@/app/libs/types";
 import { FilterTests } from "@/app/utils/regex";
 
 /**
  * Tests the '/api/goal-weight-entry' endpoint GET method
  * @returns Returns the retrieved entry's id if successful, and returns null if retrieval fails or an error occurs
  */
-export async function testGoalWeightRetrieval(userToken: string) {
+async function testGoalWeightRetrieval(userToken: string) {
   try {
     if (userToken === "") {
       throw new Error("Invalid User Token");
@@ -24,7 +26,7 @@ export async function testGoalWeightRetrieval(userToken: string) {
 
     // Checks if the appropriate message and goal weight entry was received
     if (
-      responseData.message === "Goal Weight Entry Added" &&
+      responseData.message === "Goal Weight Entry Retrieved" &&
       responseData.goalWeightEntry !== undefined
     ) {
       return responseData.goalWeightEntry._id;
@@ -43,7 +45,7 @@ export async function testGoalWeightRetrieval(userToken: string) {
  * @returns Returns a boolean denoting if the test was successful.
  * True if successful, false if creation failed or an error occurred
  */
-export async function testGoalWeightCreation(userToken: string) {
+async function testGoalWeightCreation(userToken: string) {
   try {
     if (userToken === "") {
       throw new Error("Invalid User Token");
@@ -83,7 +85,7 @@ export async function testGoalWeightCreation(userToken: string) {
  * @returns Returns a boolean denoting if the test was successful.
  * True if updating was successful, false if updating failed or an error occurred
  */
-export async function testGoalWeightUpdate(
+async function testGoalWeightUpdate(
   userToken: string,
   goalWeightEntryId: string,
 ) {
@@ -122,4 +124,59 @@ export async function testGoalWeightUpdate(
     console.error(error);
     return false;
   }
+}
+
+/**
+ * Tests all goal Weight Entry endpoints. Attempts to create, retrieve, and update a goal weight entry.
+ * If any test fails in the process, the remaining are skipped.
+ * @param endPointTestIndicators The object containing the test indicators that will be updated based on the results of the tests
+ * @param userToken The valid token for the temporary account
+ * @returns Returns the new goal weight entry's id or null if the entry's id is not accessible
+ */
+export async function testGoalWeightEntryEndpoint(
+  endPointTestIndicators: ApiEndPointDebugTests,
+  userToken: string,
+) {
+  // Calls the function to test the goal weight entry creation
+  const isGoalWeightEntryCreated = await testGoalWeightCreation(userToken);
+
+  if (isGoalWeightEntryCreated) {
+    endPointTestIndicators.goalWeightCreation =
+      "Goal Weight Entry Creation Succeeded";
+  } else {
+    //
+    endPointTestIndicators.goalWeightCreation =
+      "Goal Weight Entry Creation Failed";
+    // Exits to prevent any further testing and returns null to denote the entry is not accessible during clean up
+    return null;
+  }
+
+  // Calls the function to test the goal weight entry retrieval
+  const goalWeightEntryId = await testGoalWeightRetrieval(userToken);
+
+  if (goalWeightEntryId !== null) {
+    endPointTestIndicators.goalWeightRetrieval =
+      "Goal Weight Entry Retrieval Succeeded";
+  } else {
+    endPointTestIndicators.goalWeightRetrieval =
+      "Goal Weight Entry Retrieval Failed";
+    // Exits to prevent any further testing and returns null to denote the entry is not accessible during clean up
+    return null;
+  }
+
+  // Calls the function to test the goal weight entry updating
+  const isGoalWeightEntryUpdated = await testGoalWeightUpdate(
+    userToken,
+    goalWeightEntryId,
+  );
+
+  if (isGoalWeightEntryUpdated) {
+    endPointTestIndicators.goalWeightUpdate =
+      "Goal Weight Entry Update Succeeded";
+  } else {
+    endPointTestIndicators.goalWeightUpdate = "Goal Weight Entry Update Failed";
+  }
+
+  // Returns the goalWeightEntryId regardless of the final test outcome to allow for its removal during clean up
+  return goalWeightEntryId;
 }

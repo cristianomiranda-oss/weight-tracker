@@ -30,7 +30,7 @@ export async function GET(request: Request) {
     } else {
       // Initializes the body of the return message
       const responseBody = JSON.stringify({
-        message: "Goal Weight Entry Added",
+        message: "Goal Weight Entry Retrieved",
         goalWeightEntry,
       });
 
