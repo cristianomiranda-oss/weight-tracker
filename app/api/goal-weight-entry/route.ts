@@ -42,13 +42,17 @@ export async function GET(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
+    let status = 500;
+    if (errorCausesObj.invalidParameterValue === errorToSend.cause) {
+      status = 400;
+    }
     return new Response(
       JSON.stringify({
         message: errorToSend.message,
         cause: errorToSend.cause,
       }),
       {
-        status: 500,
+        status,
         headers: { "Content-Type": "application/json" },
       },
     );
@@ -77,6 +81,12 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { weightValue, goalType } = body;
 
+    if (weightValue === undefined || goalType === undefined) {
+      throw new Error("weightValue or goalType is missing from the body", {
+        cause: errorCausesObj.invalidParameterValue,
+      });
+    }
+
     await addGoalWeightEntryService(weightValue, goalType, userAccount);
 
     // Initializes the body of the return message
@@ -91,13 +101,17 @@ export async function POST(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
+    let status = 500;
+    if (errorCausesObj.invalidParameterValue === errorToSend.cause) {
+      status = 400;
+    }
     return new Response(
       JSON.stringify({
         message: errorToSend.message,
         cause: errorToSend.cause,
       }),
       {
-        status: 500,
+        status,
         headers: { "Content-Type": "application/json" },
       },
     );
@@ -128,6 +142,19 @@ export async function PUT(request: Request) {
     const body = await request.json();
     const { goalWeightEntryId, weightValue, goalType } = body;
 
+    if (
+      goalWeightEntryId === undefined ||
+      weightValue === undefined ||
+      goalType === undefined
+    ) {
+      throw new Error(
+        "goalWeightEntryId, weightValue, or goalType is missing from the body",
+        {
+          cause: errorCausesObj.invalidParameterValue,
+        },
+      );
+    }
+
     await changeGoalWeighEntryService(
       goalWeightEntryId,
       weightValue,
@@ -147,13 +174,17 @@ export async function PUT(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
+    let status = 500;
+    if (errorCausesObj.invalidParameterValue === errorToSend.cause) {
+      status = 400;
+    }
     return new Response(
       JSON.stringify({
         message: errorToSend.message,
         cause: errorToSend.cause,
       }),
       {
-        status: 500,
+        status,
         headers: { "Content-Type": "application/json" },
       },
     );

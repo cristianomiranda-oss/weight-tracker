@@ -60,7 +60,7 @@ async function testAccountCreation(tempUserName: string, tempPassword: string) {
 
     const userData = {
       userName: tempUserName,
-      userPassword: tempPassword,
+      // userPassword: tempPassword,
     };
 
     const creationResult = await fetch("/api/accounts", {

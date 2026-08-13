@@ -5,7 +5,7 @@ import {
   createUserAccountService,
   validateLoginService,
 } from "@/app/services/accounts";
-import { handleMiddleWareErrors } from "@/app/utils/errors";
+import { errorCausesObj, handleMiddleWareErrors } from "@/app/utils/errors";
 
 /**
  * GET Method: Returns encrypted payload if the passed in credentials are verified.
@@ -40,13 +40,17 @@ export async function GET(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
+    let status = 500;
+    if (errorCausesObj.invalidParameterValue === errorToSend.cause) {
+      status = 400;
+    }
     return new Response(
       JSON.stringify({
         message: errorToSend.message,
         cause: errorToSend.cause,
       }),
       {
-        status: 500,
+        status,
         headers: { "Content-Type": "application/json" },
       },
     );
@@ -68,6 +72,12 @@ export async function POST(request: Request) {
 
     const { userName, userPassword } = body;
 
+    if (userName === undefined || userPassword === undefined) {
+      throw new Error("Username or userPassword is missing from the body", {
+        cause: errorCausesObj.invalidParameterValue,
+      });
+    }
+
     // Passes in the passed in parameters
     await createUserAccountService(userName, userPassword);
 
@@ -83,13 +93,17 @@ export async function POST(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
+    let status = 500;
+    if (errorCausesObj.invalidParameterValue === errorToSend.cause) {
+      status = 400;
+    }
     return new Response(
       JSON.stringify({
         message: errorToSend.message,
         cause: errorToSend.cause,
       }),
       {
-        status: 500,
+        status,
         headers: { "Content-Type": "application/json" },
       },
     );

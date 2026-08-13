@@ -9,7 +9,7 @@ import {
   getWeightEntryService,
   removeWeightEntryService,
 } from "@/app/services/weight-entry";
-import { handleMiddleWareErrors } from "@/app/utils/errors";
+import { errorCausesObj, handleMiddleWareErrors } from "@/app/utils/errors";
 
 /**
  * GET Method: Returns either all weight entries, or a singular one if a valid "weightEntryId" is passed in the body, if the passed in bearer token is authorized.
@@ -65,13 +65,17 @@ export async function GET(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
+    let status = 500;
+    if (errorCausesObj.invalidParameterValue === errorToSend.cause) {
+      status = 400;
+    }
     return new Response(
       JSON.stringify({
         message: errorToSend.message,
         cause: errorToSend.cause,
       }),
       {
-        status: 500,
+        status,
         headers: { "Content-Type": "application/json" },
       },
     );
@@ -100,6 +104,12 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { weightValue, weighInDate } = body;
 
+    if (weightValue === undefined || weighInDate === undefined) {
+      throw new Error("weightValue or weighInDate is missing from the body", {
+        cause: errorCausesObj.invalidParameterValue,
+      });
+    }
+
     await addWeightEntryService(weightValue, weighInDate, userAccount);
 
     // Initializes the body of the return message
@@ -114,13 +124,17 @@ export async function POST(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
+    let status = 500;
+    if (errorCausesObj.invalidParameterValue === errorToSend.cause) {
+      status = 400;
+    }
     return new Response(
       JSON.stringify({
         message: errorToSend.message,
         cause: errorToSend.cause,
       }),
       {
-        status: 500,
+        status,
         headers: { "Content-Type": "application/json" },
       },
     );
@@ -151,6 +165,19 @@ export async function PUT(request: Request) {
     const body = await request.json();
     const { weightEntryId, weightValue, weighInDate } = body;
 
+    if (
+      weightEntryId === undefined ||
+      weightValue === undefined ||
+      weighInDate === undefined
+    ) {
+      throw new Error(
+        "weightEntryId, weightValue, or weighInDate is missing from the body",
+        {
+          cause: errorCausesObj.invalidParameterValue,
+        },
+      );
+    }
+
     await changeWeighEntryService(
       weightEntryId,
       weightValue,
@@ -170,13 +197,17 @@ export async function PUT(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
+    let status = 500;
+    if (errorCausesObj.invalidParameterValue === errorToSend.cause) {
+      status = 400;
+    }
     return new Response(
       JSON.stringify({
         message: errorToSend.message,
         cause: errorToSend.cause,
       }),
       {
-        status: 500,
+        status,
         headers: { "Content-Type": "application/json" },
       },
     );
@@ -203,6 +234,12 @@ export async function DELETE(request: Request) {
     const body = await request.json();
     const { weightEntryId } = body;
 
+    if (weightEntryId === undefined) {
+      throw new Error("weightEntryId is missing from the body", {
+        cause: errorCausesObj.invalidParameterValue,
+      });
+    }
+
     await removeWeightEntryService(weightEntryId, userAccount);
 
     // Initializes the body of the return message
@@ -217,13 +254,17 @@ export async function DELETE(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
+    let status = 500;
+    if (errorCausesObj.invalidParameterValue === errorToSend.cause) {
+      status = 400;
+    }
     return new Response(
       JSON.stringify({
         message: errorToSend.message,
         cause: errorToSend.cause,
       }),
       {
-        status: 500,
+        status,
         headers: { "Content-Type": "application/json" },
       },
     );
