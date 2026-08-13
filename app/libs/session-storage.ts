@@ -6,29 +6,32 @@ import type { CachedObj, WeightEntryType } from "./types";
  * Static Methods needed for managing session storage of the weight entries array
  */
 export class EntriesSessionStorage {
-  static weightEntriesKey = "weight_entries_cache";
+  static _weightEntriesKey = "weight_entries_cache";
+  static _goalWeightEntryKey = "goal_entry_cache";
 
   /**
    * Stores the passed in object in session storage. The key is defined in this function's file
-   * @param {CachedObj} cachedObj The object to be stored
+   * @param cachedObj The object to be stored
+   * @param cacheKey The key of the associated item to be retrieved
    */
-  static _storeCachedObject(cachedObj: CachedObj) {
+  static _storeCachedObject(cacheKey: string, cachedObj: CachedObj) {
     try {
       // Stores the object
-      sessionStorage.setItem(this.weightEntriesKey, JSON.stringify(cachedObj));
+      sessionStorage.setItem(cacheKey, JSON.stringify(cachedObj));
     } catch (error) {
-      // Catches and logs any error and returns null
+      // Catches and logs any error
       console.error("Session Storage Setting\n", error);
-      return;
     }
   }
 
   /**
    * Retrieves the cached object from session storage, but if the object does not exist or its expiration time has passed a null value is returned
+   * @param cacheKey The key of the associated item to be retrieved
+   * @returns Returns the cached object if successful and null if the process fails
    */
-  static _getCachedObject() {
+  static _getCachedObject(cacheKey: string) {
     try {
-      const cachedObjStr = sessionStorage.getItem(this.weightEntriesKey);
+      const cachedObjStr = sessionStorage.getItem(cacheKey);
 
       if (cachedObjStr === null) {
         return null;
@@ -57,7 +60,7 @@ export class EntriesSessionStorage {
 
   /**
    * Stores the passed in weight entry and assigns it an expiration time before storing in session storage
-   * @param {WeightEntryType[]} weightEntryArray The weight entry array to be stored.
+   * @param weightEntryArray The weight entry array to be stored.
    */
   static cacheWeightEntryArray(weightEntryArray: WeightEntryType[]) {
     try {
@@ -71,10 +74,10 @@ export class EntriesSessionStorage {
       };
 
       // Stores the object
-      this._storeCachedObject(cachedObj);
+      this._storeCachedObject(this._weightEntriesKey, cachedObj);
     } catch (error) {
       // Catches and logs any error
-      console.error("Session Storage Storing\n", error);
+      console.error("Session Storage Storing Weight Entries Array\n", error);
     }
   }
 
@@ -84,7 +87,7 @@ export class EntriesSessionStorage {
    */
   static getCachedWeightEntryArray(): WeightEntryType[] | null {
     try {
-      const cachedObj = this._getCachedObject();
+      const cachedObj = this._getCachedObject(this._weightEntriesKey);
 
       if (cachedObj === null) {
         return null;
@@ -94,7 +97,7 @@ export class EntriesSessionStorage {
       return cachedObj.weightEntryArray;
     } catch (error) {
       // Catches and logs any error and returns null
-      console.error("Session Storage Retrieval\n", error);
+      console.error("Session Storage Retrieval Weight Entries Array\n", error);
       return null;
     }
   }
@@ -105,7 +108,7 @@ export class EntriesSessionStorage {
     newWeighInDate: string,
   ) {
     try {
-      const cachedObj = this._getCachedObject();
+      const cachedObj = this._getCachedObject(this._weightEntriesKey);
 
       // Checks if the cache is valid and should be updated
       if (cachedObj === null) {
@@ -129,7 +132,7 @@ export class EntriesSessionStorage {
             weightEntryArray: updatedArray,
           };
           // Stores the updated array with the existing expiration time
-          this._storeCachedObject(updatedCacheObj);
+          this._storeCachedObject(this._weightEntriesKey, updatedCacheObj);
 
           // Exits the function;
           return;
@@ -140,7 +143,7 @@ export class EntriesSessionStorage {
       throw new Error("Invalid Entry Id");
     } catch (error) {
       // Catches and logs any error
-      console.error("Session Storage Updating\n", error);
+      console.error("Session Storage Updating Weight Entry Array\n", error);
     }
   }
 
@@ -152,7 +155,7 @@ export class EntriesSessionStorage {
    */
   static removeFromCachedWeightEntryArray(entryId: string) {
     try {
-      const cachedObj = this._getCachedObject();
+      const cachedObj = this._getCachedObject(this._weightEntriesKey);
 
       // Checks if the cache is valid and should be updated
       if (cachedObj === null) {
@@ -177,11 +180,11 @@ export class EntriesSessionStorage {
           weightEntryArray: updatedArray,
         };
         // Stores the updated array with the existing expiration time
-        this._storeCachedObject(updatedCacheObj);
+        this._storeCachedObject(this._weightEntriesKey, updatedCacheObj);
       }
     } catch (error) {
       // Catches and logs any error
-      console.error("Session Storage Removing\n", error);
+      console.error("Session Storage Removing From Weight Entry Array\n", error);
     }
   }
 
@@ -190,10 +193,12 @@ export class EntriesSessionStorage {
    */
   static clearCachedWeightEntryArray() {
     try {
-      sessionStorage.removeItem(this.weightEntriesKey);
+      sessionStorage.removeItem(this._weightEntriesKey);
     } catch (error) {
       // Catches and logs any error
-      console.error("Session Storage Removing\n", error);
+      console.error("Session Storage Clear Weight Entry Array\n", error);
     }
   }
+
+  
 }
