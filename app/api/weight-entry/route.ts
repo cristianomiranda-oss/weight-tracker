@@ -9,7 +9,11 @@ import {
   getWeightEntryService,
   removeWeightEntryService,
 } from "@/app/services/weight-entry";
-import { errorCausesObj, handleMiddleWareErrors } from "@/app/utils/errors";
+import {
+  errorCausesObj,
+  getServerResponseStatus,
+  handleMiddleWareErrors,
+} from "@/app/utils/errors";
 
 /**
  * GET Method: Returns either all weight entries, or a singular one if a valid "weightEntryId" is passed in the body, if the passed in bearer token is authorized.
@@ -65,10 +69,8 @@ export async function GET(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
-    let status = 500;
-    if (errorCausesObj.invalidParameterValue === errorToSend.cause) {
-      status = 400;
-    }
+    let status = getServerResponseStatus(error);
+
     return new Response(
       JSON.stringify({
         message: errorToSend.message,
@@ -124,10 +126,8 @@ export async function POST(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
-    let status = 500;
-    if (errorCausesObj.invalidParameterValue === errorToSend.cause) {
-      status = 400;
-    }
+    let status = getServerResponseStatus(error);
+
     return new Response(
       JSON.stringify({
         message: errorToSend.message,
@@ -197,10 +197,8 @@ export async function PUT(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
-    let status = 500;
-    if (errorCausesObj.invalidParameterValue === errorToSend.cause) {
-      status = 400;
-    }
+    let status = getServerResponseStatus(error);
+
     return new Response(
       JSON.stringify({
         message: errorToSend.message,
@@ -254,10 +252,8 @@ export async function DELETE(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
-    let status = 500;
-    if (errorCausesObj.invalidParameterValue === errorToSend.cause) {
-      status = 400;
-    }
+    let status = getServerResponseStatus(error);
+
     return new Response(
       JSON.stringify({
         message: errorToSend.message,

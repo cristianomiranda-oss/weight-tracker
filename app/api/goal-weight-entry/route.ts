@@ -7,7 +7,11 @@ import {
   changeGoalWeighEntryService,
   getGoalWeightEntryService,
 } from "@/app/services/goal-weight-entry";
-import { errorCausesObj, handleMiddleWareErrors } from "@/app/utils/errors";
+import {
+  errorCausesObj,
+  getServerResponseStatus,
+  handleMiddleWareErrors,
+} from "@/app/utils/errors";
 
 /**
  * GET Method: Returns goalWeightEntry if the provided Bearer token is valid.
@@ -42,10 +46,8 @@ export async function GET(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
-    let status = 500;
-    if (errorCausesObj.invalidParameterValue === errorToSend.cause) {
-      status = 400;
-    }
+    let status = getServerResponseStatus(error);
+
     return new Response(
       JSON.stringify({
         message: errorToSend.message,
@@ -101,10 +103,8 @@ export async function POST(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
-    let status = 500;
-    if (errorCausesObj.invalidParameterValue === errorToSend.cause) {
-      status = 400;
-    }
+    let status = getServerResponseStatus(error);
+
     return new Response(
       JSON.stringify({
         message: errorToSend.message,
@@ -174,10 +174,8 @@ export async function PUT(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
-    let status = 500;
-    if (errorCausesObj.invalidParameterValue === errorToSend.cause) {
-      status = 400;
-    }
+    let status = getServerResponseStatus(error);
+
     return new Response(
       JSON.stringify({
         message: errorToSend.message,

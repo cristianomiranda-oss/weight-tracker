@@ -5,7 +5,11 @@ import {
   createUserAccountService,
   validateLoginService,
 } from "@/app/services/accounts";
-import { errorCausesObj, handleMiddleWareErrors } from "@/app/utils/errors";
+import {
+  errorCausesObj,
+  getServerResponseStatus,
+  handleMiddleWareErrors,
+} from "@/app/utils/errors";
 
 /**
  * GET Method: Returns encrypted payload if the passed in credentials are verified.
@@ -40,10 +44,8 @@ export async function GET(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
-    let status = 500;
-    if (errorCausesObj.invalidParameterValue === errorToSend.cause) {
-      status = 400;
-    }
+    let status = getServerResponseStatus(error);
+
     return new Response(
       JSON.stringify({
         message: errorToSend.message,
@@ -93,10 +95,8 @@ export async function POST(request: Request) {
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
-    let status = 500;
-    if (errorCausesObj.invalidParameterValue === errorToSend.cause) {
-      status = 400;
-    }
+    let status = getServerResponseStatus(error);
+
     return new Response(
       JSON.stringify({
         message: errorToSend.message,
