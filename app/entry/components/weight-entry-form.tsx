@@ -180,7 +180,10 @@ export default function WeightEntryForm(): React.JSX.Element {
               goalWeightEntry._id,
               weightValue,
               goalType,
-            );
+            );  
+
+            // Calls the method to update the cached goal weight entry
+            EntriesSessionStorage.updateCachedGoalWeightEntry(goalWeightEntry._id, weightValue, goalType);
 
             navigateToHome();
           }

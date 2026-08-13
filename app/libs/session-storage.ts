@@ -306,7 +306,13 @@ export class EntriesSessionStorage {
       cachedGoalWeightEntry.goalType = newGoalType;
       cachedGoalWeightEntry.weightValue = newWeightValue;
 
-      this._storeCachedObject(this._goalWeightEntryKey, cachedGoalWeightEntry);
+      // Initializes a new cache object with the updated goal weight entry and existing expiration time
+      const updatedCacheObj: CachedObj<GoalWeightEntryType> = {
+        expirationTime: cachedObj.expirationTime,
+        cacheData: cachedGoalWeightEntry,
+      };
+
+      this._storeCachedObject(this._goalWeightEntryKey, updatedCacheObj);
     } catch (error) {
       // Catches and logs any error
       console.error("Session Storage Updating Goal Weight Entry\n", error);

@@ -121,14 +121,30 @@ export default function WeightLogDisplay() {
    * else the user is redirected to the goal weight entry page
    */
   async function checkGoalWeightEntry(): Promise<GoalWeightEntryType> {
+    // Pull the cached goal weight entry
+    const cachedGoalWeightEntry =
+      EntriesSessionStorage.getCachedGoalWeightEntry();
+
+      // Checks if any goal weight entry was cached
+    if (cachedGoalWeightEntry !== null) {
+      // Returns the cached goal weight entry
+      return cachedGoalWeightEntry;
+    }
+
+    // If not calls the middleware method to access the goal weight entry associated with the user from the database
     const goalWeightEntry = await getGoalWeightEntry();
 
+    // Checks if no entry exists for the user
     if (goalWeightEntry === null) {
       // If no goal weight entry exists for the user, throws an error
       throw new Error("No goal weight entry associated with user", {
         cause: errorCausesObj.noGoalWeightEntry,
       });
     } else {
+      // Stashes the goal weight entry after retrieval from the database
+      EntriesSessionStorage.cacheGoalWeightEntry(goalWeightEntry);
+
+      // Returns the retrieved entry
       return goalWeightEntry;
     }
   }
