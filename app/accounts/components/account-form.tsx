@@ -152,6 +152,7 @@ export default function AccountForm(): React.JSX.Element {
       try {
         // Calls the methods to clear user data upon loading the homepage
         EntriesSessionStorage.clearCachedWeightEntryArray();
+        EntriesSessionStorage.clearCachedGoalWeightEntry();
         await clearUserCookie();
       } catch (error) {
         // Checks if the error is an established error
