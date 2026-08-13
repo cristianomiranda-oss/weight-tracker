@@ -5,7 +5,8 @@ export async function proxy(req: NextRequest) {
   try {
     // Checks if the api request is for the accounts api call
     if (
-      req.nextUrl.pathname === "/api/accounts" ||
+      req.nextUrl.pathname === "/api/register" ||
+      req.nextUrl.pathname === "/api/login" ||
       req.nextUrl.pathname === "/api/connection-test"
     ) {
       // Approves the connection as no token is needed

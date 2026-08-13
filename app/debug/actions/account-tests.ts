@@ -14,19 +14,17 @@ async function testAccountLogin(tempUserName: string, tempPassword: string) {
     FilterTests.validateUserName(tempUserName);
     FilterTests.validatePassword(tempPassword);
 
-    // Initializes the request's headers
-    const userDataHeaders = {
+    const userData = {
       userName: tempUserName,
       userPassword: tempPassword,
     };
-    const headers = {
-      "Content-Type": "application/json",
-      ...userDataHeaders,
-    };
 
-    const creationResult = await fetch("/api/accounts", {
-      method: "GET",
-      headers: headers,
+    const creationResult = await fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
     });
 
     const responseData = (await creationResult.json()) as ApiEndpointResponse;
@@ -60,10 +58,10 @@ async function testAccountCreation(tempUserName: string, tempPassword: string) {
 
     const userData = {
       userName: tempUserName,
-      // userPassword: tempPassword,
+      userPassword: tempPassword,
     };
 
-    const creationResult = await fetch("/api/accounts", {
+    const creationResult = await fetch("/api/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
