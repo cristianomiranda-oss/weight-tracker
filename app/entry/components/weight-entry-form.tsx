@@ -153,8 +153,6 @@ export default function WeightEntryForm(): React.JSX.Element {
       // Calls the function to retrieve a goal weight entry from the database
       const goalWeightEntry = await getGoalWeightEntry();
 
-      console.log(weightValueInputRef, goalTypeSelectorRef);
-
       // Confirms the input references are established
       if (
         weightValueInputRef.current !== null &&
@@ -225,8 +223,6 @@ export default function WeightEntryForm(): React.JSX.Element {
   function handleFormSubmission(e: React.SubmitEvent): void {
     // Prevents the default form submission
     e.preventDefault();
-
-    console.log(weightValueInputRef, goalTypeSelectorRef);
 
     // Checks the currently active page
     if (isWeightGoalEntry) {
@@ -301,7 +297,6 @@ export default function WeightEntryForm(): React.JSX.Element {
    * Checks if the user has successfully completed the login process before loading data to the page
    */
   async function checkUserLogin() {
-    console.log(weightValueInputRef, goalTypeSelectorRef);
     // Sets the loading flag and clears the current error
     setIsLoading(true);
     setError(null);
@@ -316,7 +311,6 @@ export default function WeightEntryForm(): React.JSX.Element {
         router.push("/accounts");
       } else {
         // Calls the method to load data to the page if the user is logged in
-        console.log(weightValueInputRef, goalTypeSelectorRef);
         getPlaceHolderData();
       }
     } catch (error) {
