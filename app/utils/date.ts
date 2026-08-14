@@ -1,7 +1,7 @@
 "use client";
 /**
  * Appends a 0 to the front of the passed in string if its length is less than or equal to 1
- * @param {string} str The string that will be checked
+ * @param str The string that will be checked
  */
 function padString(str: string) {
   if (str.length <= 1) {
@@ -15,7 +15,7 @@ function padString(str: string) {
  * Gathers the hour and minutes data from the passed in date and formats it.
  * Format: HH:MM AM/PM
  *
- * @param {Date} date The date to be formatted
+ * @param date The date to be formatted
  */
 function formatTime(date: Date) {
   const hours = date.getHours();
@@ -62,7 +62,7 @@ function formatDate(date: Date) {
  * Parses the passed in date string and formats its date values for display
  * Format: HH:MM AM/PM MM/DD/YYYY
  *
- * @param {string} dateString The date string to be formatted
+ * @param dateString The date string to be formatted
  */
 export function getDisplayDate(dateString: string) {
   const date = new Date(dateString);

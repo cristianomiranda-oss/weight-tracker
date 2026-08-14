@@ -168,7 +168,7 @@ export class EntriesSessionStorage {
    * Removes an entry from the cached array. If the cached array is expired, the process is forgone.
    * The cached array is updated but the expiration time remains the same.
    *
-   * @param {string} entryId The entry id of the array element to be removed
+   * @param entryId The entry id of the array element to be removed
    */
   static removeFromCachedWeightEntryArray(entryId: string) {
     try {

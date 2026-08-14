@@ -92,6 +92,7 @@ export default function ApiDebug({}: ApiDebugProps) {
     checkUserLogin();
   }, []);
 
+  // Displays the loading component if any async event is running
   if (isLoading) {
     return <LoadingIndicator />;
   }

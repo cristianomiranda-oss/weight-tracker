@@ -213,7 +213,7 @@ class WeightTrackerDB {
       await client.close();
     }
   }
-  
+
   /**
    * CRUD method for removing an account made for the purposes of testing.
    * Debug only method, is not used outside of testing purposes
@@ -258,7 +258,9 @@ class WeightTrackerDB {
       // Checks the user's credentials after obtaining the account data
       if (isPasswordValid) {
         // Calls the delete method and passes in the id of the verified user account
-        const deleteResult = await dbCollection.deleteOne({_id: userAccountData._id});
+        const deleteResult = await dbCollection.deleteOne({
+          _id: userAccountData._id,
+        });
 
         // Checks if the entry was updated
         if (deleteResult.deletedCount === 0) {

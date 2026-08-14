@@ -103,7 +103,7 @@ export default function WeightEntryForm(): React.JSX.Element {
   async function triggerWeightEntryChange(): Promise<void> {
     // Sets the loading flag and clears the current error
     setIsLoading(true);
-    setError(error);
+    setError(null);
 
     try {
       // Checks if the weight value and weigh in date input refs are established and if the updateEntryId search parameter is valid
@@ -293,7 +293,9 @@ export default function WeightEntryForm(): React.JSX.Element {
    * Checks if the user has successfully completed the login process before loading data to the page
    */
   async function checkUserLogin() {
+    // Sets the loading flag and clears the current error
     setIsLoading(true);
+    setError(null);
 
     try {
       //Calls the method to check if the user completed the sign in process
@@ -330,9 +332,13 @@ export default function WeightEntryForm(): React.JSX.Element {
     return <ErrorDisplay error={error} router={router} />;
   }
 
+  // Displays the loading component if any async event is running
+  if (isLoading) {
+    return <LoadingIndicator />;
+  }
+
   return (
     <>
-      {isLoading && <LoadingIndicator />}
       <form
         className="w-full h-full min-h-min flex flex-col justify-around items-center"
         onSubmit={(e) => handleFormSubmission(e)}

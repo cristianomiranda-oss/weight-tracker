@@ -1,8 +1,8 @@
 import { errorCausesObj } from "./errors";
 
 /**
-   * Contains the logic for filtering all variable values before passing them to the MongoDB CRUD methods
-   */
+ * Contains the logic for filtering all variable values before passing them to the MongoDB CRUD methods
+ */
 export class FilterTests {
   // Validates the standard uuid format
   static uuidFilter = /(^[\w\d]{8}(-[\w\d]{4}){3}-[\w\d]{12}$)/;
@@ -20,7 +20,7 @@ export class FilterTests {
   /**
    * Checks if the passed in username is valid
    * Valid characters include all letters, digits, and either '_-' character.
-   * @param {string} userName The username to be tested
+   * @param userName The username to be tested
    * @throws Throws if username is invalid
    */
   static validateUserName(userName: string) {
@@ -56,7 +56,7 @@ export class FilterTests {
   /**
    * Checks if the passed in password is valid
    * Valid characters include all letters, digits, and any '_-?!@#$%^&*' character
-   * @param {string} passWord The password to be tested
+   * @param passWord The password to be tested
    * @throws Throws if password is invalid
    */
   static validatePassword(passWord: string) {
@@ -92,7 +92,7 @@ export class FilterTests {
   /**
    * Checks if the passed in id value is valid
    * Valid characters include all letters, digit, and '-' in the pattern of "########-####-####-####-############" (# representing any letter or digit).
-   * @param {string} uuid The id to be tested
+   * @param uuid The id to be tested
    * @throws Throws if uuid is invalid
    */
   static validateUUID(uuid: string) {
@@ -113,7 +113,7 @@ export class FilterTests {
    * Checks if the passed in weight value is valid
    * Valid pattern being any whole number or number with decimal to the hundredths place.
    * Example: "###", "###.#", or "###.##"
-   * @param {string} weightValue The weight value to be tested
+   * @param weightValue The weight value to be tested
    * @throws Throws if weightValue is invalid
    */
   static validateWeightValue(weightValue: number) {
@@ -133,7 +133,7 @@ export class FilterTests {
   /**
    * Checks if the passed in goal type is valid
    * Valid strings are "Loss", "Gain", "Maintenance"
-   * @param {string} goalType The goalType string to be tested
+   * @param goalType The goalType string to be tested
    * @throws Throws if goalType is invalid
    */
   static validateGoalType(goalType: string) {
@@ -155,7 +155,7 @@ export class FilterTests {
   /**
    * Checks if the passed in date string is valid
    * Valid string pattern is "YYYY-MM-DDT##:##"
-   * @param {string} weighInDate The date string to be tested
+   * @param weighInDate The date string to be tested
    * @throws Throws if date is invalid
    */
   static validateDateValue(weighInDate: string) {
