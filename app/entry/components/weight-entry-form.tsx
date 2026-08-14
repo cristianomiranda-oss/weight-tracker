@@ -337,7 +337,7 @@ export default function WeightEntryForm(): React.JSX.Element {
           {isWeightGoalEntry ? "Goal Weight Entry" : "Weight Entry"}
         </h2>
 
-        <h3 className="text-3xl text-red-700 text-center">{error?.message}</h3>
+        <h3 className="text-3xl text-warning text-center">{error?.message}</h3>
 
         <LabeledInput
           id="weightValue"

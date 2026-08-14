@@ -34,7 +34,7 @@ export default function SortingButton({
 
   return (
     <Button
-      className="h-fit rounded-none"
+      className="h-fit rounded-none hover:bg-text-input/80"
       onClick={() => updateSortingOption(sortingKey)}
     >
       {displayIcon}

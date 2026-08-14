@@ -22,7 +22,7 @@ export default function GoalTypeSelector({
    * Component array for the three possible goal type options
    */
   const GoalOptions: React.JSX.Element[] = goalTypes.map((type) => (
-    <option className="bg-graphite-800" key={type} value={type}>
+    <option className="bg-text-input" key={type} value={type}>
       {type}
     </option>
   ));
@@ -33,12 +33,12 @@ export default function GoalTypeSelector({
         {label}
       </label>
       <select
-        className="w-full text-4xl md:text-5xl bg-graphite-800"
+        className="w-full text-4xl md:text-5xl bg-text-input"
         name="goalType"
         id={id}
         ref={ref}
       >
-        <option className="bg-graphite-800" value={undefined}>
+        <option className="bg-text-input" value={undefined}>
           Select
         </option>
         {GoalOptions}

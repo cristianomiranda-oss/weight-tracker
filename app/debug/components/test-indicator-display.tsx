@@ -20,7 +20,7 @@ export default function TestIndicatorDisplay({
 
     return (
       <p key={entry[0]} className="text-xl md:text-2xl border-y px-0.5">
-        <span className="text-yellow-600">{entry[0]}:</span>
+        <span className="text-info">{entry[0]}:</span>
         <br />
         {message}
       </p>
