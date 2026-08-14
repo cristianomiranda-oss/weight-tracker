@@ -133,10 +133,109 @@ Most of the endpoints require a Bearer token to be present in the header of the 
 
 > ## **Read Goal Weight Entry**
 >
-> **Description**: Reads the goal weight entry for the existing account. The passed in Bearer token is used to access the user's account details. <br/>
+> **Description**: Returns the goal weight entry for the existing account. The passed in Bearer token is used to access the user's account details. <br/>
 > **URL**: `/api/goal-weight-entry` <br/>
 > **Method**: `GET` <br/>
 > **Auth required**: YES <br/>
+>
+> **Success Response**
+>
+> ```json
+> {
+>   "message": "Goal Weight Entry Retrieved",
+>   "goalWeightEntry": <GoalWeightEntryObject>, // An object containing the goal weight entry fields
+> }
+> ```
+>
+> **Error Response**
+>
+> ```json
+> {
+>   "message": string,
+>   "cause": string,
+> }
+> ```
+
+> ## **Create Goal Weight Entry**
+>
+> **Description**: Create a new goal weight entry for the existing account. The passed in Bearer token is used to access the user's account details. <br/>
+> **URL**: `/api/goal-weight-entry` <br/>
+> **Method**: `POST` <br/>
+> **Auth required**: YES <br/>
+> **Data constraints**
+>
+> ```json
+> {
+>   "weightValue": <Whole or Decimal Value>, // Format can be either '###', '###.#', or '###.##'
+>   "goalType": <A Valid Goal Type>, // Can be either 'Loss', 'Gain', or 'Maintenance'.
+> }
+> ```
+>
+> **Success Response**
+>
+> ```json
+> {
+>   "message": "Goal Weight Entry Added"
+> }
+> ```
+>
+> **Error Response**
+>
+> ```json
+> {
+>   "message": string,
+>   "cause": string,
+> }
+> ```
+
+> ## **Update Goal Weight Entry**
+>
+> **Description**: Updates an existing goal weight entry for the existing account. The passed in Bearer token is used to access the user's account details. <br/>
+> **URL**: `/api/goal-weight-entry` <br/>
+> **Method**: `PUT` <br/>
+> **Auth required**: YES <br/>
+> **Data constraints**
+>
+> ```json
+> {
+>   "weightEntryId": <UUID Value>, // Must be a uuid value that contains only letters, digits, and '-' and in the pattern of "########-####-####-####-############" (# representing any letter or digit).
+>   "weightValue": <Whole or Decimal Value>, // Format can be either '###', '###.#', or '###.##'
+>   "goalType": <A Valid Goal Type>, // Can be either 'Loss', 'Gain', or 'Maintenance'.
+> }
+> ```
+>
+> **Success Response**
+>
+> ```json
+> {
+>   "message": "Goal Weight Entry Updated"
+> }
+> ```
+>
+> **Error Response**
+>
+> ```json
+> {
+>   "message": string,
+>   "cause": string,
+> }
+> ```
+
+## Weight Entry
+
+> ## **Read Weight Entry/Entries**
+>
+> **Description**: Returns all weight entries, or a specific weight entry identified by its id value, for the existing account. The passed in Bearer token is used to access the user's account details. <br/>
+> **URL**: `/api/weight-entry` <br/>
+> **Method**: `GET` <br/>
+> **Auth required**: YES <br/>
+> **Header**
+>
+> ```json
+> {
+>   "weightEntryId": <UUID Value>,
+> }
+> ```
 >
 > **Success Response**
 >

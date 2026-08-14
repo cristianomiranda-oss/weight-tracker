@@ -7,6 +7,7 @@ import {
   getServerResponseStatus,
   handleMiddleWareErrors,
 } from "@/app/utils/errors";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * POST Method: Creates a new user account.
@@ -17,7 +18,7 @@ import {
  *
  * "userPassword" - - Must be between 8 and 30 characters and only include letters, digits, and any '_-?!@#$%^&*' character.
  */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
@@ -37,7 +38,7 @@ export async function POST(request: Request) {
       message: "Account Created",
     });
 
-    return new Response(responseBody, {
+    return new NextResponse(responseBody, {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
     const errorToSend = handleMiddleWareErrors(error);
     let status = getServerResponseStatus(error);
 
-    return new Response(
+    return new NextResponse(
       JSON.stringify({
         message: errorToSend.message,
         cause: errorToSend.cause,

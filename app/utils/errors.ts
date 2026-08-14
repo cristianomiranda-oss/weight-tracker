@@ -62,7 +62,8 @@ export function getServerResponseStatus(error: unknown) {
   if (error instanceof Error) {
     if (
       error.cause === errorCausesObj.invalidParameterValue ||
-      error.cause === errorCausesObj.accessDenied
+      error.cause === errorCausesObj.accessDenied ||
+      error.cause === errorCausesObj.noUserEntry
     ) {
       // Return a status indicating an error on the client's end
       return 400;

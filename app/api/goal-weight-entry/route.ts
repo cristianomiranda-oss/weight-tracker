@@ -12,6 +12,7 @@ import {
   getServerResponseStatus,
   handleMiddleWareErrors,
 } from "@/app/utils/errors";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * GET Method: Returns goalWeightEntry if the provided Bearer token is valid.
@@ -20,7 +21,7 @@ import {
  *
  * "Authorization" - Must be in the form of "Bearer <token>"
  */
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
     // Calls the method to get user data from the bearer token in the headers
     const userAccount = await getPayloadData(request);
@@ -38,7 +39,7 @@ export async function GET(request: Request) {
         goalWeightEntry,
       });
 
-      return new Response(responseBody, {
+      return new NextResponse(responseBody, {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
@@ -48,7 +49,7 @@ export async function GET(request: Request) {
     const errorToSend = handleMiddleWareErrors(error);
     let status = getServerResponseStatus(error);
 
-    return new Response(
+    return new NextResponse(
       JSON.stringify({
         message: errorToSend.message,
         cause: errorToSend.cause,
@@ -74,7 +75,7 @@ export async function GET(request: Request) {
  *
  * "goalType" - Must be "Loss", "Gain", or "Maintenance"
  */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     // Calls the method to get user data from the bearer token in the headers
     const userAccount = await getPayloadData(request);
@@ -96,7 +97,7 @@ export async function POST(request: Request) {
       message: "Goal Weight Entry Added",
     });
 
-    return new Response(responseBody, {
+    return new NextResponse(responseBody, {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
@@ -105,7 +106,7 @@ export async function POST(request: Request) {
     const errorToSend = handleMiddleWareErrors(error);
     let status = getServerResponseStatus(error);
 
-    return new Response(
+    return new NextResponse(
       JSON.stringify({
         message: errorToSend.message,
         cause: errorToSend.cause,
@@ -133,7 +134,7 @@ export async function POST(request: Request) {
  *
  * "goalType" - Must be "Loss", "Gain", or "Maintenance"
  */
-export async function PUT(request: Request) {
+export async function PUT(request: NextRequest) {
   try {
     // Calls the method to get user data from the bearer token in the headers
     const userAccount = await getPayloadData(request);
@@ -167,7 +168,7 @@ export async function PUT(request: Request) {
       message: "Goal Weight Entry Updated",
     });
 
-    return new Response(responseBody, {
+    return new NextResponse(responseBody, {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
@@ -176,7 +177,7 @@ export async function PUT(request: Request) {
     const errorToSend = handleMiddleWareErrors(error);
     let status = getServerResponseStatus(error);
 
-    return new Response(
+    return new NextResponse(
       JSON.stringify({
         message: errorToSend.message,
         cause: errorToSend.cause,

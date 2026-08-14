@@ -14,6 +14,7 @@ import {
   getServerResponseStatus,
   handleMiddleWareErrors,
 } from "@/app/utils/errors";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * GET Method: Returns either all weight entries, or a singular one if a valid "weightEntryId" is passed in the headers, if the passed in bearer token is authorized.
@@ -24,7 +25,7 @@ import {
  *
  * "weightEntryId" (Optional) - Must be a uuid that contains only letters, digits, and '-' and in the pattern of "########-####-####-####-############" (# representing any letter or digit).
  */
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
     // Calls the method to get user data from the bearer token in the headers
     const userAccount = await getPayloadData(request);
@@ -42,7 +43,7 @@ export async function GET(request: Request) {
         weightEntries,
       });
 
-      return new Response(responseBody, {
+      return new NextResponse(responseBody, {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
@@ -59,7 +60,7 @@ export async function GET(request: Request) {
         weightEntry,
       });
 
-      return new Response(responseBody, {
+      return new NextResponse(responseBody, {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
@@ -69,7 +70,7 @@ export async function GET(request: Request) {
     const errorToSend = handleMiddleWareErrors(error);
     let status = getServerResponseStatus(error);
 
-    return new Response(
+    return new NextResponse(
       JSON.stringify({
         message: errorToSend.message,
         cause: errorToSend.cause,
@@ -95,7 +96,7 @@ export async function GET(request: Request) {
  *
  * "weighInDate" - Must in the format of "YYYY-MM-DDT##:##"
  */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     // Calls the method to get user data from the bearer token in the headers
     const userAccount = await getPayloadData(request);
@@ -117,7 +118,7 @@ export async function POST(request: Request) {
       message: "Weight Entry Added",
     });
 
-    return new Response(responseBody, {
+    return new NextResponse(responseBody, {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
@@ -126,7 +127,7 @@ export async function POST(request: Request) {
     const errorToSend = handleMiddleWareErrors(error);
     let status = getServerResponseStatus(error);
 
-    return new Response(
+    return new NextResponse(
       JSON.stringify({
         message: errorToSend.message,
         cause: errorToSend.cause,
@@ -154,7 +155,7 @@ export async function POST(request: Request) {
  *
  * "weighInDate" - Must in the format of "YYYY-MM-DDT##:##"
  */
-export async function PUT(request: Request) {
+export async function PUT(request: NextRequest) {
   try {
     // Calls the method to get user data from the bearer token in the headers
     const userAccount = await getPayloadData(request);
@@ -188,7 +189,7 @@ export async function PUT(request: Request) {
       message: "Weight Entry Updated",
     });
 
-    return new Response(responseBody, {
+    return new NextResponse(responseBody, {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
@@ -197,7 +198,7 @@ export async function PUT(request: Request) {
     const errorToSend = handleMiddleWareErrors(error);
     let status = getServerResponseStatus(error);
 
-    return new Response(
+    return new NextResponse(
       JSON.stringify({
         message: errorToSend.message,
         cause: errorToSend.cause,
@@ -221,7 +222,7 @@ export async function PUT(request: Request) {
  *
  * "weightEntryId" - Must be a uuid that contains only letters, digits, and '-' and in the pattern of "########-####-####-####-############" (# representing any letter or digit).
  */
-export async function DELETE(request: Request) {
+export async function DELETE(request: NextRequest) {
   try {
     // Calls the method to get user data from the bearer token in the headers
     const userAccount = await getPayloadData(request);
@@ -243,7 +244,7 @@ export async function DELETE(request: Request) {
       message: "Weight Entry Deleted",
     });
 
-    return new Response(responseBody, {
+    return new NextResponse(responseBody, {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
@@ -252,7 +253,7 @@ export async function DELETE(request: Request) {
     const errorToSend = handleMiddleWareErrors(error);
     let status = getServerResponseStatus(error);
 
-    return new Response(
+    return new NextResponse(
       JSON.stringify({
         message: errorToSend.message,
         cause: errorToSend.cause,
