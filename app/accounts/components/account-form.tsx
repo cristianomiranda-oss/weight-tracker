@@ -85,7 +85,7 @@ export default function AccountForm(): React.JSX.Element {
 
       // Sets the loading boolean and clears the current error message
       setIsLoading(true);
-      // setError(null);
+      setError(null);
 
       // Checks the currently active screen
       if (isAccountCreationEnabled) {

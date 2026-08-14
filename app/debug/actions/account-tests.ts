@@ -84,13 +84,13 @@ async function testAccountCreation(tempUserName: string, tempPassword: string) {
 }
 
 /**
-   * Tests all account endpoints. Attempts to register and login to a new account.
-   * If registration fails the login test is skipped. 
-   * @param endPointTestIndicators The object containing the test indicators that will be updated based on the results of the tests
-   * @param userName The username for the temporary account 
-   * @param userPassword The password for the temporary account 
-   * @returns Returns a valid token if both tests succeed or returns null if either test fails 
-   */
+ * Tests all account endpoints. Attempts to register and login to a new account.
+ * If registration fails the login test is skipped.
+ * @param endPointTestIndicators The object containing the test indicators that will be updated based on the results of the tests
+ * @param userName The username for the temporary account
+ * @param userPassword The password for the temporary account
+ * @returns Returns a valid token if both tests succeed or returns null if either test fails
+ */
 export async function testAccountsEndpoint(
   endPointTestIndicators: ApiEndPointDebugTests,
   userName: string,

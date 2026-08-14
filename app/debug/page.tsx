@@ -14,7 +14,7 @@ export default function DebugPage({}: DebugPageProps) {
       <Header />
       <div className="w-full h-[calc(100%-10rem)] min-h-min p-8">
         <Card>
-            <ApiDebug />
+          <ApiDebug />
         </Card>
       </div>
       <Footer />

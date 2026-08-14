@@ -12,7 +12,7 @@ export async function testConnection() {
       method: "GET",
     });
 
-    const responseData = await creationResult.json() as ApiEndpointResponse;
+    const responseData = (await creationResult.json()) as ApiEndpointResponse;
 
     if (responseData.message === "Database Connected!") {
       return true;

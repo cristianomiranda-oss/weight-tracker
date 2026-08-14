@@ -15,7 +15,7 @@ export default function TestIndicatorDisplay({
   const TestIndicators = testIndicatorsArr.map((entry) => {
     let message = entry[1];
     if (message === "") {
-        message = "Test not performed"
+      message = "Test not performed";
     }
 
     return (

@@ -92,10 +92,12 @@ export default function ApiDebug({}: ApiDebugProps) {
     checkUserLogin();
   }, []);
 
+  if (isLoading) {
+    return <LoadingIndicator />;
+  }
+
   return (
     <div className="w-full h-full min-h-fit flex flex-col justify-around overflow-y-auto">
-      {isLoading && <LoadingIndicator />}
-
       <div className="h-1/2 overflow-auto border-2 border-black">
         {testData === null ? (
           <p className="text-2xl md:text-4xl">

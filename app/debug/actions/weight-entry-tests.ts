@@ -270,11 +270,9 @@ export async function testWeightEntryEndpoint(
   );
 
   if (isWeightEntryUpdated) {
-    endPointTestIndicators.weightEntryUpdate =
-      "Weight Entry Update Succeeded";
+    endPointTestIndicators.weightEntryUpdate = "Weight Entry Update Succeeded";
   } else {
-    endPointTestIndicators.weightEntryUpdate =
-      "Weight Entry Update Failed";
+    endPointTestIndicators.weightEntryUpdate = "Weight Entry Update Failed";
     // Exits to prevent any further testing
     return;
   }
