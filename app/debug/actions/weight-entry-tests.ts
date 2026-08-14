@@ -43,7 +43,7 @@ export async function testWeightEntriesRetrieval(userToken: string) {
 }
 
 /**
- * Tests the '/api/weight-entry' endpoint GET method.
+ * Tests the '/api/weight-entry/[weightEntryId]' endpoint GET method.
  * Attempts to retrieve a specific entry for the user.
  * @returns Returns a boolean denoting if the test was successful.
  * True if successful, false if retrieval failed or an error occurred.
@@ -59,12 +59,11 @@ async function testWeightEntryRetrieval(
 
     FilterTests.validateUUID(weightEntryId);
 
-    const retrievalResult = await fetch("/api/weight-entry", {
+    const retrievalResult = await fetch(`/api/weight-entry/${weightEntryId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${userToken}`,
-        weightEntryId: weightEntryId, // Adds the necessary header to the request
       },
     });
 

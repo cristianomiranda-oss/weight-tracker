@@ -17,54 +17,29 @@ import {
 import { NextRequest, NextResponse } from "next/server";
 
 /**
- * GET Method: Returns either all weight entries, or a singular one if a valid "weightEntryId" is passed in the headers, if the passed in bearer token is authorized.
+ * GET Method: Returns either all weight entries associated with a user account if the passed in bearer token is authorized.
  *
  *  Headers:
  *
  * "Authorization" - Must be in the form of "Bearer <token>"
- *
- * "weightEntryId" (Optional) - Must be a uuid that contains only letters, digits, and '-' and in the pattern of "########-####-####-####-############" (# representing any letter or digit).
  */
 export async function GET(request: NextRequest) {
   try {
     // Calls the method to get user data from the bearer token in the headers
     const userAccount = await getPayloadData(request);
 
-    // Pulls any data from the body of the request
-    const weightEntryId = request.headers.get("weightEntryId");
+    const weightEntries = await getWeightEntriesService(userAccount);
 
-    // Checks if the header is null which denotes all entries should be pulled
-    if (weightEntryId === null) {
-      const weightEntries = await getWeightEntriesService(userAccount);
+    // Initializes the body of the return message
+    const responseBody = JSON.stringify({
+      message: "Entries Retrieved",
+      weightEntries,
+    });
 
-      // Initializes the body of the return message
-      const responseBody = JSON.stringify({
-        message: "Entries Retrieved",
-        weightEntries,
-      });
-
-      return new NextResponse(responseBody, {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
-    } else {
-      // If the header string is valid, gets the entry associated with the passed in id
-      const weightEntry = await getWeightEntryService(
-        weightEntryId,
-        userAccount,
-      );
-
-      // Initializes the body of the return message
-      const responseBody = JSON.stringify({
-        message: "Entry Retrieved",
-        weightEntry,
-      });
-
-      return new NextResponse(responseBody, {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+    return new NextResponse(responseBody, {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToSend = handleMiddleWareErrors(error);
