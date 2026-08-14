@@ -6,7 +6,6 @@ import {
   addWeightEntryService,
   changeWeighEntryService,
   getWeightEntriesService,
-  getWeightEntryService,
   removeWeightEntryService,
 } from "@/app/services/weight-entry";
 import {
@@ -69,7 +68,7 @@ export async function GET(request: NextRequest) {
  *
  * "weightValue" - Must be greater than zero, and can include up to the hundredths decimal place
  *
- * "weighInDate" - Must in the format of "YYYY-MM-DDT##:##"
+ * "weighInDate" - Must in the format of "YYYY-MM-DDT##:##" (Y, M, D, H, M representing year, month, day, hour, and minute respectively)
  */
 export async function POST(request: NextRequest) {
   try {
