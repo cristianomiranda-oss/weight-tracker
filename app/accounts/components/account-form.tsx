@@ -177,17 +177,13 @@ export default function AccountForm(): React.JSX.Element {
     return <ErrorDisplay error={error} router={router} />;
   }
 
-  // Displays the loading component if any async event is running
-  if (isLoading) {
-    return <LoadingIndicator />;
-  }
-
   return (
     <>
       <form
         className="w-full h-full min-h-min flex flex-col justify-around items-center gap-1"
         onSubmit={(e) => handleFormSubmission(e)}
       >
+        {isLoading && <LoadingIndicator />}
         <h2 className="text-5xl md:text-6xl">
           {isAccountCreationEnabled ? "Create Account" : "Sign In"}
         </h2>

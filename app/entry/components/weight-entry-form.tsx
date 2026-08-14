@@ -153,6 +153,8 @@ export default function WeightEntryForm(): React.JSX.Element {
       // Calls the function to retrieve a goal weight entry from the database
       const goalWeightEntry = await getGoalWeightEntry();
 
+      console.log(weightValueInputRef, goalTypeSelectorRef);
+
       // Confirms the input references are established
       if (
         weightValueInputRef.current !== null &&
@@ -197,6 +199,10 @@ export default function WeightEntryForm(): React.JSX.Element {
             cause: errorCausesObj.invalidParameterValue,
           });
         }
+      } else {
+        throw new Error("Inputs failed to mount", {
+          cause: errorCausesObj.processFail,
+        });
       }
     } catch (error) {
       // Checks if the error is an established error
@@ -219,6 +225,8 @@ export default function WeightEntryForm(): React.JSX.Element {
   function handleFormSubmission(e: React.SubmitEvent): void {
     // Prevents the default form submission
     e.preventDefault();
+
+    console.log(weightValueInputRef, goalTypeSelectorRef);
 
     // Checks the currently active page
     if (isWeightGoalEntry) {
@@ -293,6 +301,7 @@ export default function WeightEntryForm(): React.JSX.Element {
    * Checks if the user has successfully completed the login process before loading data to the page
    */
   async function checkUserLogin() {
+    console.log(weightValueInputRef, goalTypeSelectorRef);
     // Sets the loading flag and clears the current error
     setIsLoading(true);
     setError(null);
@@ -307,6 +316,7 @@ export default function WeightEntryForm(): React.JSX.Element {
         router.push("/accounts");
       } else {
         // Calls the method to load data to the page if the user is logged in
+        console.log(weightValueInputRef, goalTypeSelectorRef);
         getPlaceHolderData();
       }
     } catch (error) {
@@ -332,17 +342,15 @@ export default function WeightEntryForm(): React.JSX.Element {
     return <ErrorDisplay error={error} router={router} />;
   }
 
-  // Displays the loading component if any async event is running
-  if (isLoading) {
-    return <LoadingIndicator />;
-  }
-
   return (
     <>
       <form
         className="w-full h-full min-h-min flex flex-col justify-around items-center"
         onSubmit={(e) => handleFormSubmission(e)}
       >
+        {/* Displays the loading indicator  */}
+        {isLoading && <LoadingIndicator />}
+
         <h2 className="text-5xl">
           {isWeightGoalEntry ? "Goal Weight Entry" : "Weight Entry"}
         </h2>
