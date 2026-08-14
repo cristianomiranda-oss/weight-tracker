@@ -16,13 +16,11 @@ import {
 } from "@/app/utils/errors";
 
 /**
- * GET Method: Returns either all weight entries, or a singular one if a valid "weightEntryId" is passed in the body, if the passed in bearer token is authorized.
+ * GET Method: Returns either all weight entries, or a singular one if a valid "weightEntryId" is passed in the headers, if the passed in bearer token is authorized.
  *
  *  Headers:
  *
  * "Authorization" - Must be in the form of "Bearer <token>"
- *
- * Body:
  *
  * "weightEntryId" (Optional) - Must be a uuid that contains only letters, digits, and '-' and in the pattern of "########-####-####-####-############" (# representing any letter or digit).
  */
@@ -85,7 +83,7 @@ export async function GET(request: Request) {
 }
 
 /**
- * PUT Method: Updates an existing weight entry type if the passed in bearer token is authorized.
+ * POST Method: Updates an existing weight entry type if the passed in bearer token is authorized.
  *
  *  Headers:
  *

@@ -1,9 +1,7 @@
 // Credit: all api calls were created using a pattern by Lee Robinson
 // https://nextjs.org/blog/building-apis-with-nextjs
 
-import {
-  createUserAccountService,
-} from "@/app/services/accounts";
+import { createUserAccountService } from "@/app/services/accounts";
 import {
   errorCausesObj,
   getServerResponseStatus,

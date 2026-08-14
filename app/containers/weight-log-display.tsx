@@ -39,7 +39,7 @@ export default function WeightLogDisplay() {
   // Initializes a router to allow for navigation
   const router = useRouter();
 
-  // Initializes state for storing the loading flag and error
+  // Initializes state for storing the loading flag, error object, and info message
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
   const [infoMessage, setInfoMessage] = useState<string>("");
@@ -60,9 +60,10 @@ export default function WeightLogDisplay() {
    * @param entryId Id for the weight entry to be updated
    */
   function triggerEntryUpdate(entryId: string): void {
-    // Sets the loading boolean
+    // Sets the loading boolean and clears the error object and info message
     setIsLoading(true);
-
+    setError(null);
+    setInfoMessage("");
     try {
       // Constructs a url with the to be updated entry's id as a search parameter
       const navigationURL = `/entry?entryId=${entryId}`;
@@ -86,8 +87,10 @@ export default function WeightLogDisplay() {
    * @param entryId Id for the weight entry to be deleted
    */
   async function triggerEntryRemoval(entryId: string): Promise<void> {
-    // Sets the loading boolean
+    // Sets the loading boolean and clears the error object and info message
     setIsLoading(true);
+    setError(null);
+    setInfoMessage("");
 
     try {
       const userConfirmation = confirm(
@@ -101,6 +104,9 @@ export default function WeightLogDisplay() {
 
         // Calls the method to update the cached weight entry array
         EntriesSessionStorage.removeFromCachedWeightEntryArray(entryId);
+
+        // Reloads the weight entries if an entry was successfully removed
+        loadWeightEntries();
       }
     } catch (error) {
       // Checks if error is a known error
@@ -111,14 +117,11 @@ export default function WeightLogDisplay() {
       }
     } finally {
       setIsLoading(false);
-
-      // Reloads the weight entries
-      loadWeightEntries();
     }
   }
 
   /**
-   * Checks if the user has entered a goal weight. If an entry is associated with their user id, teh entry is returned,
+   * Checks if the user has entered a goal weight. If an entry is associated with their user id, the entry is returned,
    * else the user is redirected to the goal weight entry page
    */
   async function checkGoalWeightEntry(): Promise<GoalWeightEntryType> {
@@ -172,6 +175,7 @@ export default function WeightLogDisplay() {
       // Checks if the user's current weight is greater than or equal to their goal weight
       isGoalWeightAchieved = goalWeightEntry.weightValue <= currentWeight;
     }
+
     return isGoalWeightAchieved;
   }
 
@@ -210,15 +214,20 @@ export default function WeightLogDisplay() {
 
     // Checks if the currently active sort button is clicked
     if (currentSortingOption.sortingKey === sortingKey) {
+      // Currently active sorting button is clicked again
+
       // Checks the current sort order and switches to the opposing one
       newSortingOptions.sortOrder =
         currentSortingOption.sortOrder === "ASC" ? "DESC" : "ASC";
     } else {
-      // If the opposing sort button is clicked it is activated
+      // The inactive sorting button is clicked
+
+      // Sets the previously inactive button to activate
       newSortingOptions.sortingKey = sortingKey;
       newSortingOptions.sortOrder = "DESC";
     }
 
+    // Calls the function to resort the array based on the new settings and updates the settings
     sortWeightEntries(
       newSortingOptions.sortOrder,
       newSortingOptions.sortingKey,
@@ -230,8 +239,10 @@ export default function WeightLogDisplay() {
    * Triggers the fetch to access the user's weight entries to the appropriate middleware method
    */
   async function loadWeightEntries() {
-    // Sets the loading boolean and clears the error message and info message
+    // Sets the loading boolean and clears the error object and info message
     setIsLoading(true);
+    setError(null);
+    setInfoMessage("");
 
     // Initializes temp weight entries array
     let userWeightEntries: WeightEntryType[] = [];
@@ -287,10 +298,13 @@ export default function WeightLogDisplay() {
   }
 
   /**
-     * Checks if the user has successfully completed the login process before loading data to the page
-     */
+   * Checks if the user has successfully completed the login process before loading data to the page
+   */
   async function checkUserLogin() {
+    // Sets the loading boolean and clears the error object and info message
     setIsLoading(true);
+    setError(null);
+    setInfoMessage("");
 
     try {
       //Calls the method to check if the user completed the sign in process
@@ -323,16 +337,15 @@ export default function WeightLogDisplay() {
     checkUserLogin();
   }, []);
 
-  // Triggers the clearing of an info or warning message once one is displayed
+  // Triggers the clearing of the info message once it is displayed
   useEffect(() => {
     // Instantiates a timeout
     let eraseTimeOut: NodeJS.Timeout | null = null;
     // Checks if any message variable is populated
-    if (infoMessage !== "" || error !== null) {
+    if (infoMessage !== "") {
       // Creates a clear timeout that clears both messages after 5 seconds
       eraseTimeOut = setTimeout(() => {
         setInfoMessage("");
-        setError(null);
       }, 5000);
     }
 
@@ -342,10 +355,15 @@ export default function WeightLogDisplay() {
         clearTimeout(eraseTimeOut);
       }
     };
-  }, [infoMessage, error]);
+  }, [infoMessage]);
 
-  if (error?.cause !== errorCausesObj.invalidParameterValue && error !== null) {
+  if (error !== null && error?.cause !== errorCausesObj.invalidParameterValue) {
     return <ErrorDisplay error={error} router={router} />;
+  }
+
+  // Displays the loading component if any async event is running
+  if (isLoading) {
+    return <LoadingIndicator />;
   }
 
   return (
@@ -362,7 +380,6 @@ export default function WeightLogDisplay() {
       </Header>
       <div className="w-full h-[calc(100%-10rem)] min-h-min p-8">
         <Card className="p-0">
-          {isLoading && <LoadingIndicator />}
           <WeightLogTableTable
             weightEntries={weightEntries}
             triggerEntryRemoval={triggerEntryRemoval}

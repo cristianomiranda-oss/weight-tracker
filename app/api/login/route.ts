@@ -3,7 +3,7 @@
 
 import { validateLoginService } from "@/app/services/accounts";
 import {
-    errorCausesObj,
+  errorCausesObj,
   getServerResponseStatus,
   handleMiddleWareErrors,
 } from "@/app/utils/errors";

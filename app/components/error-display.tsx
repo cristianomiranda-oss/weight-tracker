@@ -5,13 +5,17 @@ import { errorCausesObj } from "../utils/errors";
 interface ErrorDisplayProps {
   error: Error;
   router: AppRouterInstance;
-  debug?: boolean
+  debug?: boolean;
 }
 
 /**
  * Displays the error and handles the timing before redirecting user to the appropriate page
  */
-export default function ErrorDisplay({ error, router, debug }: ErrorDisplayProps) {
+export default function ErrorDisplay({
+  error,
+  router,
+  debug,
+}: ErrorDisplayProps) {
   const [timeCount, setTimeCount] = useState<number>(3);
 
   function navigateToPage() {
@@ -22,7 +26,7 @@ export default function ErrorDisplay({ error, router, debug }: ErrorDisplayProps
       // Redirects the user back to the accounts page
       router.push("/accounts");
     } else if (error.cause === errorCausesObj.noGoalWeightEntry) {
-      // If no goal weight entry is found, navigate to entry page 
+      // If no goal weight entry is found, navigate to entry page
       const navigationURL = "/entry?type=goal-weight-entry";
       router.push(navigationURL);
     } else if (error.cause === errorCausesObj.noUserEntry) {
@@ -39,10 +43,10 @@ export default function ErrorDisplay({ error, router, debug }: ErrorDisplayProps
    */
   useEffect(() => {
     if (timeCount <= 0) {
-      // Checks if debug mode is enabled 
+      // Checks if debug mode is enabled
       if (debug) {
         // Only logs a message if debug mode is enabled
-        console.log("Navigation Triggered")
+        console.log("Navigation Triggered");
         return;
       } else {
         // Calls the function to handle navigation

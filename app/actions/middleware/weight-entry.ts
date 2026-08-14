@@ -15,7 +15,7 @@ import {
 /**
  * Middleware for accessing the database to create new weight entry
  * @param weightValue Number value for the new weight entry - Must be greater than zero
- * @param weighInDate Date value for the new weight entry
+ * @param weighInDate Date string value for the new weight entry
  * @throws Signals the process failed
  */
 export async function addWeightEntry(
@@ -47,6 +47,7 @@ export async function addWeightEntry(
  * Middleware for accessing weight entries associated with a user cookie.
  * The currently stored user account cookie is used for identifying what entry is associated with the user.
  * @throws Signals the process failed
+ * @returns Returns an array containing the user's weight entries
  */
 export async function getWeightEntries(): Promise<WeightEntryType[]> {
   try {
@@ -75,7 +76,8 @@ export async function getWeightEntries(): Promise<WeightEntryType[]> {
 /**
  * Middleware for accessing a weight entry associated with a user cookie.
  * The currently stored user account cookie is used for identifying what entry is associated with the user.
- * @throws Signals the process failed
+ * @throws Signals the process failed or that no weight entry could be found
+ * @Returns The weight entry associated with the weight entry id
  */
 export async function getWeightEntry(
   weightEntryId: string,
@@ -114,9 +116,9 @@ export async function getWeightEntry(
 
 /**
  * Middleware for accessing the database to update an existing weight entry
- * @param weightEntryId Id for the associated weight entry to be changed - Must be greater than zero
+ * @param weightEntryId Id for the associated weight entry to be changed
  * @param weightValue New number value for the weight entry - Must be greater than zero
- * @param weighInDate New date value for the weight entry
+ * @param weighInDate New date string value for the weight entry
  * @throws Signals the process failed
  */
 export async function changeWeighEntry(

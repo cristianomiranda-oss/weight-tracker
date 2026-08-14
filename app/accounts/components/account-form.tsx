@@ -85,12 +85,13 @@ export default function AccountForm(): React.JSX.Element {
 
       // Sets the loading boolean and clears the current error message
       setIsLoading(true);
-      setError(null);
+      // setError(null);
 
       // Checks the currently active screen
       if (isAccountCreationEnabled) {
         // Account Creation Screen
-        // Checks that confirmPassword ref to associated text input is established
+
+        // Checks that ref to associated text inputs are established
         if (
           userNameRef.current !== null &&
           userPasswordRef.current !== null &&
@@ -113,10 +114,10 @@ export default function AccountForm(): React.JSX.Element {
         }
       } else {
         // Account Sign In Screen
+
         // Checks that the username and password input refs are established
         if (userNameRef.current !== null && userPasswordRef.current !== null) {
           // Calls the method to validate the user's login
-          // If no errors are thrown the function continues
           await validateLogin(
             userNameRef.current.value,
             userPasswordRef.current.value,
@@ -124,10 +125,6 @@ export default function AccountForm(): React.JSX.Element {
 
           // Navigates to the home page
           router.push("/");
-
-          // Clears text inputs
-          userNameRef.current.value = "";
-          userPasswordRef.current.value = "";
         }
       }
     } catch (error) {
@@ -170,6 +167,7 @@ export default function AccountForm(): React.JSX.Element {
     clearUserData();
   }, []);
 
+  // Displays the error component if any error occurs
   if (
     error?.cause !== errorCausesObj.invalidParameterValue &&
     error?.cause !== errorCausesObj.invalidComparison &&
@@ -179,9 +177,13 @@ export default function AccountForm(): React.JSX.Element {
     return <ErrorDisplay error={error} router={router} />;
   }
 
+  // Displays the loading component if any async event is running
+  if (isLoading) {
+    return <LoadingIndicator />;
+  }
+
   return (
     <>
-      {isLoading && <LoadingIndicator />}
       <form
         className="w-full h-full min-h-min flex flex-col justify-around items-center gap-1"
         onSubmit={(e) => handleFormSubmission(e)}

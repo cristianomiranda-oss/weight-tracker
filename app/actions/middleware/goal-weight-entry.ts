@@ -44,8 +44,8 @@ export async function addGoalWeightEntry(
 /**
  * Middleware for accessing a goal weight entries associated with a user.
  * The currently stored user account cookie is used for identifying what entry is associated with the user.
- * Returns a null value if no goal weight entry is stored for the user.
  * @throws Signals the process failed
+ * @returns Returns the goal weight entry or a null value if no goal weight entry is stored for the user.
  */
 export async function getGoalWeightEntry(): Promise<GoalWeightEntryType | null> {
   try {
