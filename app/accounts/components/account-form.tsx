@@ -191,7 +191,7 @@ export default function AccountForm(): React.JSX.Element {
         </h2>
 
         {error !== null && (
-          <h3 className="text-3xl text-red-700 text-center">{error.message}</h3>
+          <h3 className="text-3xl text-warning text-center">{error.message}</h3>
         )}
 
         <LabeledInput
@@ -226,7 +226,7 @@ export default function AccountForm(): React.JSX.Element {
             <p className="w-full text-md text-center">
               New User?{" "}
               <span
-                className="text-blue-600 cursor-pointer select-none"
+                className="text-hyper-link cursor-pointer select-none"
                 onClick={toggleAccountCreation}
               >
                 Create New Account

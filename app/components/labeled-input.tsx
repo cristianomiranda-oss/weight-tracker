@@ -28,7 +28,7 @@ export default function LabeledInput({
         {label}
       </label>
       <input
-        className="bg-graphite-800 text-3xl md:text-4xl p-2"
+        className="bg-text-input text-3xl md:text-4xl p-2"
         type={inputType}
         id={id}
         disabled={disabled}

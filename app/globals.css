@@ -3,11 +3,24 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --header-footer: #095d42;
+  --card: #514653;
+  --text-input: #362f37;
+  --warning: #fb2c36;
+  --info: #e6cc00;
+  --hyper-link: #155dfc;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-header-footer: var(--header-footer);
+  --color-card: var(--card);
+  --color-text-input: var(--text-input);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-hyper-link: var(--hyper-link);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --color-dusty-taupe-50: #f5f2f0;
@@ -71,10 +84,29 @@
   --color-turf-green-950: #032017;
 }
 
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #ededed;
+    --foreground: #f3f3f3;
+    --header-footer: #0e8b64;
+    --card: #87758a;
+    --text-input: #514653;
+    --warning: #fa0d19;
+    --info: #e6cc00;
+    --hyper-link: #1414df;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --header-footer: #095d42;
+    --card: #514653;
+    --text-input: #362f37;
+    --warning: #fa000c;
+    --info: #c7b001;
+    --hyper-link: #0352fc;
   }
 }
 

@@ -1,8 +1,6 @@
 import Card from "../components/card";
-import ErrorDisplay from "../components/error-display";
 import Footer from "../components/footer";
 import Header from "../components/header";
-import { getUnknownError } from "../utils/errors";
 import AccountForm from "./components/account-form";
 
 /**

@@ -18,9 +18,9 @@ export default function MessageDisplay({
       <div className="w-full h-12 p-1 text-2xl fixed bottom-0 right-0 bg-dusty-taupe-900/50">
         {/* Prioritizes error messages over info messages */}
         {error !== null ? (
-          <p className="text-red-600">{error.message}</p>
+          <p className="text-warning">{error.message}</p>
         ) : (
-          <p className="text-yellow-600">{infoMessage}</p>
+          <p className="text-info">{infoMessage}</p>
         )}
       </div>
     );

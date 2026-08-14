@@ -68,7 +68,7 @@ export default function ErrorDisplay({ error, router, debug }: ErrorDisplayProps
         </h2>
 
         <p className="text-2xl md:text-3xl text-center">
-          <span className="text-yellow-600">{error.message}</span>
+          <span className="text-info">{error.message}</span>
           <br />
           Navigating to goal weight entry page in {timeCount}...
         </p>
@@ -82,7 +82,7 @@ export default function ErrorDisplay({ error, router, debug }: ErrorDisplayProps
         </h2>
 
         <p className="text-2xl md:text-3xl text-center">
-          <span className="text-red-600">{error.message}</span>
+          <span className="text-warning">{error.message}</span>
           <br />
           Navigating in {timeCount}...
         </p>
