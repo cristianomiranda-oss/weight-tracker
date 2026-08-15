@@ -1,5 +1,5 @@
 "use server";
-import { errorCausesObj } from "@/app/libs/errors";
+import { errorCausesObj } from "@/app/utils/errors";
 import type { UserPayloadObj } from "@/app/libs/types";
 import jwt from "jsonwebtoken";
 
@@ -27,9 +27,10 @@ export async function getAccountPayload(userId: string, userName: string) {
 }
 
 /**
- * Verifies the payload string, returns the payload string if the string is valid or throws an access denied error if it fails to validate
+ * Verifies the payload string
  *
  * @param {string} payload Payload string that will be verified
+ * @returns Returns the payload string if the string is valid or throws an access denied error if it fails to validate
  */
 export async function verifyAccountPayload(payload: string) {
   try {
@@ -45,5 +46,33 @@ export async function verifyAccountPayload(payload: string) {
     throw new Error("Account authorization failed", {
       cause: errorCausesObj.accessDenied,
     });
+  }
+}
+
+/**
+ * Obtains the payload sting from a request's bearer token and decrypts the data
+ * @param {Request} request The request containing the bearer token
+ */
+export async function getPayloadData(request: Request) {
+  try {
+    // Pulls the token from the headers
+    const token = request.headers.get("Authorization");
+
+    // Splits the string and stores the payload string
+    const bearer = token?.split(" ").at(1);
+
+    // Checks if the payload string is invalid
+    if (!bearer) {
+      throw new Error("Failed to Acquire Token");
+    }
+
+    // Decrypts the payload value
+    const userAccount = await verifyAccountPayload(bearer);
+
+    // Returns the decrypted payload
+    return userAccount;
+  } catch (error) {
+    // Throws error to parent
+    throw error;
   }
 }

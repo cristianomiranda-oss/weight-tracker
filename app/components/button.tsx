@@ -16,13 +16,13 @@ export default function Button({
   type,
   onClick,
 }: ButtonProps) {
-  let bgColor: string = "bg-graphite-800";
-  let bgColorHover: string = "hover:bg-cool-sky-300/20";
+  let bgColor: string = "bg-text-input";
+  let bgColorHover: string = "hover:bg-text-input/80";
 
   // Checks which button type to display
   if (type === "warning") {
-    bgColor = "bg-red-500";
-    bgColorHover = "hover:bg-red-500/80";
+    bgColor = "bg-warning";
+    bgColorHover = "hover:bg-warning/80";
   }
   // Removes any conflicting classes found
   // Prioritizes the passed in classes

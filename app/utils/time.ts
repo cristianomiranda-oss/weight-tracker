@@ -1,8 +1,8 @@
 /**
  * Calculates the number of milliseconds for the number of minutes passed in.
  *
- * @param {number} minutes The number of minutes that will be converted to milliseconds
- * @returns {number} The calculated number of milliseconds, if the passed in value is less than 1 0 is returned
+ * @param minutes The number of minutes that will be converted to milliseconds
+ * @returns The calculated number of milliseconds, if the passed in value is less than 1 0 is returned
  */
 export function minutesToMilliseconds(minutes: number): number {
   if (minutes > 0) {

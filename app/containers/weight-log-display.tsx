@@ -23,15 +23,13 @@ import {
   getWeightEntries,
 } from "../actions/middleware/weight-entry";
 import { getGoalWeightEntry } from "../actions/middleware/goal-weight-entry";
-import { errorCausesObj } from "../libs/errors";
+import { errorCausesObj, getUnknownError } from "../utils/errors";
 import LoadingIndicator from "../components/loading-indicator";
 import MessageDisplay from "../components/message-display";
-import { sortEntriesArray } from "../libs/sorting";
-import {
-  cacheWeightEntryArray,
-  getCachedWeightEntryArray,
-  removeFromCachedWeightEntryArray,
-} from "../libs/session-storage";
+import { sortEntriesArray } from "../utils/sorting";
+import { EntriesSessionStorage } from "../libs/session-storage";
+import ErrorDisplay from "../components/error-display";
+import { checkForUserSignIn } from "../libs/cookies";
 
 /**
  * Contains the components for displaying the weight log interface and
@@ -41,9 +39,9 @@ export default function WeightLogDisplay() {
   // Initializes a router to allow for navigation
   const router = useRouter();
 
-  // Initializes state for storing the loading flag and error messages
+  // Initializes state for storing the loading flag, error object, and info message
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [error, setError] = useState<Error | null>(null);
   const [infoMessage, setInfoMessage] = useState<string>("");
 
   // Initializes state for storing all user weight entries
@@ -58,21 +56,14 @@ export default function WeightLogDisplay() {
   );
 
   /**
-   * Alerts the user of an invalid sign in and navigates to the accounts page
-   */
-  function handleInvalidUserData() {
-    alert("Invalid user data, returning to signing page...");
-    router.push("/accounts");
-  }
-
-  /**
    * Handles the updating of weight entries
    * @param entryId Id for the weight entry to be updated
    */
   function triggerEntryUpdate(entryId: string): void {
-    // Sets the loading boolean
+    // Sets the loading boolean and clears the error object and info message
     setIsLoading(true);
-
+    setError(null);
+    setInfoMessage("");
     try {
       // Constructs a url with the to be updated entry's id as a search parameter
       const navigationURL = `/entry?entryId=${entryId}`;
@@ -82,9 +73,9 @@ export default function WeightLogDisplay() {
     } catch (error) {
       // Checks if error is a known error
       if (error instanceof Error && error.cause) {
-        setErrorMessage(error.message);
+        setError(error);
       } else {
-        setErrorMessage("An unknown error has occurred");
+        setError(getUnknownError());
       }
     } finally {
       setIsLoading(false);
@@ -96,8 +87,10 @@ export default function WeightLogDisplay() {
    * @param entryId Id for the weight entry to be deleted
    */
   async function triggerEntryRemoval(entryId: string): Promise<void> {
-    // Sets the loading boolean
+    // Sets the loading boolean and clears the error object and info message
     setIsLoading(true);
+    setError(null);
+    setInfoMessage("");
 
     try {
       const userConfirmation = confirm(
@@ -110,43 +103,52 @@ export default function WeightLogDisplay() {
         setInfoMessage("Entry removed");
 
         // Calls the method to update the cached weight entry array
-        removeFromCachedWeightEntryArray(entryId);
+        EntriesSessionStorage.removeFromCachedWeightEntryArray(entryId);
+
+        // Reloads the weight entries if an entry was successfully removed
+        loadWeightEntries();
       }
     } catch (error) {
       // Checks if error is a known error
       if (error instanceof Error && error.cause) {
-        if (error.cause === errorCausesObj.invalidUserCookie) {
-          handleInvalidUserData();
-        } else {
-          setErrorMessage(error.message);
-        }
+        setError(error);
       } else {
-        setErrorMessage("An unknown error has occurred");
+        setError(getUnknownError());
       }
     } finally {
       setIsLoading(false);
-
-      // Reloads the weight entries
-      loadWeightEntries();
     }
   }
 
   /**
-   * Checks if the user has entered a goal weight. If an entry is associated with their user id, teh entry is returned,
+   * Checks if the user has entered a goal weight. If an entry is associated with their user id, the entry is returned,
    * else the user is redirected to the goal weight entry page
    */
   async function checkGoalWeightEntry(): Promise<GoalWeightEntryType> {
+    // Pull the cached goal weight entry
+    const cachedGoalWeightEntry =
+      EntriesSessionStorage.getCachedGoalWeightEntry();
+
+    // Checks if any goal weight entry was cached
+    if (cachedGoalWeightEntry !== null) {
+      // Returns the cached goal weight entry
+      return cachedGoalWeightEntry;
+    }
+
+    // If not calls the middleware method to access the goal weight entry associated with the user from the database
     const goalWeightEntry = await getGoalWeightEntry();
 
+    // Checks if no entry exists for the user
     if (goalWeightEntry === null) {
-      // If no goal weight entry exists for the user, navigates them to the entry page
-      alert("No goal entry recorded, navigating to goal entry page...");
-      const navigationURL = "/entry?type=goal-weight-entry";
-      router.push(navigationURL);
-      throw new Error("Failed to access goal weight entry", {
-        cause: errorCausesObj.noUserEntry,
+      // If no goal weight entry exists for the user, throws an error
+      throw new Error("No goal weight entry associated with user", {
+        cause: errorCausesObj.noGoalWeightEntry,
       });
     } else {
+      // Stashes the goal weight entry after retrieval from the database
+      EntriesSessionStorage.cacheGoalWeightEntry(goalWeightEntry);
+
+      // Returns the retrieved entry
       return goalWeightEntry;
     }
   }
@@ -173,6 +175,7 @@ export default function WeightLogDisplay() {
       // Checks if the user's current weight is greater than or equal to their goal weight
       isGoalWeightAchieved = goalWeightEntry.weightValue <= currentWeight;
     }
+
     return isGoalWeightAchieved;
   }
 
@@ -209,21 +212,22 @@ export default function WeightLogDisplay() {
     // Copies the current sorting options
     let newSortingOptions = { ...currentSortingOption };
 
-    const cachedObj = getCachedWeightEntryArray();
-
-    console.log(cachedObj);
-
     // Checks if the currently active sort button is clicked
     if (currentSortingOption.sortingKey === sortingKey) {
+      // Currently active sorting button is clicked again
+
       // Checks the current sort order and switches to the opposing one
       newSortingOptions.sortOrder =
         currentSortingOption.sortOrder === "ASC" ? "DESC" : "ASC";
     } else {
-      // If the opposing sort button is clicked it is activated
+      // The inactive sorting button is clicked
+
+      // Sets the previously inactive button to activate
       newSortingOptions.sortingKey = sortingKey;
       newSortingOptions.sortOrder = "DESC";
     }
 
+    // Calls the function to resort the array based on the new settings and updates the settings
     sortWeightEntries(
       newSortingOptions.sortOrder,
       newSortingOptions.sortingKey,
@@ -235,21 +239,23 @@ export default function WeightLogDisplay() {
    * Triggers the fetch to access the user's weight entries to the appropriate middleware method
    */
   async function loadWeightEntries() {
-    // Sets the loading boolean and clears the error message and info message
+    // Sets the loading boolean and clears the error object and info message
     setIsLoading(true);
+    setError(null);
+    setInfoMessage("");
 
     // Initializes temp weight entries array
     let userWeightEntries: WeightEntryType[] = [];
 
     try {
-      const cachedArray = getCachedWeightEntryArray();
+      const cachedArray = EntriesSessionStorage.getCachedWeightEntryArray();
 
       // Check if the cached array is valid
       if (cachedArray === null) {
         // Gathers the user's weight entries
         userWeightEntries = await getWeightEntries();
         // Stores the entries in cache
-        cacheWeightEntryArray(userWeightEntries);
+        EntriesSessionStorage.cacheWeightEntryArray(userWeightEntries);
       } else {
         // Uses the cached array values
         userWeightEntries = cachedArray;
@@ -281,14 +287,9 @@ export default function WeightLogDisplay() {
     } catch (error) {
       // Checks if error is a known error
       if (error instanceof Error && error.cause) {
-        // Checks the cause of the error
-        if (error.cause === errorCausesObj.invalidUserCookie) {
-          handleInvalidUserData();
-        } else {
-          setErrorMessage(error.message);
-        }
+        setError(error);
       } else {
-        setErrorMessage("An unknown error has occurred");
+        setError(getUnknownError());
       }
     } finally {
       // Change the loading boolean to indicate the function is no longer running
@@ -296,21 +297,55 @@ export default function WeightLogDisplay() {
     }
   }
 
-  // Triggers the loading of the user's weight entries upon page launch
+  /**
+   * Checks if the user has successfully completed the login process before loading data to the page
+   */
+  async function checkUserLogin() {
+    // Sets the loading boolean and clears the error object and info message
+    setIsLoading(true);
+    setError(null);
+    setInfoMessage("");
+
+    try {
+      //Calls the method to check if the user completed the sign in process
+      const isUserLoggedIn = await checkForUserSignIn();
+
+      // Checks the user is not logged in
+      if (!isUserLoggedIn) {
+        // Redirects the user to the accounts page
+        router.push("/accounts");
+      } else {
+        // Calls the method to load data to the page if the user is logged in
+        loadWeightEntries();
+      }
+    } catch (error) {
+      // Checks if the error is an established error
+      if (error instanceof Error) {
+        setError(error);
+      } else {
+        // Indicates an unusual error has occurred
+        setError(getUnknownError());
+      }
+    } finally {
+      // Clears the loading indicator before calling the function to load weight entries
+      setIsLoading(false);
+    }
+  }
+
+  // Calls the method to check if the user is logged in
   useEffect(() => {
-    loadWeightEntries();
+    checkUserLogin();
   }, []);
 
-  // Triggers the clearing of an info or warning message once one is displayed
+  // Triggers the clearing of the info message once it is displayed
   useEffect(() => {
     // Instantiates a timeout
     let eraseTimeOut: NodeJS.Timeout | null = null;
     // Checks if any message variable is populated
-    if (infoMessage !== "" || errorMessage !== "") {
+    if (infoMessage !== "") {
       // Creates a clear timeout that clears both messages after 5 seconds
       eraseTimeOut = setTimeout(() => {
         setInfoMessage("");
-        setErrorMessage("");
       }, 5000);
     }
 
@@ -320,7 +355,16 @@ export default function WeightLogDisplay() {
         clearTimeout(eraseTimeOut);
       }
     };
-  }, [infoMessage, errorMessage]);
+  }, [infoMessage]);
+
+  if (error !== null && error?.cause !== errorCausesObj.invalidParameterValue) {
+    return <ErrorDisplay error={error} router={router} />;
+  }
+
+  // Displays the loading component if any async event is running
+  if (isLoading) {
+    return <LoadingIndicator />;
+  }
 
   return (
     <>
@@ -336,7 +380,6 @@ export default function WeightLogDisplay() {
       </Header>
       <div className="w-full h-[calc(100%-10rem)] min-h-min p-8">
         <Card className="p-0">
-          {isLoading && <LoadingIndicator />}
           <WeightLogTableTable
             weightEntries={weightEntries}
             triggerEntryRemoval={triggerEntryRemoval}
@@ -344,10 +387,7 @@ export default function WeightLogDisplay() {
             currentSortingOption={currentSortingOption}
             updateSortingOption={updateSortingOption}
           />
-          <MessageDisplay
-            errorMessage={errorMessage}
-            infoMessage={infoMessage}
-          />
+          <MessageDisplay error={error} infoMessage={infoMessage} />
         </Card>
       </div>
       <Footer className="flex justify-around lg:justify-center gap-0 lg:gap-36 items-center">

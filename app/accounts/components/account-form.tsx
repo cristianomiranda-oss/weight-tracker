@@ -5,11 +5,13 @@ import {
   validateLogin,
 } from "@/app/actions/middleware/accounts";
 import Button from "@/app/components/button";
+import ErrorDisplay from "@/app/components/error-display";
 import LabeledInput from "@/app/components/labeled-input";
 import LoadingIndicator from "@/app/components/loading-indicator";
 import SubmitButton from "@/app/components/submit-button";
 import { clearUserCookie } from "@/app/libs/cookies";
-import { clearCachedWeightEntryArray } from "@/app/libs/session-storage";
+import { EntriesSessionStorage } from "@/app/libs/session-storage";
+import { errorCausesObj, getUnknownError } from "@/app/utils/errors";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -25,8 +27,8 @@ export default function AccountForm(): React.JSX.Element {
   const [isAccountCreationEnabled, setIsAccountCreationEnabled] =
     useState<boolean>(false);
 
-  // Initializes state for storing the loading flag and error messages
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  // Initializes state for storing the loading flag and error
+  const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Initializes various references to the html input elements in the form
@@ -41,6 +43,30 @@ export default function AccountForm(): React.JSX.Element {
   function toggleAccountCreation(): void {
     // Only swaps screens if no calls are loading
     if (!isLoading) {
+      // Checks if the account creation refs or the account sign-in refs are loaded
+      if (
+        isAccountCreationEnabled &&
+        userNameRef.current !== null &&
+        userPasswordRef.current !== null &&
+        confirmPassWordRef.current !== null
+      ) {
+        // Clears all ref values
+        userNameRef.current.value = "";
+        userPasswordRef.current.value = "";
+        confirmPassWordRef.current.value = "";
+      } else if (
+        !isAccountCreationEnabled &&
+        userNameRef.current !== null &&
+        userPasswordRef.current !== null
+      ) {
+        // Clears all ref values
+        userNameRef.current.value = "";
+        userPasswordRef.current.value = "";
+      }
+
+      // Resets all necessary state values
+      setIsLoading(false);
+      setError(null);
       setIsAccountCreationEnabled((curr) => !curr);
     }
   }
@@ -59,12 +85,13 @@ export default function AccountForm(): React.JSX.Element {
 
       // Sets the loading boolean and clears the current error message
       setIsLoading(true);
-      setErrorMessage("");
+      setError(null);
 
       // Checks the currently active screen
       if (isAccountCreationEnabled) {
         // Account Creation Screen
-        // Checks that confirmPassword ref to associated text input is established
+
+        // Checks that ref to associated text inputs are established
         if (
           userNameRef.current !== null &&
           userPasswordRef.current !== null &&
@@ -87,10 +114,10 @@ export default function AccountForm(): React.JSX.Element {
         }
       } else {
         // Account Sign In Screen
+
         // Checks that the username and password input refs are established
         if (userNameRef.current !== null && userPasswordRef.current !== null) {
           // Calls the method to validate the user's login
-          // If no errors are thrown the function continues
           await validateLogin(
             userNameRef.current.value,
             userPasswordRef.current.value,
@@ -98,19 +125,15 @@ export default function AccountForm(): React.JSX.Element {
 
           // Navigates to the home page
           router.push("/");
-
-          // Clears text inputs
-          userNameRef.current.value = "";
-          userPasswordRef.current.value = "";
         }
       }
     } catch (error) {
       // Checks if the error is an established error
       if (error instanceof Error) {
-        setErrorMessage(error.message);
+        setError(error);
       } else {
         // Indicates an unusual error has occurred
-        setErrorMessage("An Unknown Error has Occurred!");
+        setError(getUnknownError());
       }
     } finally {
       // Changes the loading boolean to indicate the function is no longer running.
@@ -125,15 +148,16 @@ export default function AccountForm(): React.JSX.Element {
 
       try {
         // Calls the methods to clear user data upon loading the homepage
-        clearCachedWeightEntryArray();
+        EntriesSessionStorage.clearCachedWeightEntryArray();
+        EntriesSessionStorage.clearCachedGoalWeightEntry();
         await clearUserCookie();
       } catch (error) {
         // Checks if the error is an established error
         if (error instanceof Error) {
-          setErrorMessage(error.message);
+          setError(error);
         } else {
           // Indicates an unusual error has occurred
-          setErrorMessage("An Unknown Error has Occurred!");
+          setError(getUnknownError());
         }
       } finally {
         setIsLoading(false);
@@ -143,18 +167,30 @@ export default function AccountForm(): React.JSX.Element {
     clearUserData();
   }, []);
 
+  // Displays the error component if any error occurs
+  if (
+    error?.cause !== errorCausesObj.invalidParameterValue &&
+    error?.cause !== errorCausesObj.invalidComparison &&
+    error?.cause !== errorCausesObj.accessDenied &&
+    error !== null
+  ) {
+    return <ErrorDisplay error={error} router={router} />;
+  }
+
   return (
     <>
-      {isLoading && <LoadingIndicator />}
       <form
         className="w-full h-full min-h-min flex flex-col justify-around items-center gap-1"
         onSubmit={(e) => handleFormSubmission(e)}
       >
+        {isLoading && <LoadingIndicator />}
         <h2 className="text-5xl md:text-6xl">
           {isAccountCreationEnabled ? "Create Account" : "Sign In"}
         </h2>
 
-        <h3 className="text-3xl text-red-700 text-center">{errorMessage}</h3>
+        {error !== null && (
+          <h3 className="text-3xl text-warning text-center">{error.message}</h3>
+        )}
 
         <LabeledInput
           id="userName"
@@ -188,7 +224,7 @@ export default function AccountForm(): React.JSX.Element {
             <p className="w-full text-md text-center">
               New User?{" "}
               <span
-                className="text-blue-600 cursor-pointer select-none"
+                className="text-hyper-link cursor-pointer select-none"
                 onClick={toggleAccountCreation}
               >
                 Create New Account

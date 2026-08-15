@@ -1,4 +1,4 @@
-import { sortOrder, WeightEntryType } from "./types";
+import { sortOrder, WeightEntryType } from "../libs/types";
 
 // Credit: GeeksforGeeks https://www.geeksforgeeks.org/dsa/merge-sort/
 // Based merge sort functions are based on their initial code but have been adapted to work with different object types

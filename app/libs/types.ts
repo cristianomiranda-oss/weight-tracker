@@ -1,5 +1,5 @@
 export type WeightEntryType = {
-  weightEntryId: string;
+  _id: string;
   weightValue: number;
   weighInDate: string;
   userId: string;
@@ -8,14 +8,14 @@ export type WeightEntryType = {
 export type GoalOption = "Loss" | "Maintenance" | "Gain";
 
 export type GoalWeightEntryType = {
-  goalWeightEntryId: string;
+  _id: string;
   weightValue: number;
   goalType: "Loss" | "Maintenance" | "Gain";
   userId: string;
 };
 
 export type UserAccount = {
-  userId: string;
+  _id: string;
   userName: string;
   userPassword: string;
 };
@@ -43,7 +43,36 @@ export type sortOptions = {
   sortingKey: "weightValue" | "weighInDate";
 };
 
-export type CachedObj = {
+export type CachedObj<CacheType> = {
   expirationTime: number;
-  weightEntryArray: WeightEntryType[];
+  cacheData: CacheType;
+};
+
+export type DBCollection =
+  | "USER_ACCOUNT"
+  | "WEIGHT_ENTRY"
+  | "GOAL_WEIGHT_ENTRY";
+
+export type ApiEndpointResponse = {
+  message: string;
+  userAccountData?: string;
+  goalWeightEntry?: GoalWeightEntryType;
+  weightEntries?: WeightEntryType[];
+  weightEntry?: WeightEntryType;
+};
+
+export type ApiEndPointDebugTests = {
+  connectionTest: string;
+  accountCreation: string;
+  accountLogin: string;
+  goalWeightCreation: string;
+  goalWeightRetrieval: string;
+  goalWeightUpdate: string;
+  weightEntryCreation: string;
+  weightEntriesRetrieval: string;
+  weightEntryRetrieval: string;
+  weightEntryUpdate: string;
+  weightEntryRemoval: string;
+  accountCleanUp: string;
+  goalWeightEntryCleanUp: string;
 };

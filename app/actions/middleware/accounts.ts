@@ -1,7 +1,10 @@
-"use client";
+"use server";
 import { createUserCookie } from "@/app/libs/cookies";
-import { errorCausesObj, handleMiddleWareErrors } from "@/app/libs/errors";
-import { IndexedDB } from "@/app/libs/indexedDB";
+import { errorCausesObj, handleMiddleWareErrors } from "@/app/utils/errors";
+import {
+  createUserAccountService,
+  validateLoginService,
+} from "@/app/services/accounts";
 
 /**
  * Middleware for accessing the database to create a new user account
@@ -16,49 +19,14 @@ export async function createUserAccount(
   confirmPassWord: string,
 ): Promise<void> {
   try {
-    if (userName === "" || userPassword === "") {
-      throw new Error("Username and Password cannot be blank", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
-
-    if (userName.length < 6) {
-      throw new Error("Username cannot be less than 6 characters", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    } else if (userName.length > 25) {
-      throw new Error("Username cannot exceed 25 characters", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
-
-    if (userPassword.length < 8) {
-      throw new Error("Password cannot be less than 8 characters", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    } else if (userPassword.length > 30) {
-      throw new Error("Password cannot exceed 30 characters", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
-
+    // Checks that both password entries match
     if (userPassword !== confirmPassWord) {
       throw new Error("Passwords do no match", {
         cause: errorCausesObj.invalidComparison,
       });
     }
 
-    const value = await IndexedDB.createNewUserAccount(userName, userPassword);
-
-    // Checks if a valid value was returned by the database method
-    if (value) {
-      // Exits the function as the account was created
-      return;
-    } else {
-      throw new Error("Account Creation failed", {
-        cause: errorCausesObj.processFail,
-      });
-    }
+    await createUserAccountService(userName, userPassword);
   } catch (error) {
     // Calls the method to handle errors in middleware functions
     const errorToThrow = handleMiddleWareErrors(error);
@@ -77,34 +45,16 @@ export async function validateLogin(
   userPassword: string,
 ): Promise<void> {
   try {
-    if (userName === "" || userPassword === "") {
-      throw new Error("Username and Password cannot be blank", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
+    // Calls the service to validate the user's login.
+    const userAccountPayload = await validateLoginService(
+      userName,
+      userPassword,
+    );
 
-    if (userName.length < 6 || userName.length > 25) {
-      throw new Error("Username is invalid", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
+    // Calls the method to store the returned user account payload string
+    const isCookieStored = await createUserCookie(userAccountPayload);
 
-    if (userPassword.length < 8 || userPassword.length > 30) {
-      throw new Error("Password is invalid", {
-        cause: errorCausesObj.invalidParameterValue,
-      });
-    }
-
-    const userId = await IndexedDB.validateUserAccount(userName, userPassword);
-
-    if (userId === null) {
-      throw new Error("Username or Password is invalid", {
-        cause: errorCausesObj.accessDenied,
-      });
-    }
-
-    const isCookieStored = await createUserCookie(userId);
-
+    // Checks if the account string was successfully stored
     if (isCookieStored) {
       return;
     } else {

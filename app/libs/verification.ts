@@ -4,19 +4,20 @@ import bcrypt from "bcrypt";
 /**
  * Hashes the passed in password
  *
- * @param {string} userPassword The password string to be encrypted
+ * @param userPassword The password string to be encrypted
  */
 export async function hashPassword(userPassword: string) {
-  const saltRounds = 10;
-  const hashPassword = bcrypt.hash(userPassword, saltRounds);
+  const salt = await bcrypt.genSalt(12);
+  const hashPassword = bcrypt.hash(userPassword, salt);
+
   return hashPassword;
 }
 
 /**
  * Compares the encrypted password to the hashed password
  *
- * @param {string} userPassword The password string to be tested
- * @param {hashedPassword} hashedPassword The hashed password to be tested against
+ * @param userPassword The password string to be tested
+ * @param hashedPassword The hashed password to be tested against
  */
 export async function checkPassword(
   userPassword: string,

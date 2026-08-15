@@ -12,6 +12,7 @@ export const errorCausesObj = {
   databaseCrudError: "database-crud-error",
   databaseConstraintIssue: "database-constraint-issue",
   noUserEntry: "no-user-entry",
+  noGoalWeightEntry: "no-goal-weight-entry",
 };
 
 /**
@@ -52,4 +53,32 @@ export function handleMiddleWareErrors(error: unknown): Error {
     );
     return newError;
   }
+}
+
+/**
+ * Returns the server response status based on the passed in error
+ */
+export function getServerResponseStatus(error: unknown) {
+  if (error instanceof Error) {
+    if (
+      error.cause === errorCausesObj.invalidParameterValue ||
+      error.cause === errorCausesObj.accessDenied ||
+      error.cause === errorCausesObj.noUserEntry
+    ) {
+      // Return a status indicating an error on the client's end
+      return 400;
+    }
+  }
+
+  //Returns the status indicating an error on the server's end
+  return 500;
+}
+
+/**
+ * Creates a new error object that signals an unknown error cause and message
+ */
+export function getUnknownError() {
+  return new Error("An Unknown Error has Occurred!", {
+    cause: errorCausesObj.unknownError,
+  });
 }
