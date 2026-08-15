@@ -30,7 +30,7 @@ class WeightTrackerDB {
     this.WEIGHT_ENTRY_COLLECTION = "WEIGHT_ENTRY";
     this.GOAL_WEIGHT_ENTRY_COLLECTION = "GOAL_WEIGHT_ENTRY";
 
-    const dbUri: string | undefined = process.env.DB_URI;
+    const dbUri: string | undefined = process.env.DB_MONGODB_URI;
 
     // Checks if the username and password values were successfully gathered
     if (dbUri === undefined) {
