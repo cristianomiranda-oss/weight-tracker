@@ -30,16 +30,15 @@ class WeightTrackerDB {
     this.WEIGHT_ENTRY_COLLECTION = "WEIGHT_ENTRY";
     this.GOAL_WEIGHT_ENTRY_COLLECTION = "GOAL_WEIGHT_ENTRY";
 
-    const userName: string | undefined = process.env.DB_USERNAME;
-    const passWord: string | undefined = process.env.DB_PASSWORD;
+    const dbUri: string | undefined = process.env.DB_URI;
 
     // Checks if the username and password values were successfully gathered
-    if (userName === undefined || passWord === undefined) {
+    if (dbUri === undefined) {
       // If not the client is set to null
       this.mongoDbUri = null;
     } else {
       // If so, the uri is created and a new client is created
-      this.mongoDbUri = `mongodb://${userName}:${passWord}@ac-udfeevm-shard-00-00.a0yqeq4.mongodb.net:27017,ac-udfeevm-shard-00-01.a0yqeq4.mongodb.net:27017,ac-udfeevm-shard-00-02.a0yqeq4.mongodb.net:27017/?ssl=true&replicaSet=atlas-t9numu-shard-0&authSource=admin&appName=Weight-Tracking-Data`;
+      this.mongoDbUri = dbUri;
     }
   }
 
